@@ -47,7 +47,6 @@ export default async ({ app, mode, config }) => {
     app.use(express.urlencoded({ extended: false }));
     app.use(cookieParser());
     app.use('/spec', express.static(join(__dirname, '../openapi.yaml')));
-    app.use(express.static(join(__dirname, '../www')));
 
     let {uiPath, uiAPI} = await Entity.init(cliArgs.db || process.env.db || "storage");
 
@@ -104,7 +103,7 @@ export default async ({ app, mode, config }) => {
       app.use("/", express.static(join(__dirname, `../mods/${mod}/www`)))
     }
     
-    app.use("/", express.static(join(__dirname, "www"), {index: "index.html"}))
+    app.use("/", express.static(join(__dirname, "../www"), {index: "index.html"}))
     
     app.use("/", (req, res) => {
       if(req.query.single)
