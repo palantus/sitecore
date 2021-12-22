@@ -27,5 +27,8 @@ Can be overridden by creating a menu.mjs in root folder which has a default expo
 ## Mods
 Take a look at the mod sample in mods folder. It can be loaded by placing LOAD_SAMPLE=TRUE in .env.
 
+### Client files (js, css etc.)
+It is important to note that the www folder in a mod is exposed on the root of the site, meaning that the mod can overrule ANY public file from core, if it needs to. That is a great power, but consider using namespacing (subfolders) for mod files, to avoid accidental name clashes.
+
 ### Extending command palette (F1)
 Take a look at my mod sitemod-wiki or sitemod-files. Basically you need to plads a javascript file in www/commands/ which exports the commands.

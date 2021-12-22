@@ -21,9 +21,9 @@ class Element extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    let type = this.getAttribute("type");
-    if(type){
-      api.get(`search/tokens/${type}`).then(tokens => {
+    let path = this.getAttribute("path");
+    if(path){
+      api.get(path).then(tokens => {
         this.shadowRoot.getElementById("searchhelp").setAttribute("title", tokens.map(t => `${t.keywords[0]||"<none>"}: ${t.title}\n`).join("")||`Search help is not yet available for type ${type}`)
       })
     }
