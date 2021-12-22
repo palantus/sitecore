@@ -37,6 +37,18 @@ template.innerHTML = `
       right: 48px;
       width: 22px;
     }
+    .counter{
+      top: 9px;
+      position: fixed;
+      cursor: pointer;
+      background: rgba(255, 0, 0, 0.7);
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 110%;
+      pointer-events: none;
+      display: none;
+    }
         
     #log{
       position: fixed;
