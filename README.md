@@ -23,3 +23,6 @@
 
 ## Main menu:
 Can be overridden by creating a menu.mjs in root folder which has a default export of type array
+
+## Mods
+Take a look at the mod sample in mods folder. It can be loaded by placing LOAD_SAMPLE=TRUE in .env.
