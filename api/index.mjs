@@ -23,7 +23,7 @@ export default async () => {
   jobs(app);
   search(app);
 
-  for(let mod of global.mods){
+  for(let {id : mod} of global.mods){
     let handler = (await import(`../mods/${mod}/api/index.mjs`)).default;
     handler(app, fields)
   }

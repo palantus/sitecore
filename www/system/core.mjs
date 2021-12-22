@@ -166,5 +166,6 @@ export function apiURL() { return config.api }
 export function wsURL() { return config.ws }
 export let siteTitle = config.title
 export let menu = config.menu
+export let mods = config.mods
 export function isSinglePageMode() { return state().query.single ? true : false }
 export { axm }

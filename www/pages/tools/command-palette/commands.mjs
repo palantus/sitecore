@@ -1,3 +1,5 @@
+import {mods} from "/system/core.mjs"
+
 let commands = []
 let commandsPromise = null;
 
@@ -5,15 +7,14 @@ export let getCommands = async (context, query) => {
   if(commandsPromise) await commandsPromise
 
   if(commands.length == 0){
-    commandsPromise = Promise.all([
-      import("./commands/issue.mjs"),
-      import("./commands/forum.mjs"),
-      import("./commands/menu.mjs"),
-      import("./commands/vm.mjs"),
-      import("./commands/wiki.mjs"),
-      import("./commands/file.mjs"),
-      import("./commands/instance.mjs")
-    ])
+
+    let commandFiles = [import("./commands/menu.mjs")]
+
+    for(let mod of mods){
+      commandFiles.push(...mod.files.filter(f => f.startsWith("/commands/")).map(f => import(f)))
+    }
+
+    commandsPromise = Promise.all(commandFiles)
     let commandsImport = await commandsPromise;
 
     for(let imp of commandsImport){

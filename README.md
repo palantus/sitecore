@@ -26,3 +26,6 @@ Can be overridden by creating a menu.mjs in root folder which has a default expo
 
 ## Mods
 Take a look at the mod sample in mods folder. It can be loaded by placing LOAD_SAMPLE=TRUE in .env.
+
+### Extending command palette (F1)
+Take a look at my mod sitemod-wiki or sitemod-files. Basically you need to plads a javascript file in www/commands/ which exports the commands.

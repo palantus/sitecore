@@ -101,7 +101,7 @@ export default async ({ app, mode, config }) => {
     app.get("/modroutes.mjs", (req, res) => res.type('.js').send(global.modRoutes).end())
     app.use("/", express.static(join(__dirname, "www"), {index: "index.html"}))
     
-    for(let mod of global.mods){
+    for(let {id : mod} of global.mods){
       app.use("/", express.static(join(__dirname, `../mods/${mod}/www`)))
     }
     
