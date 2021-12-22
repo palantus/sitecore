@@ -20,8 +20,6 @@ class Service {
     this.redirect = `http${isDev ? '' : 's'}://${cliArgs.domain || process.env.APIDOMAIN || process.env.DOMAIN}${this.apiPrefix ? "/" + this.apiPrefix : ""}/auth/redirect`  //registrered on azure app
     this.secret = process.env.AZURE_APP_SECRET //from azure app
 
-    console.log(this.redirect)
-
     if (!this.clientId || !this.secret)
       throw "Please enter AZURE_APP_CLIENTID and AZURE_APP_SECRET in .env file"
   }
