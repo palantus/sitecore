@@ -7,6 +7,7 @@ import SearchQueryParser from "searchqueryparser";
 
 export default async ({ expressApp, mode, config }) => {
   console.log(`Starting in mode: ${mode}`)
+  global.sitecore_mode = mode;
 
   if(mode != "www"){
     await (new SearchQueryParser()).init()

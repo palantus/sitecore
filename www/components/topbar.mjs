@@ -37,53 +37,10 @@ template.innerHTML = `
       right: 48px;
       width: 22px;
     }
-    /*
-    img.chat{
-        filter: invert(0);
-        right: 80px;
-        width: 28px;
-        top: 4px;
-    }
-    img.chat:hover{
-        filter: invert(30%);
-    }
-    */
-    img.actions{
-        filter: invert(1);
-        right: 80px;
-        width: 25px;
-        top: 5px;
-    }
-    img.actions:hover{
-        filter: invert(80%);
-    }
-    #actions-counter{
-      right: 80px;
-      width: 25px;
-    }
-    
-    img.curpage{filter: invert(1);right: 112px;width: 25px;top: 5px;}
-    img.curpage:hover{filter: invert(80%);}
-    #curpage-counter{right: 112px; width: 25px; background: rgba(0, 0, 255, 0.4); color: white;}
-
-    .counter{
-      top: 9px;
-      position: fixed;
-      cursor: pointer;
-      background: rgba(255, 0, 0, 0.7);
-      border-radius: 10px;
-      text-align: center;
-      if(req.query.single)
-        res.sendFile(join(__dirname, "../www/index-single.html"))
-      font-weight: bold;
-      font-size: 110%;
-      pointer-events: none;
-      display: none;
-    }
-    
+        
     #log{
       position: fixed;
-      right: 142px;
+      right: 82px;
       top: 6px;
       text-align: right;
       font-size: 120%;
@@ -112,11 +69,6 @@ template.innerHTML = `
 
   <div id="container">
     <span id="log" class="hidden"></span>
-    <img class="curpage" id="curpage-toggle" src="/img/page.png" alt="Cur page" title="Current page"/>
-    <span class="counter" id="curpage-counter"></span>
-    <img class="actions" id="actions-toggle" src="/img/todo.png" alt="Actions" title="Running actions"/>
-    <!--<img class="chat" id="chat-toggle" src="/img/chat.png" alt="Chat" title="Chat"/>-->
-    <span class="counter" id="actions-counter"></span>
     <img class="noti" id="noti-toggle" src="/img/bell.png" alt="Notifications" title="Notifications"/>
     <span class="counter" id="noti-counter"></span>
     <img class="profile" id="user-toggle" src="/img/profile.png" alt="Profile" title="Profile"/>
@@ -138,7 +90,7 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById("notifications").classList.toggle("shown")
     })
     */
-    this.shadowRoot.querySelectorAll("#actions-toggle,#chat-toggle,#user-toggle,#noti-toggle,#curpage-toggle").forEach(e => e.addEventListener("click", event => {
+    this.shadowRoot.querySelectorAll("#user-toggle,#noti-toggle").forEach(e => e.addEventListener("click", event => {
       let rightBar = document.querySelector("#grid-container .right rightbar-component");
       let pageId = event.target.id.replace("-toggle", "")
       rightBar.setAttribute("page", rightBar.getAttribute("page") == pageId ? "" : pageId)
@@ -174,18 +126,6 @@ class Element extends HTMLElement {
     if (!counters) return;
     this.shadowRoot.getElementById("noti-counter").style.display = counters.notifications < 1 ? "none" : "inline"
     this.shadowRoot.getElementById("noti-counter").innerText = counters.notifications
-
-    this.shadowRoot.getElementById("actions-counter").style.display = counters.actions < 1 ? "none" : "inline"
-    this.shadowRoot.getElementById("actions-counter").innerText = counters.actions
-
-    this.refreshCurPageCounterOnly(counters.note)
-  }
-
-  async refreshCurPageCounterOnly(exists) {
-    exists = exists ?? await api.get(`wiki/exists?id=${state().path.slice(1)}`)
-
-    this.shadowRoot.getElementById("curpage-counter").style.display = exists ? "inline" : "none"
-    this.shadowRoot.getElementById("curpage-counter").innerText = exists ? "N" : ""
   }
 
   clearCurLogItem() {

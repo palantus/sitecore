@@ -17,15 +17,6 @@ template.innerHTML = `
 
       <p>Logged in as <b><span id="user-id"/></b> with email <b><span id="user-email"/></b></p>
       <button id="logout">Log out</button>
-
-      <br>
-      <br>
-      <h2>Setup</h2>
-      <br>
-
-      <h3>Notifications</h3>
-      <field-component label="Threads" title="Receive a notification every time a new thread or reply is posted"><input type="checkbox" id="setup-forum-notify"></input></field-component>
-      <field-component label="Changesets" title="Receive a notification on new changesets"><input type="checkbox" id="setup-changeset-notify"></input></field-component>
   </div>
 `;
 
@@ -35,35 +26,19 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.setupChange = this.setupChange.bind(this)
-
+    
     this.shadowRoot.getElementById("logout").addEventListener("click", () => {
       api.post("/auth/logout")
       api.logout();
       location.reload(); 
     })
     this.refreshData()
-    this.shadowRoot.getElementById("setup-forum-notify").addEventListener("change", this.setupChange);
-    this.shadowRoot.getElementById("setup-changeset-notify").addEventListener("change", this.setupChange);
-  }
-
-  setupChange({target : e}){
-    switch(e.id){
-      case "setup-forum-notify":
-        api.patch("me/setup", {notifyOnForumUpdates: e.checked})
-        break;
-      case "setup-changeset-notify":
-        api.patch("me/setup", {notifyOnNewChangesets: e.checked})
-        break;
-    }
   }
 
   connectedCallback() {
-    on("changed-project", elementName, this.refreshData)
   }
 
   disconnectedCallback() {
-    off("changed-project", elementName)
   }
 
   async refreshData(){
@@ -74,18 +49,12 @@ class Element extends HTMLElement {
           id,
           email
         },
-        activeMSUser,
-        setup{
-          notifyOnForumUpdates,
-          notifyOnNewChangesets
-        }
+        activeMSUser
       }
     }`)).me
 
     this.shadowRoot.getElementById("user-id").innerText = me.id
     this.shadowRoot.getElementById("user-email").innerText = me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"
-    this.shadowRoot.getElementById("setup-forum-notify").checked = me.setup.notifyOnForumUpdates
-    this.shadowRoot.getElementById("setup-changeset-notify").checked = me.setup.notifyOnNewChangesets
   }
 }
 

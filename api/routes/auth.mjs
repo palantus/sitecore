@@ -9,7 +9,6 @@ import service from "../../services/auth.mjs"
 import { service as userService } from "../../services/user.mjs"
 import jwt from 'jsonwebtoken'
 import Entity from "entitystorage"
-import { getTimestamp } from "../../tools/date.mjs"
 import yargs from "yargs"
 import User from "../../models/user.mjs"
 const cliArgs = yargs.argv
@@ -28,7 +27,7 @@ export default (app) => {
     console.log("Warning: Is in dev mode, which means that user requests aren't authorized")
 
   if (process.env.LOGIN_URL && process.env.LOGIN_URL.indexOf("<domain>")) {
-    process.env.LOGIN_URL = process.env.LOGIN_URL.replace("<domain>", domain)
+    process.env.LOGIN_URL = process.env.LOGIN_URL.replace("<domain>", domain) + (service.apiPrefix ? "/" + service.apiPrefix : "")
   }
 
   app.use("/auth", route)

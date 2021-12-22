@@ -13,11 +13,14 @@ let isDev = process.env.ISDEV === "TRUE"
 if (isDev) console.log("Running auth in developer mode (non-ssl)")
 
 class Service {
-  constructor() {
+  init(){
+    this.apiPrefix = process.env.API_PREFIX || (global.sitecore_mode == "combined" ? "api" : "");
     this.clientId = process.env.AZURE_APP_CLIENTID  //from azure app
     this.scope = "https%3A%2F%2Fgraph.microsoft.com%2Fuser.read" //inkluder %20offline_access for refresh_token. %20 er fordi det er space separeret.
-    this.redirect = `http${isDev ? '' : 's'}://${cliArgs.domain || process.env.DOMAIN}/auth/redirect`  //registrered on azure app
+    this.redirect = `http${isDev ? '' : 's'}://${cliArgs.domain || process.env.APIDOMAIN || process.env.DOMAIN}${this.apiPrefix ? "/" + this.apiPrefix : ""}/auth/redirect`  //registrered on azure app
     this.secret = process.env.AZURE_APP_SECRET //from azure app
+
+    console.log(this.redirect)
 
     if (!this.clientId || !this.secret)
       throw "Please enter AZURE_APP_CLIENTID and AZURE_APP_SECRET in .env file"

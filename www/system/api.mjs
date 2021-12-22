@@ -190,7 +190,7 @@ class API {
     if (window.location.pathname.startsWith("/login")) return;
     let redirectUrl = window.location.pathname;
     //window.location = `${apiURL()}/auth/login?redirect=${encodeURIComponent(redirectUrl)}`
-    goto(`/login?redirect=${encodeURIComponent(redirectUrl)}`)
+    //goto(`/login?redirect=${encodeURIComponent(redirectUrl)}`)
   }
 
   logout(){
