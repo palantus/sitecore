@@ -1,19 +1,13 @@
 import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
-import service from "../../services/system.mjs"
 import Entity from "entitystorage"
 import { getTimestamp } from "../../tools/date.mjs"
-import System from "../../models/system.mjs"
 import LogEntry from "../../models/logentry.mjs";
 
 export default (app) => {
 
   app.use("/system", route)
-
-  route.post('/convert', async function (req, res, next) {
-    res.json(await service.convert());
-  });
 
   route.get('/log/:area', function (req, res, next) {
     res.json(LogEntry.search(`tag:logentry area.prop:"id=${req.params.area}"`).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => e.toObj()));
@@ -26,22 +20,6 @@ export default (app) => {
   route.get('/logareas', function (req, res, next) {
     res.json(Entity.search("tag:logarea").map(e => ({ id: e.id })));
   });
-
-  route.patch('/setup', function (req, res, next) {
-    if (!res.locals.roles.includes("admin")) return res.status(403).json({ error: `You do not have access to ${req.method} ${req.path}` })
-
-    let sys = System.lookup()
-    for (let p in req.body) {
-      if (typeof req.body[p] !== "object") {
-        sys[p] = req.body[p]
-      }
-    }
-    if (req.body.flags) {
-      Object.assign(sys.flags, req.body.flags)
-    }
-    res.json(true);
-  });
-
 
   // API keys
   const routeAPIKeys = Router();

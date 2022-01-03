@@ -22,15 +22,6 @@ export const MSUserType = new GraphQLObjectType({
     })
   })
 
-export const UserSetupType = new GraphQLObjectType({
-    name: 'UserSetup',
-    description: 'This represents a user setup',
-    fields: () => ({
-      notifyOnForumUpdates: { type: GraphQLNonNull(GraphQLBoolean), resolve: s => s.notifyOnForumUpdates || false},
-      notifyOnNewChangesets: { type: GraphQLNonNull(GraphQLBoolean), resolve: s => s.notifyOnNewChangesets || false }
-    })
-  })
-
 export const UserType = new GraphQLObjectType({
     name: 'User',
     description: 'This represents a user',
@@ -43,7 +34,6 @@ export const UserType = new GraphQLObjectType({
           resolve: (user => MSUser.search(`tag:msuser rel:${User.lookup(user.id)}=user`))
       },
       activeMSUser: {type: GraphQLString, resolve: (parent, args, context) => context.user.activeMSUser},
-      setup: {type: GraphQLNonNull(UserSetupType)},
       isDeveloper: { type: GraphQLNonNull(GraphQLBoolean), resolve: u => u.tags.includes("developer") },
       isTester: { type: GraphQLNonNull(GraphQLBoolean), resolve: u => u.tags.includes("tester") },
       forumName: { type: GraphQLString },

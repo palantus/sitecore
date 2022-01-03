@@ -6,7 +6,6 @@ export let menu = [
       {title: "API keys", path: "/system/apikeys"},
       {title: "Jobs", path: "/setup/jobs"},
       {title: "Logs", path: "/logs"},
-      {title: "Setup", path: "/system"},
       {title: "Tools", path: "/systemtools"},
       {title: "Users", path: "/setup/users"}
     ]
@@ -18,7 +17,6 @@ export let routes = [
   {path: "/setup/users",            page: "../pages/setup/users.mjs"},
   {path: "/setup/msusers",          page: "../pages/setup/msusers.mjs"},
   {path: "/setup/jobs",             page: "../pages/setup/jobs.mjs"},
-  {path: "/system",                 page: "../pages/setup/system.mjs"},
   {path: "/systemtools",            page: "../pages/setup/tools.mjs"},
   {path: "/system/apikeys",         page: "../pages/setup/apikeys.mjs"},
   {path: "/logs",                   page: "../pages/setup/logs.mjs"},

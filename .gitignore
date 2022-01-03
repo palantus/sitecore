@@ -63,7 +63,7 @@ storage
 storage_intern
 test.js
 jobs
-menu.mjs
+./menu.mjs
 todo.md
 
 mods

@@ -1,5 +1,4 @@
 import user from "../graphql/user.mjs";
-import system from "../graphql/system.mjs";
 
 import expressGraphQL from 'express-graphql'
 import {
@@ -20,7 +19,6 @@ export default (app) => {
 
       //REGISTER ALL QUERIES HERE:
       user.registerQueries(fields)
-      system.registerQueries(fields)
 
       return fields;
     }

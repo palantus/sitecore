@@ -1,5 +1,4 @@
 import auth from './routes/auth.mjs';
-import system from './routes/system.mjs';
 import user from './routes/user.mjs';
 import notifications from './routes/notifications.mjs';
 import {default as graphql, fields} from './routes/graphql.mjs';
@@ -16,7 +15,6 @@ export default async () => {
 	const app = Router();
 
   auth(app);
-  system(app);
   user(app);
   notifications(app);
   jobs(app);
