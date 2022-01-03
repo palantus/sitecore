@@ -5,6 +5,7 @@ import service from "../../services/system.mjs"
 import Entity from "entitystorage"
 import { getTimestamp } from "../../tools/date.mjs"
 import System from "../../models/system.mjs"
+import LogEntry from "../../models/logentry.mjs";
 
 export default (app) => {
 
@@ -14,8 +15,16 @@ export default (app) => {
     res.json(await service.convert());
   });
 
+  route.get('/log/:area', function (req, res, next) {
+    res.json(LogEntry.search(`tag:logentry area.prop:"id=${req.params.area}"`).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => e.toObj()));
+  });
+
   route.get('/log', function (req, res, next) {
     res.json(Entity.search("tag:logentry").sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => ({ timestamp: e.timestamp, text: e.text })));
+  });
+
+  route.get('/logareas', function (req, res, next) {
+    res.json(Entity.search("tag:logarea").map(e => ({ id: e.id })));
   });
 
   route.patch('/setup', function (req, res, next) {

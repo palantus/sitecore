@@ -23,6 +23,11 @@ template.innerHTML = `
   </style>  
 
   <div id="container">
+    <label for="logselect">Log: </label>
+    <select id="logselect" value="vsts-work-items">
+    </select>
+    <br><br>
+
     <table>
         <thead>
             <tr>
@@ -44,9 +49,15 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.refreshData = this.refreshData.bind(this);
+
+    api.get("system/logareas").then(areas => {
+      this.shadowRoot.getElementById("logselect").innerHTML = areas.map(e => `<option value="${e.id}">${e.id}</option>`).join("")
+      this.shadowRoot.getElementById("logselect").addEventListener("change", this.refreshData)
+      this.refreshData()
+    })
   }
   async refreshData(){
-    let data = await api.get(`system/log`)
+    let data = await api.get(`system/log/${this.shadowRoot.getElementById("logselect").value||""}`)
     this.shadowRoot.getElementById("log").innerHTML = data.map(e => `<tr><td>${e.timestamp.substr(0, 19).replace("T", " ")}</td><td>${e.text}</td></tr>`).join("")
   }
 
@@ -54,7 +65,6 @@ class Element extends HTMLElement {
     on("changed-project",elementName, this.refreshData)
     on("changed-page", elementName, this.refreshData)
     this.timer = setInterval(this.refreshData, 3000)
-    this.refreshData()
   }
 
   disconnectedCallback() {
