@@ -54,10 +54,6 @@ class User extends Entity{
       if(!setup){
         setup = new Entity()
         this.rel(setup, "setup")
-
-        // Default values
-        setup.notifyOnForumUpdates = false;
-        setup.notifyOnNewChangesets = false;
       }
       return setup
     }

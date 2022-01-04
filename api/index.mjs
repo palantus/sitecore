@@ -3,6 +3,7 @@ import user from './routes/user.mjs';
 import notifications from './routes/notifications.mjs';
 import {default as graphql, fields} from './routes/graphql.mjs';
 import jobs from './routes/jobs.mjs';
+import system from './routes/system.mjs';
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -18,6 +19,7 @@ export default async () => {
   user(app);
   notifications(app);
   jobs(app);
+  system(app)
 
   for(let {id : mod} of global.mods){
     let handler = (await import(`../mods/${mod}/api/index.mjs`)).default;
