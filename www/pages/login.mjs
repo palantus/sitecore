@@ -22,10 +22,13 @@ template.innerHTML = `
         margin-bottom: 5px;
       }
       #flex{
-        display: flex;
+        
       }
       #flex div{
         padding: 10px;
+      }
+      #flex > div{
+        float: left;
       }
     </style>
     <div id="container">
