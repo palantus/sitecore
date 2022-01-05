@@ -113,6 +113,7 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("select").style.display = "none"
       
       this.shadowRoot.querySelector("input").setAttribute("type", this.getAttribute("type"));
+      this.shadowRoot.querySelector("input").setAttribute("placeholder", this.getAttribute("placeholder") || "");
       this.shadowRoot.querySelector("input").toggleAttribute("disabled", this.hasAttribute("disabled"))
     }
   }
