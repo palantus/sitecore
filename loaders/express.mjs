@@ -50,8 +50,10 @@ export default async ({ app, mode, config }) => {
 
     let {uiPath, uiAPI} = await Entity.init(cliArgs.db || process.env.db || "storage");
 
-    app.use("/db", express.static(uiPath))
-    app.use("/db/api/:query", uiAPI)
+    if(process.env.EXPOSEDB == "TRUE"){
+      app.use("/db", express.static(uiPath))
+      app.use("/db/api/:query", uiAPI)
+    }
 
     // 1. Install the OpenApiValidator on your express app
     
