@@ -91,17 +91,26 @@ export default {
       fields.unassignedMSUsers = {
         type: GraphQLList(MSUserType),
         description: "Gets all MS users not assigned",
-        resolve: (parent, args, context) => userService().getUnassignedMSUsers()
+        resolve: (parent, args, context) => {
+          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          return userService().getUnassignedMSUsers()
+        }
       }
       fields.users = {
         type: GraphQLList(UserType),
         description: "Gets all users",
-        resolve: (parent, args, context) => User.search("tag:user")
+        resolve: (parent, args, context) => {
+          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          return User.search("tag:user")
+        }
       }
       fields.usersActive = {
         type: GraphQLList(UserType),
         description: "Gets all users",
-        resolve: (parent, args, context) => User.search("tag:user !tag:obsolete")
+        resolve: (parent, args, context) => {
+          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          return User.search("tag:user !tag:obsolete")
+        }
       }
       fields.user = {
         type: UserType,
@@ -109,12 +118,18 @@ export default {
           id: { type: GraphQLString }
         },
         description: "Get user",
-        resolve: (parent, args, context) => User.lookup(args.id)
+        resolve: (parent, args, context) => {
+          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          return User.lookup(args.id)
+        }
       }
       fields.msUsers = {
         type: GraphQLList(MSUserType),
         description: "Get ms users",
-        resolve: (parent, args, context) => MSUser.search("tag:msuser")
+        resolve: (parent, args, context) => {
+          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          return MSUser.search("tag:msuser")
+        }
       }
     }
 }
