@@ -49,6 +49,13 @@ class API {
     delete this.token;
   }
 
+  lookupCache(path){
+    let url = `${apiURL()}/${path}`;
+    if (this.cache && this.cache.has(url))
+      return this.cache.get(url)
+    return null;
+  }
+
   async get(path, { returnIfError = false, cache = false } = {}) {
     if (this.failedLoginState === true) return;
     let url = `${apiURL()}/${path}`;
@@ -195,6 +202,7 @@ class API {
 
   logout(){
     this.removeToken();
+    this.cache = new Map()
   }
 
   async fetch(path, options) {
@@ -245,11 +253,20 @@ export function userRolesCached() {
   return storedRoles ? JSON.parse(storedRoles) : []
 }
 export async function userRoles() {
-  let storedRoles = window.localStorage.getItem("userroles")
-  if(storedRoles)
-    return JSON.parse(storedRoles)
+  let me = api.lookupCache("me");
+  if(!me){
+    let storedRoles = window.localStorage.getItem("userroles")
+    if(storedRoles) {
+      // Make sure to update cache, in case the roles change
+      api.get("me").then(me => {
+        let roles = me?.roles || []
+        window.localStorage.setItem("userroles", JSON.stringify(roles))
+      })
+      return JSON.parse(storedRoles)
+    }
 
-  let me = await api.get("me")
+    me = await api.get("me")
+  }
   let roles = me?.roles || []
   window.localStorage.setItem("userroles", JSON.stringify(roles))
   return roles;
