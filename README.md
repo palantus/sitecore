@@ -24,6 +24,10 @@
 ## Main menu:
 Can be overridden by creating a menu.mjs in root folder of sitecore or a mod, which has a default export of type array. Otherwise, the menu consists of a merge of all ui.mjs files in sitecore and mod root folders.
 
+### Permissions
+
+Any menu or item in the menu, can have roles (array) or public (boolean) defined, to control which items are available to a given user.
+
 ## Mods
 Take a look at the mod sample in mods folder. It can be loaded by placing LOAD_SAMPLE=TRUE in .env.
 

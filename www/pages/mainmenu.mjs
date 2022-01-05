@@ -1,5 +1,5 @@
 const elementName = 'main-menu'
-import api from "../system/api.mjs";
+import {default as api, userRoles, getUser} from "../system/api.mjs";
 import {goto, state, isMobile, menu} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
 
@@ -117,8 +117,6 @@ class Page extends HTMLElement {
     this.updateSelected = this.updateSelected.bind(this)
     this.refreshData = this.refreshData.bind(this)
 
-    let roles = window.localStorage.getItem("roles")
-    this.userRoles = roles ? JSON.parse(roles) : []
     this.refreshData();
 
     //this.shadowRoot.querySelector('h3').innerText = this.getAttribute('name');
@@ -168,17 +166,9 @@ class Page extends HTMLElement {
     }
   }
 
-  refreshData(){
-    api.get("me").then(me => {
-      if(me){
-        if(JSON.stringify(me.roles) == JSON.stringify(this.userRoles)) return;
-        this.userRoles = me.roles
-      } else {
-        this.userRoles = []
-      }
-      window.localStorage.setItem("roles", JSON.stringify(this.userRoles))
-      this.refreshMenu()
-    })
+  async refreshData(){
+    this.userRoles = await userRoles()
+    this.user = getUser()
     this.refreshMenu();
   }
 
@@ -214,6 +204,7 @@ class Page extends HTMLElement {
   addMenu(parent, items, parentMenuId){
     for(let item of items){
       if(item.role && !this.userRoles.includes(item.role)) continue;
+      if(item.public !== true && !this.user) continue;
 
       let itemDiv = document.createElement("div")
       let titleElement = document.createElement("span")
@@ -254,14 +245,12 @@ class Page extends HTMLElement {
   }
 
   connectedCallback() {
-    on("changed-project", elementName, this.refreshData)
     on("logged-in", elementName, this.refreshData)
     on("logged-out", elementName, this.refreshData)
     //this.shadowRoot.querySelector('#toggle-info').addEventListener('click', () => this.toggleInfo());
   }
 
   disconnectedCallback() {
-    off("changed-project", elementName)
     off("logged-in", elementName)
     off("logged-out", elementName)
     //this.shadowRoot.querySelector('#toggle-info').removeEventListener();

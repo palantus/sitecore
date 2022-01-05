@@ -15,7 +15,7 @@ template.innerHTML = `
   <div id="container">
       <h2>Status</h2>
 
-      <p>Logged in as <b><span id="user-id"/></b> with email <b><span id="user-email"/></b></p>
+      <p id="status"></p>
       <button id="logout">Log out</button>
   </div>
 `;
@@ -51,10 +51,12 @@ class Element extends HTMLElement {
         },
         activeMSUser
       }
-    }`)).me
+    }`))?.me
 
-    this.shadowRoot.getElementById("user-id").innerText = me.id
-    this.shadowRoot.getElementById("user-email").innerText = me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"
+    this.shadowRoot.getElementById("status").innerHTML = 
+            me ? `Signed in as <b>${me.id}</b> with email <b>${me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"}</b>`
+            : `Not signed in`
+    this.shadowRoot.getElementById("logout").style.display = me ? "button" : "none"
   }
 }
 

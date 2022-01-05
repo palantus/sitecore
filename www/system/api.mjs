@@ -16,10 +16,11 @@ class API {
 
   setToken() {
     let urlToken = state().query.token
-    let tokenKey = `${state().project}_apitoken`
+    let tokenKey = `apitoken`
     if (urlToken) {
       this.token = urlToken;
       localStorage.setItem(tokenKey, this.token)
+      localStorage.removeItem("userroles")
       removeQueryVar("token");
     } else {
       this.token = localStorage.getItem(tokenKey)
@@ -33,7 +34,7 @@ class API {
       }
     } else {
       if (state().query.success == "false") {
-        alertDialog("Could not sign in to project " + state().project)
+        alertDialog("Could not sign in")
         this.failedLoginState = true;
       } else {
         this.login();
@@ -43,8 +44,8 @@ class API {
   }
 
   removeToken(){
-    let tokenKey = `${state().project}_apitoken`
-    localStorage.removeItem(tokenKey)
+    localStorage.removeItem("apitoken")
+    localStorage.removeItem("userroles")
     delete this.token;
   }
 
@@ -239,3 +240,17 @@ export default api
 export function getToken() { return api.token }
 export function getUser() { return api.tokenPayload }
 export function getApiUrl() { return `${apiURL()}` }
+export function userRolesCached() {
+  let storedRoles = window.localStorage.getItem("userroles")
+  return storedRoles ? JSON.parse(storedRoles) : []
+}
+export async function userRoles() {
+  let storedRoles = window.localStorage.getItem("userroles")
+  if(storedRoles)
+    return JSON.parse(storedRoles)
+
+  let me = await api.get("me")
+  let roles = me?.roles || []
+  window.localStorage.setItem("userroles", JSON.stringify(roles))
+  return roles;
+}
