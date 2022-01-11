@@ -15,7 +15,7 @@ const cliArgs = yargs.argv;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 let isDev = process.env.ISDEV === "TRUE"
 
-export let config;
+let siteConfig = {};
 
 export default async ({ app, mode, config }) => {
 
@@ -87,7 +87,7 @@ export default async ({ app, mode, config }) => {
     let wsURL = mode == "combined" ? siteURL.replace("https://", "wss://").replace("http://", "ws://")
                                    : `ws${isDev ? '' : 's'}://${apiDomain}`
 
-    config = {apiURL, siteURL, isDev, wsURL};
+    siteConfig = {apiURL, siteURL, isDev, wsURL};
 
     app.get("/clientconfig.mjs", (req, res) => {
 
@@ -150,3 +150,5 @@ export default async ({ app, mode, config }) => {
     });
   }
 };
+
+export let config = () => siteConfig;
