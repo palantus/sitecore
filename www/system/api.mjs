@@ -5,6 +5,7 @@ import messageServer from "./message.mjs"
 
 class API {
   cache = new Map()
+  activeCacheableRequests = {}
 
   constructor() {
     this.setToken()
@@ -28,7 +29,6 @@ class API {
 
     if (this.token) {
       this.failedLoginState = false;
-      this.tokenPayload = parseJwt(this.token)
       if (!isSinglePageMode()) {
         messageServer.connect();
       }
@@ -232,6 +232,7 @@ class API {
   }
 }
 
+/*
 function parseJwt(token) {
   var base64Url = token.split('.')[1];
   var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -241,12 +242,13 @@ function parseJwt(token) {
 
   return JSON.parse(jsonPayload);
 };
+*/
 
 export let api = new API()
 
 export default api
 export function getToken() { return api.token }
-export function getUser() { return api.tokenPayload }
+export function getUser() { return api.get("me", {cache: true})}
 export function getApiUrl() { return `${apiURL()}` }
 export function userRolesCached() {
   let storedRoles = window.localStorage.getItem("userroles")

@@ -95,10 +95,10 @@ class Element extends HTMLElement {
     let dialog = this.shadowRoot.querySelector("#newkey-dialog")
 
     showDialog(dialog, {
-      show: () => {
+      show: async () => {
         this.shadowRoot.querySelector("#newkey-name").focus()
         this.shadowRoot.querySelector("#newkey-key").value = uuidv4()
-        this.shadowRoot.querySelector("#newkey-user").value = getUser().id
+        this.shadowRoot.querySelector("#newkey-user").value = (await getUser()).id
       },
       ok: async (val) => {
         await api.post("system/apikeys", val)

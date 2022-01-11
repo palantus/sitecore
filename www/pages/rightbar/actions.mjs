@@ -57,7 +57,7 @@ class Element extends HTMLElement {
               totalCount
             }
           }
-      }`, {input: {query: `owner:${getUser().id} state:running`, reverse: true}}),
+      }`, {input: {query: `owner:${(await getUser()).id} state:running`, reverse: true}}),
       api.query(`query ActionList($input:PageableSearchArgsType){
           actions(input: $input){
             nodes{
@@ -67,7 +67,7 @@ class Element extends HTMLElement {
               totalCount
             }
           }
-      }`, {input: {query: `owner:${getUser().id} finished:today`, reverse: true}}),
+      }`, {input: {query: `owner:${(await getUser()).id} finished:today`, reverse: true}}),
       api.query(`query ActionList($input:PageableSearchArgsType){
           actions(input: $input){
             nodes{
@@ -77,7 +77,7 @@ class Element extends HTMLElement {
               totalCount
             }
           }
-      }`, {input: {query: `owner:${getUser().id} state:ready created:today`, reverse: true}})
+      }`, {input: {query: `owner:${(await getUser()).id} state:ready created:today`, reverse: true}})
     ])
 
     let rbStateToText = (rb) => rb.state == "error" ? "ERROR" : rb.state == "timeout" ? "TIMEDOUT" : `${Math.floor((rb.done/rb.total)*100)}%`;

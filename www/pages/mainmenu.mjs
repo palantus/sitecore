@@ -167,8 +167,8 @@ class Page extends HTMLElement {
   }
 
   async refreshData(){
+    this.user = await getUser()
     this.userRoles = await userRoles()
-    this.user = getUser()
     this.refreshMenu();
   }
 
