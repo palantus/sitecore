@@ -164,6 +164,7 @@ export function isMobile() { return axm.isMobile() }
 export function isSecure() { return config.secure }
 export function apiURL() { return config.api }
 export function wsURL() { return config.ws }
+export function siteURL() { return config.site }
 export let siteTitle = config.title
 export let menu = config.menu
 export let mods = config.mods
