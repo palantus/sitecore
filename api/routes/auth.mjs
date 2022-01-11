@@ -116,12 +116,12 @@ export default (app) => {
     }
 
     if (!user && !res.finished) {
-      if (authHeader)
+      if (req.query.token)
+        token = req.query.token
+      else if (authHeader)
         token = authHeader.split(' ')[1]
       else if (req.cookies.jwtToken)
         token = req.cookies.jwtToken
-      else if (req.query.token)
-        token = req.query.token
 
       if (!token)
         return res.status(401).json({ error: "Not logged in", redirectTo: process.env.LOGIN_URL })
