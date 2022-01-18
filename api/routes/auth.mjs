@@ -72,7 +72,7 @@ export default (app) => {
       user = service.getAdmin();
     } else {
       user = User.lookup(req.body.username);
-      if(!user.hasPassword() || !user.validatePassword(req.body.password)){
+      if(!user.active || !user.hasPassword() || !user.validatePassword(req.body.password)){
         return res.json({success: false})
       }
     }
@@ -161,17 +161,9 @@ export default (app) => {
       user = service.lookupUser(req.headers["impersonate-user"]);
       roles = user.roles
     }
-
-    if (!roles.includes("team") && !roles.includes("admin") && req.method != "GET"
-      && (req.method != "POST" || req.path != "/graphql")
-      && (!roles.includes("translator") || !req.path.startsWith("/label"))) {
-      console.log(`Unauthorized access by user ${user.id}: ${req.method} ${req.path}`)
-      return res.status(403).json({ error: `You do not have access to ${req.method} ${req.path}` })
-    }
-
-    if (req.path.startsWith("/jobs") && !roles.includes("admin")) {
-      console.log(`Unauthorized access by user ${user.id}: ${req.method} ${req.path}`)
-      return res.status(403).json({ error: `You do not have access to ${req.method} ${req.path}` })
+    
+    if(!user.active){
+      return res.status(401).json({ error: `The user ${user.id} is deactivated`, redirectTo: process.env.LOGIN_URL })
     }
 
     res.locals.user = user

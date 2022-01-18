@@ -101,7 +101,7 @@ class IndexPage extends HTMLElement {
         goto(`/?token=${response.token}`)
       }
     } else {
-      alertDialog("Wrong username/password")
+      alertDialog("Wrong username/password combination. If you continue seeing this error and you are sure that the combination is correct, your user might be deactivated")
     }
   }
 

@@ -62,6 +62,20 @@ class User extends Entity{
       return this.tags.filter(t => ["translator", "admin", "developer", "tester", "team"].includes(t))
     }
 
+    get active(){
+      return !this.tags.includes("obsolete")
+    }
+
+    deactivate(){
+      this.tag("obsolete")
+      return this;
+    }
+
+    activate(){
+      this.removeTag("obsolete")
+      return this;
+    }
+
     toObj(){
         return {
             id: this.id,

@@ -115,7 +115,7 @@ class Element extends HTMLElement {
     let tab = this.shadowRoot.querySelector('table tbody')
     tab.innerHTML = "";
 
-    for(let user of users){
+    for(let user of users.sort((a, b) => a.id < b.id ? -1 : 1)){
         let row = document.createElement("tr")
         row.classList.add("result")
         row.innerHTML = `

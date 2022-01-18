@@ -14,8 +14,9 @@ export default (app) => {
   app.use("/user", route)
 
 
-  route.post('/', async function (req, res, next) {
+  route.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!req.body.id || !req.body.name) throw "id and name are mandatory for users"
     res.json(service(res.locals).add(req.body.id, req.body.name));
   });
 
@@ -59,6 +60,7 @@ export default (app) => {
     if (!user) throw "Unknown user"
 
     if (req.body.name !== undefined) user.name = req.body.name
+    if (req.body.active !== undefined) {if(req.body.active) user.activate(); else user.deactivate();}
     if (req.body.password !== undefined) user.setPassword(req.body.password || null);
     if (req.body.developer !== undefined) { if (req.body.developer) user.tag("developer"); else user.removeTag("developer"); }
     if (req.body.tester !== undefined) { if (req.body.tester) user.tag("tester"); else user.removeTag("tester"); }
