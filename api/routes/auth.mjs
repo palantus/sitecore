@@ -105,7 +105,11 @@ export default (app) => {
     const authHeader = req.headers['authorization']
     let token;
 
-    if (authHeader && authHeader.startsWith("Basic")) {
+    if(res.locals.user?._id){
+      user = res.locals.user; // In case a mod already found the user using some other form of authentication
+    }
+
+    if (!user && authHeader && authHeader.startsWith("Basic")) {
       const [login, password] = Buffer.from(authHeader.split(" ")[1], 'base64').toString().split(':')
       if (password && password.length < 50) {
         let apiKey = Entity.find(`tag:apikey prop:"key=${password}"`)
@@ -116,13 +120,14 @@ export default (app) => {
     }
 
     if (!user && !res.finished) {
-      if (req.query.token)
+      if(res.locals.token)
+        token = res.locals.token //Allow mods to set token
+      else if (req.query.token)
         token = req.query.token
       else if (authHeader)
         token = authHeader.split(' ')[1]
       else if (req.cookies.jwtToken)
         token = req.cookies.jwtToken
-
       if (!token)
         return res.status(401).json({ error: "Not logged in", redirectTo: process.env.LOGIN_URL })
 

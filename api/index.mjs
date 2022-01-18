@@ -4,6 +4,7 @@ import notifications from './routes/notifications.mjs';
 import {default as graphql, fields} from './routes/graphql.mjs';
 import jobs from './routes/jobs.mjs';
 import system from './routes/system.mjs';
+import fs from 'fs'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -14,6 +15,13 @@ const route = Router();
 
 export default async () => {
 	const app = Router();
+
+  for(let {id : mod} of global.mods){
+    if(!!(await fs.promises.stat(`./mods/${mod}/api/auth.mjs`).catch(e => false))){
+      let handler = (await import(`../mods/${mod}/api/auth.mjs`)).default;
+      handler(app)
+    }
+  }
 
   auth(app);
   user(app);

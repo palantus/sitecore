@@ -46,7 +46,7 @@ template.innerHTML = `
               <th>Id</th>
               <th>Name</th>
               <th>User</th>
-              <th>Issued date</th>
+              <th>Issued</th>
               <th></th>
             </tr>
         </thead>
@@ -141,7 +141,7 @@ class Element extends HTMLElement {
                 <td>${key.id}</td>
                 <td>${key.name}</td>
                 <td>${key.user}</td>
-                <td>${key.issueDate||"N/A"}</td>
+                <td>${key.issueDate?.substring(0, 19).replace("T", " ") ||"N/A"}</td>
                 <td><button data-id="${key.id}" class="deletekey">Delete</button></td>
             </tr>
         `

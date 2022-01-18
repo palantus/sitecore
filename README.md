@@ -36,3 +36,7 @@ It is important to note that the www folder in a mod is exposed on the root of t
 
 ### Extending command palette (F1)
 Take a look at my mod sitemod-wiki or sitemod-files. Basically you need to plads a javascript file in www/commands/ which exports the commands.
+
+### Add custom authentication
+
+You can add a auth.mjs file to the api folder in your mod. This will be added to the express chain first, meaning that you can use it to set eg. res.locals.user and thereby authenticate a user by some custom means.
