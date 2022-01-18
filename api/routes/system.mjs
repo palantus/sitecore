@@ -31,16 +31,15 @@ export default (app) => {
 
   routeAPIKeys.get('/', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
-    res.json(Entity.search("tag:apikey").map(k => { return { id: k._id, name: k.name, user: k.user, issueDate: k.issueDate } }))
+    res.json(Entity.search("tag:apikey").map(k => { return { id: k._id, name: k.name, userId: k.related.user?.id||null, issueDate: k.issueDate } }))
   });
 
   routeAPIKeys.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
-    if (!req.body.name || !req.body.key || !req.body.user)
-      throw "name, key and user are mandatory"
-    if (!Entity.find("tag:user prop:id=" + req.body.user))
-      throw `User ${req.body.user} doesn't exist`
-    new Entity().tag("apikey").prop("name", req.body.name).prop("issueDate", getTimestamp()).prop("user", req.body.user).prop("key", req.body.key)
+    if (!req.body.name || !req.body.key || !req.body.userId) throw "name, key and userId are mandatory"
+    let user = Entity.find("tag:user prop:id=" + req.body.userId)
+    if (!user) throw `User ${req.body.userId} doesn't exist`
+    new Entity().tag("apikey").prop("name", req.body.name).prop("issueDate", getTimestamp()).rel(user, "user").prop("key", req.body.key)
     res.json({ success: true })
   })
 

@@ -107,12 +107,12 @@ class Element extends HTMLElement {
       validate: (val) => 
           !val.name ? "Please fill out name"
         : !val.key ? "Please fill out key"
-        : !val.user ? "Please fill out user"
+        : !val.userId ? "Please fill out user"
         : true,
       values: () => {return {
         name: this.shadowRoot.getElementById("newkey-name").value,
         key: this.shadowRoot.getElementById("newkey-key").value,
-        user: this.shadowRoot.getElementById("newkey-user").value
+        userId: this.shadowRoot.getElementById("newkey-user").value
       }},
       close: () => {
         this.shadowRoot.querySelectorAll("field-component input").forEach(e => e.value = '')
@@ -140,7 +140,7 @@ class Element extends HTMLElement {
             <tr>
                 <td>${key.id}</td>
                 <td>${key.name}</td>
-                <td>${key.user}</td>
+                <td>${key.userId}</td>
                 <td>${key.issueDate?.substring(0, 19).replace("T", " ") ||"N/A"}</td>
                 <td><button data-id="${key.id}" class="deletekey">Delete</button></td>
             </tr>

@@ -114,7 +114,7 @@ export default (app) => {
       if (password && password.length < 50) {
         let apiKey = Entity.find(`tag:apikey prop:"key=${password}"`)
         if (apiKey) {
-          user = service.lookupUser(apiKey.user);
+          user = User.from(apiKey.related.user);
         }
       }
     }
