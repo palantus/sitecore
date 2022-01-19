@@ -62,7 +62,7 @@ template.innerHTML = `
       <field-component label="Key"><input id="newkey-key"></input></field-component>
       <p>Remember to copy the key above, as it will not be shown/available again!</p>
       <field-component label="Daily key"><input type="checkbox" id="newkey-daily"></input></field-component>
-      <p>If you set this as a daily key, then the actual key that you use for API access must be a SHA256 hash of a string concatenation of the above key and the current date (YYYY-MM-DD) - i.e. sha256(key+today).</p>
+      <p>If you set this as a daily key, then the actual key that you use for API access must be a SHA256 hash of a string concatenation of the above key and the current date (YYYY-MM-DD) - i.e. sha256(key+today). This is useful, because you can generate links that will only work for one day (eg. with ?token=key).</p>
     </dialog-component>
 
     <datalist id="users">
