@@ -38,6 +38,7 @@ template.innerHTML = `
   <action-bar>
       <action-bar-item id="new-btn">New User</action-bar-item>
       <action-bar-item id="msusers-btn">Microsoft users</action-bar-item>
+      <action-bar-item id="roles-btn">Roles</action-bar-item>
   </action-bar>
 
   <div id="container">
@@ -75,6 +76,7 @@ class Element extends HTMLElement {
     
     this.shadowRoot.querySelector("#new-btn").addEventListener("click", this.newUser)
     this.shadowRoot.querySelector("#msusers-btn").addEventListener("click", () => goto("/setup/msusers"))
+    this.shadowRoot.querySelector("#roles-btn").addEventListener("click", () => goto("/setup/roles"))
     this.shadowRoot.getElementById("showinactive").addEventListener("change", this.refreshData)
 
     this.refreshData();

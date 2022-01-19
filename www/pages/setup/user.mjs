@@ -41,6 +41,17 @@ template.innerHTML = `
       <field-edit type="checkbox" label="Admin" id="admin"></field-edit>
       <field-edit type="checkbox" label="Team" id="team"></field-edit>
     </field-list>
+    
+    <br/>
+    <br/>
+
+    <h3>Roles</h3>
+    <table>
+      <tbody id="roles"></tbody>
+    </table>
+
+    <br/>
+    <br/>
 
     <br/>
     <h3>Microsoft users:</h3>
@@ -64,9 +75,13 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.assignToMSUser = this.assignToMSUser.bind(this); //Make sure "this" in that method refers to this
+    this.roleClick = this.roleClick.bind(this)
+    this.refreshData = this.refreshData.bind(this)
     
-    this.refreshData(/\/setup\/users\/([a-z]+)/.exec(state().path)[1]);
+    this.userId = /\/setup\/users\/([a-z]+)/.exec(state().path)[1]
+    this.refreshData();
     this.shadowRoot.querySelector("#msuser-btn").addEventListener("click", this.assignToMSUser)
+    this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)
   }
 
   async assignToMSUser(){
@@ -102,8 +117,8 @@ class Element extends HTMLElement {
     })
   }
 
-  async refreshData(id = this.userId){
-    this.userId = id;
+  async refreshData(){
+    let id = this.userId;
 
     let user = (await api.query(`{user(id:"${id}") {id, name, passwordSet, msUsers{email, vsts}, roles, active}}`)).user
     if(!user){alertDialog("could not retrive user"); return;}
@@ -121,14 +136,26 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("msusers").innerHTML = user.msUsers.map(u => u.vsts ? `${u.email} (vsts)` : u.email).join("<br/>")
     
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `user/${user.id}`));
+
+    let roles = await api.get("role")
+    this.shadowRoot.getElementById("roles").innerHTML = roles.map(r => `<tr><td>${r.id}</td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
+  }
+
+  roleClick(e){
+    if(e.target.tagName != "INPUT") return;
+    if(!e.target.classList.contains("enable-role")) return;
+    let id = e.target.closest("tr").querySelector("td:first-child").innerText;
+    
+    if(e.target.checked)
+      api.post(`user/${this.userId}/roles`, {id}).then(this.refreshData)
+    else
+      api.del(`user/${this.userId}/roles/${id}`).then(this.refreshData)
   }
 
   connectedCallback() {
-    on("changed-project", "user", ({query}) => this.refreshData())
   }
 
   disconnectedCallback() {
-    off("changed-project", "user")
   }
 }
 

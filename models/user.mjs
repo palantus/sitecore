@@ -60,6 +60,7 @@ class User extends Entity{
 
     get roles(){
       return this.tags.filter(t => ["translator", "admin", "developer", "tester", "team"].includes(t))
+      //return this.rels.role?.map(r => r.id)||[]
     }
 
     get active(){

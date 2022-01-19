@@ -1,41 +1,42 @@
 import Entity from "entitystorage";
 import express from "express"
 const { Router, Request, Response } = express;
-const route = Router();
 import service from "../../services/user.mjs"
 import {validateAccess} from "../../services/auth.mjs"
 import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import { createId } from "../../tools/id.mjs"
+import Role from "../../models/role.mjs";
 
 export default (app) => {
 
-  const route = Router();
-  app.use("/user", route)
+  const userRoute = Router();
+  app.use("/user", userRoute)
 
+  /* User */
 
-  route.post('/', function (req, res, next) {
+  userRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     if(!req.body.id || !req.body.name) throw "id and name are mandatory for users"
     res.json(service(res.locals).add(req.body.id, req.body.name));
   });
 
-  route.get('/', async function (req, res, next) {
+  userRoute.get('/', async function (req, res, next) {
     if(!validateAccess(req, res, {roles: ["team", "admin"]})) return;
     res.json(service(res.locals).active());
   });
 
-  route.get('/list', async function (req, res, next) {
+  userRoute.get('/list', async function (req, res, next) {
     if(!validateAccess(req, res, {roles: ["team", "admin"]})) return;
     res.json(User.search("tag:user !tag:obsolete").map(u => ({id: u.id, name: u.name})));
   });
 
-  route.delete('/:id', async function (req, res, next) {
+  userRoute.delete('/:id', async function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     res.json(service(res.locals).del(req.params.id));
   });
 
-  route.get("/counters", async function (req, res, next) {
+  userRoute.get("/counters", async function (req, res, next) {
     res.json({
       notifications: Entity.search(`tag:notification user.prop:id=${res.locals.user.id} !tag:dismissed`).length,
       actions: Entity.search(`tag:action prop:state=running owner.prop:id=${res.locals.user.id}`).length,
@@ -43,18 +44,18 @@ export default (app) => {
     });
   });
 
-  route.get('/:id', async function (req, res, next) {
+  userRoute.get('/:id', async function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     res.json(service(res.locals).get(req.params.id));
   });
 
-  route.post('/:id/assignToMSAccount/:msid', async function (req, res, next) {
+  userRoute.post('/:id/assignToMSAccount/:msid', async function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     let result = service(res.locals).assignToMSAccount(req.params.id, req.params.msid);
     res.json(typeof result === "string" ? { error: result } : true);
   });
 
-  route.patch('/:id', function (req, res, next) {
+  userRoute.patch('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     let user = User.lookup(req.params.id)
     if (!user) throw "Unknown user"
@@ -70,6 +71,8 @@ export default (app) => {
 
     res.json(true);
   });
+  
+  /* Me */
 
   const meRoute = Router();
   app.use("/me", meRoute)
@@ -97,6 +100,8 @@ export default (app) => {
 		res.json({token: service(res.locals).getTempAuthToken(res.locals.user)})
 	})
   
+  /* MS Users */
+
   const msRoute = Router();
   app.use("/msuser", msRoute)
 
@@ -119,4 +124,46 @@ export default (app) => {
     res.json(true);
   });
 
+  /* Roles */
+  
+  const roleRoute = Router();
+  app.use("/role", roleRoute)
+
+  roleRoute.get("/", (req, res) => {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    res.json(Role.all().map(({id}) => ({id})));
+  })
+
+  roleRoute.post('/', function (req, res, next) {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    if (!req.body.id) throw "id is mandatory"
+    Role.lookupOrCreate(req.body.id)
+    res.json({ success: true })
+  })
+
+  roleRoute.delete('/:id', function (req, res, next) {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    Role.lookup(req.params.id)?.delete();
+    res.json({ success: true })
+  })
+
+  userRoute.post('/:id/roles', async function (req, res, next) {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    let user = User.lookup(req.params.id)
+    if (!user) throw "Unknown user"
+    if (!req.body.id) throw "id is mandatory"
+    user.rel(Role.lookupOrCreate(req.body.id), "role");
+    res.json({success: true});
+  });
+
+  userRoute.delete('/:id/roles/:role', async function (req, res, next) {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    let user = User.lookup(req.params.id)
+    if (!user) throw "Unknown user"
+    if (!req.params.role) throw "role is mandatory"
+    let role = Role.lookup(req.params.role);
+    if(!role) throw "Unknown role"
+    user.removeRel(role, "role")
+    res.json({success: true});
+  });
 };
