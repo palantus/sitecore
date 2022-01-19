@@ -63,11 +63,6 @@ export default (app) => {
     if (req.body.name !== undefined) user.name = req.body.name
     if (req.body.active !== undefined) {if(req.body.active) user.activate(); else user.deactivate();}
     if (req.body.password !== undefined) user.setPassword(req.body.password || null);
-    if (req.body.developer !== undefined) { if (req.body.developer) user.tag("developer"); else user.removeTag("developer"); }
-    if (req.body.tester !== undefined) { if (req.body.tester) user.tag("tester"); else user.removeTag("tester"); }
-    if (req.body.translator !== undefined) { if (req.body.translator) user.tag("translator"); else user.removeTag("translator"); }
-    if (req.body.admin !== undefined) { if (req.body.admin) user.tag("admin"); else user.removeTag("admin"); }
-    if (req.body.team !== undefined) { if (req.body.team) user.tag("team"); else user.removeTag("team"); }
 
     res.json(true);
   });

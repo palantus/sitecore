@@ -78,7 +78,7 @@ class Element extends HTMLElement {
     this.roleClick = this.roleClick.bind(this)
     this.refreshData = this.refreshData.bind(this)
     
-    this.userId = /\/setup\/users\/([a-z]+)/.exec(state().path)[1]
+    this.userId = /\/setup\/users\/([a-z0-9\_\-]+)/.exec(state().path)[1]
     this.refreshData();
     this.shadowRoot.querySelector("#msuser-btn").addEventListener("click", this.assignToMSUser)
     this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)

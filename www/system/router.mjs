@@ -9,7 +9,7 @@ let routes = [
     {path: "/systemtools",            page: "../pages/setup/tools.mjs"},
     {path: "/system/apikeys",         page: "../pages/setup/apikeys.mjs"},
     {path: "/logs",                   page: "../pages/setup/logs.mjs"},
-    {regexp: /\/setup\/users\/([a-z]+)/,    page: "../pages/setup/user.mjs"},
+    {regexp: /\/setup\/users\/([a-z0-9\_\-]+)/,    page: "../pages/setup/user.mjs"},
 ]
 
 routes.push(...modRoutes)
