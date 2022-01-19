@@ -96,8 +96,11 @@ class Service {
   }
 
   validateAccess(req, res, rule){
-    let roles = res.locals.roles || [];
-    let permissions = res.locals.permissions || [];
+    let roles = res.roles || res.locals?.roles || [];
+    let permissions = res.permissions || res.locals?.permissions || [];
+
+    if(permissions.includes("admin"))
+      return true;
 
     if(rule.role && roles.includes(rule.role))
       return true;
@@ -109,8 +112,12 @@ class Service {
     if(rule.permissions && permissions.find(t => rule.permissions.includes(t)))
       return true;
 
-    console.log(`Unauthorized access by user ${res.locals.user?.id}: ${req.method} ${req.originalUrl}`)
-    res.status(403).json({ error: `You do not have access to ${req.method} ${req.originalUrl}` })
+    if(req && res){
+      console.log(`Unauthorized access by user ${res.locals.user?.id}: ${req.method} ${req.originalUrl}`)
+      res.status(403).json({ error: `You do not have access to ${req.method} ${req.originalUrl}` })
+    } else {
+      throw `Unauthorized access by user ${res.user?.id || res.locals?.user?.id || "N/A"}`
+    }
 
     return false;
   }

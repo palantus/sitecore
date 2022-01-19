@@ -4,7 +4,7 @@ import {validateAccess} from "../../services/auth.mjs"
 export default (app) => {
 
   app.get("/jobs", function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
 
     let jobs = []
     fs.readdir('jobs', (err, files) => {
@@ -16,7 +16,7 @@ export default (app) => {
     });
   });
   app.post("/jobs/:id/run", async function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
     
     let {default: job} = await import(`../../jobs/${req.params.id}`);
     if(job){

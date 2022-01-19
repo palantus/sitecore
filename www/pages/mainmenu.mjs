@@ -1,5 +1,5 @@
 const elementName = 'main-menu'
-import {default as api, userRoles, getUser} from "../system/api.mjs";
+import {default as api, userRoles, userPermissions, getUser} from "../system/api.mjs";
 import {goto, state, isMobile, menu} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
 
@@ -169,6 +169,7 @@ class Page extends HTMLElement {
   async refreshData(){
     this.user = await getUser()
     this.userRoles = await userRoles()
+    this.userPermissions = await userPermissions()
     this.refreshMenu();
   }
 
@@ -204,6 +205,7 @@ class Page extends HTMLElement {
   addMenu(parent, items, parentMenuId){
     for(let item of items){
       if(item.role && !this.userRoles.includes(item.role)) continue;
+      if(item.permission && !this.userPermissions.includes(item.permission)) continue;
       if(item.public !== true && !this.user) continue;
 
       let itemDiv = document.createElement("div")

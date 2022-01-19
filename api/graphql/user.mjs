@@ -1,6 +1,7 @@
 import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import userService from "../../services/user.mjs"
+import { validateAccess } from "../../services/auth.mjs"
 
 import {
     GraphQLObjectType,
@@ -94,7 +95,7 @@ export default {
         type: GraphQLList(MSUserType),
         description: "Gets all MS users not assigned",
         resolve: (parent, args, context) => {
-          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          if(!validateAccess(null, context, {permission: "user.read"})) return;
           return userService().getUnassignedMSUsers()
         }
       }
@@ -102,7 +103,7 @@ export default {
         type: GraphQLList(UserType),
         description: "Gets all users",
         resolve: (parent, args, context) => {
-          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          if(!validateAccess(null, context, {permission: "user.read"})) return;
           return User.search("tag:user")
         }
       }
@@ -110,7 +111,7 @@ export default {
         type: GraphQLList(UserType),
         description: "Gets all users",
         resolve: (parent, args, context) => {
-          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          if(!validateAccess(null, context, {permission: "user.read"})) return;
           return User.search("tag:user !tag:obsolete")
         }
       }
@@ -121,7 +122,7 @@ export default {
         },
         description: "Get user",
         resolve: (parent, args, context) => {
-          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          if(!validateAccess(null, context, {permission: "user.read"})) return;
           return User.lookup(args.id)
         }
       }
@@ -129,7 +130,7 @@ export default {
         type: GraphQLList(MSUserType),
         description: "Get ms users",
         resolve: (parent, args, context) => {
-          if(!context.user.roles.includes("admin") && !context.user.roles.includes("team")) throw "Unauthorized"
+          if(!validateAccess(null, context, {permission: "user.read"})) return;
           return MSUser.search("tag:msuser")
         }
       }

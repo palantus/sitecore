@@ -32,7 +32,7 @@ export default (app) => {
       let gql = expressGraphQL({
         schema: schema,
         graphiql: true,
-        context: {user: res.locals.user}
+        context: res.locals
       })
       return gql(req, res, next)
     })

@@ -128,13 +128,14 @@ class Element extends HTMLElement {
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `user/${user.id}`));
 
     let roles = await api.get("role")
-    this.shadowRoot.getElementById("roles").innerHTML = roles.map(r => `<tr><td>${r.id}</td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
+    this.shadowRoot.getElementById("roles").innerHTML = roles.map(r => `<tr data-roleid="${r.id}"><td><field-ref ref="/setup/role/${r.id}">${r.id}</field-ref></td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
   }
 
   roleClick(e){
     if(e.target.tagName != "INPUT") return;
     if(!e.target.classList.contains("enable-role")) return;
-    let id = e.target.closest("tr").querySelector("td:first-child").innerText;
+    let id = e.target.closest("tr").getAttribute("data-roleid");
+    if(!id) alert("Invalid role")
     
     if(e.target.checked)
       api.post(`user/${this.userId}/roles`, {id}).then(this.refreshData)

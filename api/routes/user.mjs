@@ -17,23 +17,23 @@ export default (app) => {
   /* User */
 
   userRoute.post('/', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.body.id || !req.body.name) throw "id and name are mandatory for users"
     res.json(service(res.locals).add(req.body.id, req.body.name, req.body.roles));
   });
 
   userRoute.get('/', async function (req, res, next) {
-    if(!validateAccess(req, res, {roles: ["team", "admin"]})) return;
+    if(!validateAccess(req, res, {permission: "user.read"})) return;
     res.json(service(res.locals).active());
   });
 
   userRoute.get('/list', async function (req, res, next) {
-    if(!validateAccess(req, res, {roles: ["team", "admin"]})) return;
+    if(!validateAccess(req, res, {permission: "user.read"})) return;
     res.json(User.search("tag:user !tag:obsolete").map(u => ({id: u.id, name: u.name})));
   });
 
   userRoute.delete('/:id', async function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "user.edit"})) return;
     res.json(service(res.locals).del(req.params.id));
   });
 
@@ -46,18 +46,18 @@ export default (app) => {
   });
 
   userRoute.get('/:id', async function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "user.read"})) return;
     res.json(service(res.locals).get(req.params.id));
   });
 
   userRoute.post('/:id/assignToMSAccount/:msid', async function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "user.edit"})) return;
     let result = service(res.locals).assignToMSAccount(req.params.id, req.params.msid);
     res.json(typeof result === "string" ? { error: result } : true);
   });
 
   userRoute.patch('/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "user.edit"})) return;
     let user = User.lookup(req.params.id)
     if (!user) throw "Unknown user"
 
@@ -83,6 +83,7 @@ export default (app) => {
     })
     userObject.activeMSUser = res.locals.user.activeMSUser
     userObject.roles = u.roles
+    userObject.permissions = u.permissions
     if (u) res.json(userObject); else res.sendStatus(404);
   });
 
@@ -102,14 +103,14 @@ export default (app) => {
   app.use("/msuser", msRoute)
 
   msRoute.post('/', async function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.body.email) throw "Email is required"
     let msUser = new MSUser(null, {email: req.body.email})
     res.json(true);
   });
 
   msRoute.patch('/:email', async function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.params.email) throw "email is required"
     let msUser = MSUser.lookup(req.params.email)
     if(!msUser) throw "Unknown user"
@@ -126,32 +127,30 @@ export default (app) => {
   app.use("/role", roleRoute)
 
   roleRoute.get("/", (req, res) => {
-    if(!validateAccess(req, res, {role: "admin"})) return;
     res.json(Role.all().map(({id}) => ({id})));
   })
 
   roleRoute.get("/:id", (req, res) => {
-    if(!validateAccess(req, res, {role: "admin"})) return;
     let role = Role.lookup(req.params.id)
     if(!role) throw "Unknown role"
     res.json({id: role.id, permissions: role.rels.permission?.map(p => p.id)||[]});
   })
 
   roleRoute.post('/', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
     if (!req.body.id) throw "id is mandatory"
     Role.lookupOrCreate(req.body.id)
     res.json({ success: true })
   })
 
   roleRoute.delete('/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
     Role.lookup(req.params.id)?.delete();
     res.json({ success: true })
   })
 
   userRoute.post('/:id/roles', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
     let user = User.lookup(req.params.id)
     if (!user) throw "Unknown user"
     if (!req.body.id) throw "id is mandatory"
@@ -160,7 +159,7 @@ export default (app) => {
   });
 
   userRoute.delete('/:id/roles/:role', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
     let user = User.lookup(req.params.id)
     if (!user) throw "Unknown user"
     if (!req.params.role) throw "role is mandatory"
@@ -174,12 +173,11 @@ export default (app) => {
   app.use("/permission", permissionRoute)
 
   permissionRoute.get("/", (req, res) => {
-    if(!validateAccess(req, res, {role: "admin"})) return;
     res.json(Permission.all().map(({id}) => ({id})));
   })
 
   roleRoute.post('/:id/permissions', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
     let role = Role.lookup(req.params.id)
     if (!role) throw "Unknown role"
     if (!req.body.id) throw "id is mandatory"
@@ -188,7 +186,7 @@ export default (app) => {
   });
 
   roleRoute.delete('/:id/permissions/:role', function (req, res, next) {
-    if(!validateAccess(req, res, {role: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "admin"})) return;
     let role = Role.lookup(req.params.id)
     if (!role) throw "Unknown role"
     if (!req.params.role) throw "role is mandatory"

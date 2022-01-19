@@ -181,6 +181,9 @@ class API {
     */
     if (res.status < 300) {
       res = await res.json()
+      if(res.errors){
+        fire("log", { level: "error", message: res.errors[0]?.message })
+      }
       if (res.data)
         return res.data
       else
@@ -272,4 +275,24 @@ export async function userRoles() {
   let roles = me?.roles || []
   window.localStorage.setItem("userroles", JSON.stringify(roles))
   return roles;
+}
+
+export async function userPermissions() {
+  let me = api.lookupCache("me");
+  if(!me){
+    let storedPermissions = window.localStorage.getItem("userpermissions")
+    if(storedPermissions) {
+      // Make sure to update cache, in case the permissions change
+      api.get("me").then(me => {
+        let permissions = me?.permissions || []
+        window.localStorage.setItem("userpermissions", JSON.stringify(permissions))
+      })
+      return JSON.parse(storedPermissions)
+    }
+
+    me = await api.get("me")
+  }
+  let permissions = me?.permissions || []
+  window.localStorage.setItem("userpermissions", JSON.stringify(permissions))
+  return permissions;
 }
