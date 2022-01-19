@@ -32,7 +32,8 @@ template.innerHTML = `
     table thead th:nth-child(1){width: 100px}
     table thead th:nth-child(2){width: 200px}
     table thead th:nth-child(3){width: 200px}
-    table thead th:nth-child(5){width: 50px}
+    table thead th:nth-child(4){width: 200px}
+    table thead th:nth-child(5){width: 100px}
   </style>  
 
   <action-bar>
@@ -47,6 +48,7 @@ template.innerHTML = `
               <th>Name</th>
               <th>User</th>
               <th>Issued</th>
+              <th>Daily key</th>
               <th></th>
             </tr>
         </thead>
@@ -58,7 +60,9 @@ template.innerHTML = `
       <field-component label="Name"><input id="newkey-name"></input></field-component>
       <field-component label="User"><input id="newkey-user" list="users"></input></field-component>
       <field-component label="Key"><input id="newkey-key"></input></field-component>
-      <p>Remember to copy the key above, as it will not be shown/available again!
+      <p>Remember to copy the key above, as it will not be shown/available again!</p>
+      <field-component label="Daily key"><input type="checkbox" id="newkey-daily"></input></field-component>
+      <p>If you set this as a daily key, then the actual key that you use for API access must be a SHA256 hash of a string concatenation of the above key and the current date (YYYY-MM-DD) - i.e. sha256(key+today).</p>
     </dialog-component>
 
     <datalist id="users">
@@ -112,7 +116,8 @@ class Element extends HTMLElement {
       values: () => {return {
         name: this.shadowRoot.getElementById("newkey-name").value,
         key: this.shadowRoot.getElementById("newkey-key").value,
-        userId: this.shadowRoot.getElementById("newkey-user").value
+        userId: this.shadowRoot.getElementById("newkey-user").value,
+        daily: this.shadowRoot.getElementById("newkey-daily").checked
       }},
       close: () => {
         this.shadowRoot.querySelectorAll("field-component input").forEach(e => e.value = '')
@@ -142,6 +147,7 @@ class Element extends HTMLElement {
                 <td>${key.name}</td>
                 <td>${key.userId}</td>
                 <td>${key.issueDate?.substring(0, 19).replace("T", " ") ||"N/A"}</td>
+                <td>${key.daily ? "Yes" : "No"}</td>
                 <td><button data-id="${key.id}" class="deletekey">Delete</button></td>
             </tr>
         `

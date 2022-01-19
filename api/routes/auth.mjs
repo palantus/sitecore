@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken'
 import Entity from "entitystorage"
 import yargs from "yargs"
 import User from "../../models/user.mjs"
+import APIKey from '../../models/apikey.mjs';
 const cliArgs = yargs.argv
 
 let domain = process.env.APIDOMAIN || process.env.DOMAIN || cliArgs.domain
@@ -109,21 +110,13 @@ export default (app) => {
       user = res.locals.user; // In case a mod already found the user using some other form of authentication
     }
 
-    if (!user && authHeader && authHeader.startsWith("Basic")) {
-      const [login, password] = Buffer.from(authHeader.split(" ")[1], 'base64').toString().split(':')
-      if (password && password.length < 50) {
-        let apiKey = Entity.find(`tag:apikey prop:"key=${password}"`)
-        if (apiKey) {
-          user = User.from(apiKey.related.user);
-        }
-      }
-    }
-
     if (!user && !res.finished) {
       if(res.locals.token)
         token = res.locals.token //Allow mods to set token
       else if (req.query.token)
         token = req.query.token
+      else if (authHeader && authHeader.startsWith("Basic"))
+        token = Buffer.from(authHeader.split(" ")[1], 'base64').toString().split(':')[1]
       else if (authHeader)
         token = authHeader.split(' ')[1]
       else if (req.cookies.jwtToken)
@@ -133,13 +126,21 @@ export default (app) => {
 
       if (token == process.env.AXMAN_API_KEY) {
         user = service.getAxManUser();
-      } else {
+      } 
+      
+      if(!user){
         let userId = userService.authTokenToUserId(token)
         if (userId) {
           user = service.lookupUser(userId)
         }
       }
 
+      if(!user && token && token.length < 100){
+        let apiKey = APIKey.tokenToKey(token)
+        if (apiKey) {
+          user = User.from(apiKey.related.user);
+        }
+      }
     }
 
     if (!user && !res.finished) {

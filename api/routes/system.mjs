@@ -5,6 +5,7 @@ import Entity from "entitystorage"
 import { getTimestamp } from "../../tools/date.mjs"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
+import APIKey from "../../models/apikey.mjs";
 
 export default (app) => {
 
@@ -31,7 +32,7 @@ export default (app) => {
 
   routeAPIKeys.get('/', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
-    res.json(Entity.search("tag:apikey").map(k => { return { id: k._id, name: k.name, userId: k.related.user?.id||null, issueDate: k.issueDate } }))
+    res.json(Entity.search("tag:apikey").map(k => { return { id: k._id, name: k.name, userId: k.related.user?.id||null, issueDate: k.issueDate, daily: k.daily||false } }))
   });
 
   routeAPIKeys.post('/', function (req, res, next) {
@@ -39,13 +40,13 @@ export default (app) => {
     if (!req.body.name || !req.body.key || !req.body.userId) throw "name, key and userId are mandatory"
     let user = Entity.find("tag:user prop:id=" + req.body.userId)
     if (!user) throw `User ${req.body.userId} doesn't exist`
-    new Entity().tag("apikey").prop("name", req.body.name).prop("issueDate", getTimestamp()).rel(user, "user").prop("key", req.body.key)
+    new APIKey(req.body.name, req.body.key, user, req.body.daily)
     res.json({ success: true })
   })
 
   routeAPIKeys.delete('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
-    Entity.find(`tag:apikey id:${req.params.id}`).delete();
+    APIKey.lookup(req.params.id)?.delete();
     res.json({ success: true })
   })
 };

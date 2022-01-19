@@ -33,7 +33,7 @@ template.innerHTML = `
     </style>
     <div id="container">
 
-        <h1>Welcome to AX Management!</h1>
+        <h1>Welcome to SiteCore!</h1>
 
         <div>You are not signed in. You can sign in using an authorized Microsoft account or with username/password.</div>
         <br>
