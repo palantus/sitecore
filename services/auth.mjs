@@ -7,6 +7,7 @@ import yargs from "yargs";
 const cliArgs = yargs.argv;
 
 import dotenv from 'dotenv'
+import Role from "../models/role.mjs";
 dotenv.config()
 
 let isDev = process.env.ISDEV === "TRUE"
@@ -78,10 +79,14 @@ class Service {
   }
 
   getAdmin(){
-    let admin = User.find("tag:user tag:admin")
+    let admin = User.find("tag:user role.prop:id=admin")
     if(!admin) {
-      admin = new User("admin", {name: "Admin"}).tag("admin");
-      console.log("Created user 'admin'")
+      admin = User.find("tag:user prop:id=admin")
+      if(!admin)
+        admin = new User("admin", {name: "Admin"}).tag("admin");
+      admin.rel(Role.lookupOrCreate("admin"), "role")
+
+      console.log("Added admin user")
     }
     return admin;
   }

@@ -18,7 +18,7 @@ class User extends Entity{
     }
 
     static lookupAdmin(){
-      return User.find("tag:user tag:admin") || null
+      return User.find("tag:user role.prop:id=admin") || null
     }
 
     static lookupEmail(email){
