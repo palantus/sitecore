@@ -4,6 +4,7 @@ import Entity from "entitystorage"
 import MSUser from "./msuser.mjs"
 import Notification from "./notification.mjs"
 import {pbkdf2Sync} from 'crypto'; 
+import Role from "./role.mjs";
 
 class User extends Entity{
     initNew(userId, {name = ""} = {}){
@@ -60,6 +61,14 @@ class User extends Entity{
 
     get roles(){
       return this.rels.role?.map(r => r.id)||[]
+    }
+
+    addRole(id){
+      this.rel(Role.lookupOrCreate(id), "role");
+    }
+
+    removeRole(id){
+      this.removeRel(Role.lookup(id), "role");
     }
 
     get active(){

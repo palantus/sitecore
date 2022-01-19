@@ -7,6 +7,7 @@ import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import { createId } from "../../tools/id.mjs"
 import Role from "../../models/role.mjs";
+import Permission from "../../models/permission.mjs";
 
 export default (app) => {
 
@@ -18,7 +19,7 @@ export default (app) => {
   userRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     if(!req.body.id || !req.body.name) throw "id and name are mandatory for users"
-    res.json(service(res.locals).add(req.body.id, req.body.name));
+    res.json(service(res.locals).add(req.body.id, req.body.name, req.body.roles));
   });
 
   userRoute.get('/', async function (req, res, next) {
@@ -142,23 +143,49 @@ export default (app) => {
     res.json({ success: true })
   })
 
-  userRoute.post('/:id/roles', async function (req, res, next) {
+  userRoute.post('/:id/roles', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     let user = User.lookup(req.params.id)
     if (!user) throw "Unknown user"
     if (!req.body.id) throw "id is mandatory"
-    user.rel(Role.lookupOrCreate(req.body.id), "role");
+    user.addRole(req.body.id)
     res.json({success: true});
   });
 
-  userRoute.delete('/:id/roles/:role', async function (req, res, next) {
+  userRoute.delete('/:id/roles/:role', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     let user = User.lookup(req.params.id)
     if (!user) throw "Unknown user"
     if (!req.params.role) throw "role is mandatory"
-    let role = Role.lookup(req.params.role);
-    if(!role) throw "Unknown role"
-    user.removeRel(role, "role")
+    user.removeRole(req.params.role)
+    res.json({success: true});
+  });
+
+  /* Permissions */
+  
+  const permissionRoute = Router();
+  app.use("/permission", roleRoute)
+
+  permissionRoute.get("/", (req, res) => {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    res.json(Permission.all().map(({id}) => ({id})));
+  })
+
+  roleRoute.post('/:id/permissions', function (req, res, next) {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    let role = Role.lookup(req.params.id)
+    if (!role) throw "Unknown role"
+    if (!req.body.id) throw "id is mandatory"
+    role.addPermission(req.body.id)
+    res.json({success: true});
+  });
+
+  roleRoute.delete('/:id/permissions/:role', function (req, res, next) {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    let role = Role.lookup(req.params.id)
+    if (!role) throw "Unknown role"
+    if (!req.params.role) throw "role is mandatory"
+    role.removePermission(req.params.role)
     res.json({success: true});
   });
 };

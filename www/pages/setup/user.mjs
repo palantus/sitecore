@@ -35,11 +35,6 @@ template.innerHTML = `
       <field-edit type="text" label="Name" id="name" disabled></field-edit>
       <field-edit type="password" label="Password" id="password"></field-edit>
       <field-edit type="checkbox" label="Active" id="active"></field-edit>
-      <field-edit type="checkbox" label="Developer" id="developer"></field-edit>
-      <field-edit type="checkbox" label="Tester" id="tester"></field-edit>
-      <field-edit type="checkbox" label="Translator" id="translator"></field-edit>
-      <field-edit type="checkbox" label="Admin" id="admin"></field-edit>
-      <field-edit type="checkbox" label="Team" id="team"></field-edit>
     </field-list>
     
     <br/>
@@ -127,11 +122,6 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("name").setAttribute("value", user.name);
     this.shadowRoot.getElementById("password").setAttribute("value", user.passwordSet ? "12345678" : "");
     this.shadowRoot.getElementById("active").setAttribute("value", user.active);
-    this.shadowRoot.getElementById("developer").setAttribute("value", user.roles.includes("developer"));
-    this.shadowRoot.getElementById("tester").setAttribute("value", user.roles.includes("tester"));
-    this.shadowRoot.getElementById("translator").setAttribute("value", user.roles.includes("translator"));
-    this.shadowRoot.getElementById("admin").setAttribute("value", user.roles.includes("admin"));
-    this.shadowRoot.getElementById("team").setAttribute("value", user.roles.includes("team"));
     
     this.shadowRoot.getElementById("msusers").innerHTML = user.msUsers.map(u => u.vsts ? `${u.email} (vsts)` : u.email).join("<br/>")
     

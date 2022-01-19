@@ -12,9 +12,14 @@ class Service {
     this.context = context;
   }
 
-  add(id, name) {
+  add(id, name, roles) {
     if (!id || !name) return null;
-    return User.lookup(id)?.toObj() || new User(id, { name }).toObj()
+    let user = User.lookup(id) || new User(id, { name })
+    if(roles){
+      for(let role of roles){
+        user.addRole(role)
+      }
+    }
   }
 
   all() {

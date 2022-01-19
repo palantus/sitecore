@@ -26,7 +26,7 @@ class APIKey extends Entity {
         dailyTokensToKeyMap.set(createHash('sha256').update(key.key+cacheDate).digest('hex'), key)
       }
     }
-    return dailyTokensToKeyMap.get(token) || APIKey.find(`tag:apikey prop:"key=${token}" prop:daily=false`) 
+    return dailyTokensToKeyMap.get(token) || APIKey.find(`tag:apikey prop:"key=${token}" !prop:daily=true`) 
   }
 
   delete(){

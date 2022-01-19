@@ -8,6 +8,18 @@ class Role extends Entity {
     this.tag("role")
   }
 
+  addPermission(idOrArray){
+    for(let id of Array.isArray(idOrArray) ? idOrArray : [idOrArray]){
+      this.rel(Permission.lookup(id), "permission")
+    }
+    return this
+  }
+
+  removePermission(id){
+    this.removeRel(Permission.lookup(id), "permission")
+    return this
+  }
+
   static lookup(id){
     return Role.find(`tag:role prop:"id=${id}"`)
   }
