@@ -72,6 +72,9 @@ export default async ({ app, mode, config }) => {
     // Load API routes
     console.log(`Using api prefix: /${apiPrefix}`)
     app.use(`/${apiPrefix}`, await routes());
+    app.use(`/${apiPrefix}`, (req, res) => {
+      res.sendStatus(404);
+    })
   }
 
   if(mode != "api"){

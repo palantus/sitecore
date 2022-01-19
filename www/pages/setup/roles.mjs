@@ -122,7 +122,7 @@ class Element extends HTMLElement {
         row.classList.add("result")
         row.innerHTML = `
             <tr>
-                <td>${role.id}</td>
+                <td><field-ref ref="/setup/role/${role.id}">${role.id}</field-ref></td>
                 <td><button data-id="${role.id}" class="deleterole">Delete</button></td>
             </tr>
         `

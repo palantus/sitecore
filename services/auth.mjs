@@ -97,10 +97,16 @@ class Service {
 
   validateAccess(req, res, rule){
     let roles = res.locals.roles || [];
+    let permissions = res.locals.permissions || [];
 
     if(rule.role && roles.includes(rule.role))
       return true;
     if(rule.roles && roles.find(t => rule.roles.includes(t)))
+      return true;
+      
+    if(rule.permission && permissions.includes(rule.permission))
+      return true;
+    if(rule.permissions && permissions.find(t => rule.permissions.includes(t)))
       return true;
 
     console.log(`Unauthorized access by user ${res.locals.user?.id}: ${req.method} ${req.originalUrl}`)

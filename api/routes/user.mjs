@@ -130,6 +130,13 @@ export default (app) => {
     res.json(Role.all().map(({id}) => ({id})));
   })
 
+  roleRoute.get("/:id", (req, res) => {
+    if(!validateAccess(req, res, {role: "admin"})) return;
+    let role = Role.lookup(req.params.id)
+    if(!role) throw "Unknown role"
+    res.json({id: role.id, permissions: role.rels.permission?.map(p => p.id)||[]});
+  })
+
   roleRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {role: "admin"})) return;
     if (!req.body.id) throw "id is mandatory"
@@ -164,7 +171,7 @@ export default (app) => {
   /* Permissions */
   
   const permissionRoute = Router();
-  app.use("/permission", roleRoute)
+  app.use("/permission", permissionRoute)
 
   permissionRoute.get("/", (req, res) => {
     if(!validateAccess(req, res, {role: "admin"})) return;

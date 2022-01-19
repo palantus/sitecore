@@ -71,6 +71,10 @@ class User extends Entity{
       this.removeRel(Role.lookup(id), "role");
     }
 
+    get permissions(){
+      return [...new Set((this.rels.role?.map(r => r.rels.permission?.map(p => p.id)||[])||[]).flat())]
+    }
+
     get active(){
       return !this.tags.includes("obsolete")
     }

@@ -99,6 +99,7 @@ export default (app) => {
       let admin = service.getAdmin();
       res.locals.user = admin
       res.locals.roles = admin.roles
+      res.locals.permissions = admin.permissions
       next();
       return;
     }
@@ -158,9 +159,11 @@ export default (app) => {
     }
 
     let roles = user.roles;
+    let permissions = user.permissions;
     if (req.headers["impersonate-user"] && roles.includes("admin")) {
       user = service.lookupUser(req.headers["impersonate-user"]);
       roles = user.roles
+      permissions = user.permissions
     }
     
     if(!user.active){
@@ -169,6 +172,7 @@ export default (app) => {
 
     res.locals.user = user
     res.locals.roles = roles
+    res.locals.permissions = permissions
     next();
   });
 
