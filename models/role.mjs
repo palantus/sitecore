@@ -1,4 +1,5 @@
 import Entity from "entitystorage"
+import Permission from "./permission.mjs"
 
 class Role extends Entity {
 
