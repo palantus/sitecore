@@ -11,7 +11,7 @@ class Role extends Entity {
 
   addPermission(idOrArray){
     for(let id of Array.isArray(idOrArray) ? idOrArray : [idOrArray]){
-      this.rel(Permission.lookup(id), "permission")
+      this.rel(Permission.lookupOrCreate(id), "permission")
     }
     return this
   }
