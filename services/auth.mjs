@@ -121,8 +121,31 @@ class Service {
 
     return false;
   }
+
+  hasPermission(context, permissionId){
+    let permissions = context.permissions || context.locals?.permissions || [];
+    if(permissions.includes("admin"))
+      return true;
+    if(permissions.includes(permissionId))
+      return true;
+    return false;
+  }
+
+  ifPermission(context, permissionId, returnValue){
+    if(this.hasPermission(context, permissionId))
+      return returnValue;
+    return null;
+  }
+
+  ifPermissionThrow(context, permissionId, returnValue){
+    if(this.hasPermission(context, permissionId))
+      return returnValue;
+    throw `Unauthorized access by user ${context.user?.id || context.locals?.user?.id || "N/A"}`
+  }
 }
 
 let service = new Service();
 export default service
 export function validateAccess(...args){return service.validateAccess(...args)}
+export function ifPermission(...args){return service.ifPermission(...args)}
+export function ifPermissionThrow(...args){return service.ifPermissionThrow(...args)}
