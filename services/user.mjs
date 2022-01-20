@@ -20,6 +20,7 @@ class Service {
         user.addRole(role)
       }
     }
+    return user.toObj()
   }
 
   all() {
