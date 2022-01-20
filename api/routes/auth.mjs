@@ -117,7 +117,7 @@ export default (app) => {
       else if (req.query.token)
         token = req.query.token
       else if (authHeader && authHeader.startsWith("Basic"))
-        token = Buffer.from(authHeader.split(" ")[1], 'base64').toString().split(':')[1]
+        token = Buffer.from(authHeader.split(" ")[1], 'base64').toString().split(':')?.[1] || authHeader.split(" ")[1]
       else if (authHeader)
         token = authHeader.split(' ')[1]
       else if (req.cookies.jwtToken)
