@@ -9,9 +9,9 @@ class Role extends Entity {
     this.tag("role")
   }
 
-  addPermission(idOrArray){
+  addPermission(idOrArray, createIfMissing = false){
     for(let id of Array.isArray(idOrArray) ? idOrArray : [idOrArray]){
-      this.rel(Permission.lookupOrCreate(id), "permission")
+      this.rel(createIfMissing ? Permission.lookupOrCreate(id) : Permission.lookup(id), "permission")
     }
     return this
   }
