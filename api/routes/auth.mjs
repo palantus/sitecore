@@ -12,6 +12,7 @@ import Entity from "entitystorage"
 import yargs from "yargs"
 import User from "../../models/user.mjs"
 import APIKey from '../../models/apikey.mjs';
+import { lookupUserPermissions, lookupUserRoles, lookupUserFromJWT, cacheJWT} from '../../tools/usercache.mjs';
 const cliArgs = yargs.argv
 
 let domain = process.env.APIDOMAIN || process.env.DOMAIN || cliArgs.domain
@@ -98,8 +99,8 @@ export default (app) => {
     if (process.env.ADMIN_MODE === "true") {
       let admin = service.getAdmin();
       res.locals.user = admin
-      res.locals.roles = admin.roles
-      res.locals.permissions = admin.permissions
+      res.locals.roles = lookupUserRoles(admin)
+      res.locals.permissions = lookupUserPermissions(admin.permissions);
       next();
       return;
     }
@@ -145,11 +146,11 @@ export default (app) => {
     }
 
     if (!user && !res.finished) {
-      user = await new Promise(resolve => {
+      user = lookupUserFromJWT(token) || await new Promise(resolve => {
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
           if (err) return res.status(401).json({ error: "Session expired", redirectTo: process.env.LOGIN_URL })
           if (!user.id) return res.status(401).json({ error: "No user in session", redirectTo: process.env.LOGIN_URL })
-          resolve(service.lookupUser(user.id))
+          resolve(cacheJWT(token, service.lookupUser(user.id)))
         })
       })
     }
@@ -158,12 +159,8 @@ export default (app) => {
       return res.status(401).json({ error: "Could not log you in", redirectTo: process.env.LOGIN_URL })
     }
 
-    let roles = user.roles;
-    let permissions = user.permissions;
-    if (req.headers["impersonate-user"] && roles.includes("admin")) {
+    if (req.headers["impersonate-user"] && lookupUserRoles(user).includes("admin")) {
       user = service.lookupUser(req.headers["impersonate-user"]);
-      roles = user.roles
-      permissions = user.permissions
     }
     
     if(!user.active){
@@ -171,8 +168,8 @@ export default (app) => {
     }
 
     res.locals.user = user
-    res.locals.roles = roles
-    res.locals.permissions = permissions
+    res.locals.roles = lookupUserRoles(user)
+    res.locals.permissions = lookupUserPermissions(user)
     next();
   });
 

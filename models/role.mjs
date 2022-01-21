@@ -1,4 +1,5 @@
 import Entity from "entitystorage"
+import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs"
 import Permission from "./permission.mjs"
 
 class Role extends Entity {
@@ -13,11 +14,13 @@ class Role extends Entity {
     for(let id of Array.isArray(idOrArray) ? idOrArray : [idOrArray]){
       this.rel(createIfMissing ? Permission.lookupOrCreate(id) : Permission.lookup(id), "permission")
     }
+    clearUserRoleAndPermissionCache()
     return this
   }
 
   removePermission(id){
     this.removeRel(Permission.lookup(id), "permission")
+    clearUserRoleAndPermissionCache()
     return this
   }
 

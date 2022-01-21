@@ -5,6 +5,7 @@ import MSUser from "./msuser.mjs"
 import Notification from "./notification.mjs"
 import {pbkdf2Sync} from 'crypto'; 
 import Role from "./role.mjs";
+import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs";
 
 class User extends Entity{
     initNew(userId, {name = ""} = {}){
@@ -65,10 +66,12 @@ class User extends Entity{
 
     addRole(id){
       this.rel(Role.lookupOrCreate(id), "role");
+      clearUserRoleAndPermissionCache()
     }
 
     removeRole(id){
       this.removeRel(Role.lookup(id), "role");
+      clearUserRoleAndPermissionCache()
     }
 
     get permissions(){

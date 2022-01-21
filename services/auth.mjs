@@ -79,7 +79,7 @@ class Service {
   }
 
   getAdmin(){
-    let admin = User.find("tag:user role.prop:id=admin")
+    let admin = User.find("tag:user prop:id=admin role.prop:id=admin") || User.find("tag:user role.prop:id=admin")
     if(!admin) {
       admin = User.find("tag:user prop:id=admin")
       if(!admin)
@@ -113,10 +113,11 @@ class Service {
       return true;
 
     if(req && res){
-      console.log(`Unauthorized access by user ${res.locals.user?.id}: ${req.method} ${req.originalUrl}`)
-      res.status(403).json({ error: `You do not have access to ${req.method} ${req.originalUrl}` })
+      console.log(`Unauthorized access by user ${res.locals.user?.id}: ${req.method} ${req.originalUrl}. Missing: ${JSON.stringify(rule)}`)
+      res.status(403).json({ error: `You do not have access to ${req.method} ${req.originalUrl}. Missing: ${JSON.stringify(rule)}` })
     } else {
-      throw `Unauthorized access by user ${res.user?.id || res.locals?.user?.id || "N/A"}`
+      console.log(`Unauthorized access by user ${res.user?.id || res.locals?.user?.id||"N/A"}: Missing: ${JSON.stringify(rule)}`)
+      throw `Unauthorized access by user ${res.user?.id || res.locals?.user?.id || "N/A"}. Missing: ${JSON.stringify(rule)}`
     }
 
     return false;
@@ -140,6 +141,7 @@ class Service {
   ifPermissionThrow(context, permissionId, returnValue){
     if(this.hasPermission(context, permissionId))
       return returnValue;
+    console.log(context, permissionId)
     throw `Unauthorized access by user ${context.user?.id || context.locals?.user?.id || "N/A"}`
   }
 }

@@ -203,10 +203,12 @@ class Page extends HTMLElement {
   }
 
   addMenu(parent, items, parentMenuId){
+    let anyAdded = false;
     for(let item of items){
       if(item.role && !this.userRoles.includes(item.role) && !this.userRoles.includes("admin")) continue;
       if(item.permission && !this.userPermissions.includes(item.permission) && !this.userPermissions.includes("admin")) continue;
       if(item.public !== true && !this.user) continue;
+      anyAdded = true;
 
       let itemDiv = document.createElement("div")
       let titleElement = document.createElement("span")
@@ -233,9 +235,12 @@ class Page extends HTMLElement {
       parent.appendChild(itemDiv)
 
       if(item.items){
-        this.addMenu(parent, item.items, itemDiv.getAttribute("data-menuid"));
+        if(!this.addMenu(parent, item.items, itemDiv.getAttribute("data-menuid"))){
+          itemDiv.remove(); //No child items added
+        }
       }
     }
+    return anyAdded;
   }
 
   refreshMenu(){
