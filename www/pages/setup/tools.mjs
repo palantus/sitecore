@@ -2,8 +2,8 @@ const elementName = 'systemtools-page'
 
 import "/components/action-bar.mjs"
 import "/components/action-bar-item.mjs"
-import {apiURL} from "/system/core.mjs"
-import { goto } from "../../system/core.mjs"
+import {apiURL, goto} from "/system/core.mjs"
+import api from "/system/api.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -27,7 +27,7 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.shadowRoot.getElementById("dbbrowse-btn").addEventListener("click", () => goto("/system/db"))
-    this.shadowRoot.getElementById("graphql-btn").addEventListener("click", () => window.open(`${apiURL()}/graphql`))
+    this.shadowRoot.getElementById("graphql-btn").addEventListener("click", () => api.get("me/token").then(token => window.open(`${apiURL()}/graphql?access_token=${token.token}`)))
   }
 
 

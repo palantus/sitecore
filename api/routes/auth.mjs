@@ -117,6 +117,8 @@ export default (app) => {
         token = res.locals.token //Allow mods to set token
       else if (req.query.token)
         token = req.query.token
+      else if (req.query.access_token)
+        token = req.query.access_token
       else if (authHeader && authHeader.startsWith("Basic"))
         token = Buffer.from(authHeader.split(" ")[1], 'base64').toString().split(':')?.[1] || authHeader.split(" ")[1]
       else if (authHeader)
