@@ -7,6 +7,7 @@ let routes = [
     {path: "/setup/roles",            page: "../pages/setup/roles.mjs"},
     {path: "/setup/jobs",             page: "../pages/setup/jobs.mjs"},
     {path: "/systemtools",            page: "../pages/setup/tools.mjs"},
+    {path: "/system/db",              page: "../pages/setup/db.mjs"},
     {path: "/system/apikeys",         page: "../pages/setup/apikeys.mjs"},
     {path: "/logs",                   page: "../pages/setup/logs.mjs"},
     {regexp: /\/setup\/users\/([a-z0-9\_\-]+)/,    page: "../pages/setup/user.mjs"},

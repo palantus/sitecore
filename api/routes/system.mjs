@@ -6,6 +6,7 @@ import { getTimestamp } from "../../tools/date.mjs"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
+import { dbUIAPI } from "../../loaders/express.mjs";
 
 export default (app) => {
 
@@ -25,6 +26,12 @@ export default (app) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     res.json(Entity.search("tag:logarea").map(e => ({ id: e.id })));
   });
+
+  route.get("/db/query", (req, res, next) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    req.params.query = req.query.q;
+    return dbUIAPI(req, res, next);
+  })
 
   // API keys
   const routeAPIKeys = Router();
@@ -49,4 +56,5 @@ export default (app) => {
     APIKey.lookup(req.params.id)?.delete();
     res.json({ success: true })
   })
+
 };

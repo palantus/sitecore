@@ -10,6 +10,8 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
 
+export let dbUIAPI = null;
+
 const OpenApiValidator = OpenApiValidatorImport.OpenApiValidator;
 const cliArgs = yargs.argv;
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -52,11 +54,7 @@ export default async ({ app, mode, config }) => {
 
     let {uiPath, uiAPI} = await Entity.init(cliArgs.db || process.env.db || "storage");
 
-    if(process.env.EXPOSEDB == "TRUE"){
-      app.use("/db", express.static(uiPath))
-      app.use("/db/api/:query", uiAPI)
-    }
-
+    dbUIAPI = uiAPI
     // 1. Install the OpenApiValidator on your express app
     
     /*
