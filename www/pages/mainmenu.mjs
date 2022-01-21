@@ -204,7 +204,7 @@ class Page extends HTMLElement {
 
   addMenu(parent, items, parentMenuId){
     for(let item of items){
-      if(item.role && !this.userRoles.includes(item.role)) continue;
+      if(item.role && !this.userRoles.includes(item.role) && !this.userRoles.includes("admin")) continue;
       if(item.permission && !this.userPermissions.includes(item.permission) && !this.userPermissions.includes("admin")) continue;
       if(item.public !== true && !this.user) continue;
 
