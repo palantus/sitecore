@@ -78,7 +78,7 @@ class API {
       fire("log", { level: "error", message: retObj.message || retObj.error })
       throw retObj.message || retObj.error
     } else {
-      toast(`Request returned an error. Information: ${res.status}; ${res.statusText}`)
+      fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
     }
   }
 
@@ -221,7 +221,7 @@ class API {
       alertDialog("Server fejl")
       console.log(await res.text())
     } else {
-      toast(`Request returned an error. Information: ${res.status}; ${res.statusText}`)
+      fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
     }
   }
 
