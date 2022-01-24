@@ -22,21 +22,13 @@ async function handleClientRequest(messageText, ws){
         return;
       }
 
-      let userInfo;
-      if(token == process.env.AXMAN_API_KEY){
-        userInfo = service.getAxManUser();
-      } else {
-        userInfo = await new Promise(resolve => jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-          if (err || !user?.id) return resolve({error: "Session expired"})
-          resolve(user)
-        }))
-      }
+      let userInfo = await service.tokenToUser(token);
 
-      if(userInfo?.id){
-        ws.userId = userInfo.id
+      if(userInfo?.user?.id){
+        ws.userId = userInfo.user.id
         ws.send(JSON.stringify({type: "status", content: {status: "loggedin"}}))
       } else {
-        ws.send(JSON.stringify({type: "error", content: userInfo?.error || "Could not log you in"}))
+        ws.send(JSON.stringify({type: "error", content: userInfo?.reponse || "Could not log you in"}))
         return;
       }
       break;

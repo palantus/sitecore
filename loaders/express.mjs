@@ -5,15 +5,11 @@ import routes from '../api/index.mjs';
 import cookieParser from 'cookie-parser';
 import OpenApiValidatorImport from 'express-openapi-validator';
 import Entity from 'entitystorage';
-import yargs from 'yargs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
 
-export let dbUIAPI = null;
-
 const OpenApiValidator = OpenApiValidatorImport.OpenApiValidator;
-const cliArgs = yargs.argv;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 let isDev = process.env.ISDEV === "TRUE"
 
@@ -52,9 +48,6 @@ export default async ({ app, mode, config }) => {
     app.use(cookieParser());
     app.use('/spec', express.static(join(__dirname, '../openapi.yaml')));
 
-    let {uiPath, uiAPI} = await Entity.init(cliArgs.db || process.env.db || "storage");
-
-    dbUIAPI = uiAPI
     // 1. Install the OpenApiValidator on your express app
     
     /*

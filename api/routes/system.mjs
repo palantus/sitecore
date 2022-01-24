@@ -1,12 +1,11 @@
 import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
-import Entity, {sanitize} from "entitystorage"
+import Entity, {sanitize, uiAPI} from "entitystorage"
 import { getTimestamp } from "../../tools/date.mjs"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
-import { dbUIAPI } from "../../loaders/express.mjs";
 
 export default (app) => {
 
@@ -30,7 +29,7 @@ export default (app) => {
   route.get("/db/query", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     req.params.query = req.query.q;
-    return dbUIAPI(req, res, next);
+    return uiAPI(req, res, next);
   })
 
   // API keys

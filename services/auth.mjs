@@ -8,6 +8,11 @@ const cliArgs = yargs.argv;
 
 import dotenv from 'dotenv'
 import Role from "../models/role.mjs";
+import { lookupUserFromJWT, lookupUserRoles, cacheJWT} from "../tools/usercache.mjs";
+import { sanitize } from "entitystorage";
+import { service as userService } from "./user.mjs"
+import jwt from 'jsonwebtoken'
+import APIKey from "../models/apikey.mjs";
 dotenv.config()
 
 let isDev = process.env.ISDEV === "TRUE"
@@ -68,6 +73,58 @@ class Service {
 
     let user = User.from(msUser.related.user);
     return { user, msUser };
+  }
+
+  async tokenToUser(token, impersonate = null){
+    let user = null;
+    
+    if(!user){
+      let userId = userService.authTokenToUserId(token)
+      if (userId) {
+        user = this.lookupUser(userId)
+      }
+    }
+
+    if(!user && token && token.length < 100){
+      let apiKey = APIKey.tokenToKey(token)
+      if (apiKey) {
+        user = User.from(apiKey.related.user);
+      }
+    }
+
+    if (!user) {
+      user = lookupUserFromJWT(token)
+    }
+
+    if(!user){
+      let potentialUser = await new Promise(resolve => {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+          if (err) return resolve({user: null, responseCode: 401, response: { error: `Session expired`, redirectTo: process.env.LOGIN_URL }})
+          if (!user.id) return resolve({user: null, responseCode: 401, response: { error: `No user in session`, redirectTo: process.env.LOGIN_URL }})
+          resolve({user: cacheJWT(token, this.lookupUser(user.id))})
+        })
+      })
+      if(!potentialUser.user)
+        return potentialUser
+      user = potentialUser.user
+    }
+
+    if (!user) {
+      return {user: null, responseCode: 401, response: { error: "Could not log you in", redirectTo: process.env.LOGIN_URL }}
+    }
+
+    if (impersonate && lookupUserRoles(user).includes("admin")) {
+      user = this.lookupUser(sanitize(impersonate));
+      if(!user){
+        return {user: null, responseCode: 404, response: { error: `The user to impersonate doesn't exist`, redirectTo: process.env.LOGIN_URL }}
+      }
+    }
+    
+    if(!user.active){
+      return {user: null, responseCode: 401, response: { error: `The user ${user.id} is deactivated`, redirectTo: process.env.LOGIN_URL }}
+    }
+
+    return {user, responseCode: null, response: null};
   }
 
   getAxManUser() {

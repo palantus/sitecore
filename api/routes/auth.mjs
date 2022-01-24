@@ -6,13 +6,12 @@ const { Router, Request, Response } = express;
 const route = Router();
 
 import service from "../../services/auth.mjs"
-import { service as userService } from "../../services/user.mjs"
 import jwt from 'jsonwebtoken'
 import {sanitize} from "entitystorage"
 import yargs from "yargs"
 import User from "../../models/user.mjs"
 import APIKey from '../../models/apikey.mjs';
-import { lookupUserPermissions, lookupUserRoles, lookupUserFromJWT, cacheJWT} from '../../tools/usercache.mjs';
+import { lookupUserPermissions, lookupUserRoles} from '../../tools/usercache.mjs';
 const cliArgs = yargs.argv
 
 let domain = process.env.APIDOMAIN || process.env.DOMAIN || cliArgs.domain
@@ -112,7 +111,7 @@ export default (app) => {
       user = res.locals.user; // In case a mod already found the user using some other form of authentication
     }
 
-    if (!user && !res.finished) {
+    if (!user) {
       if(res.locals.token)
         token = res.locals.token //Allow mods to set token
       else if (req.query.token)
@@ -128,47 +127,15 @@ export default (app) => {
       if (!token)
         return res.status(401).json({ error: "Not logged in", redirectTo: process.env.LOGIN_URL })
 
-      if (token == process.env.AXMAN_API_KEY) {
-        user = service.getAxManUser();
-      } 
-
       token = (token && typeof token === "string") ? sanitize(token) : null;
       
-      if(!user){
-        let userId = userService.authTokenToUserId(token)
-        if (userId) {
-          user = service.lookupUser(userId)
-        }
+
+      let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"])
+      if(foundUser){
+        user = foundUser;
+      } else {
+        return res.status(responseCode||401).json(response || "Could not find user")
       }
-
-      if(!user && token && token.length < 100){
-        let apiKey = APIKey.tokenToKey(token)
-        if (apiKey) {
-          user = User.from(apiKey.related.user);
-        }
-      }
-    }
-
-    if (!user && !res.finished) {
-      user = lookupUserFromJWT(token) || await new Promise(resolve => {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-          if (err) return res.status(401).json({ error: "Session expired", redirectTo: process.env.LOGIN_URL })
-          if (!user.id) return res.status(401).json({ error: "No user in session", redirectTo: process.env.LOGIN_URL })
-          resolve(cacheJWT(token, service.lookupUser(user.id)))
-        })
-      })
-    }
-
-    if (!user && !res.finished) {
-      return res.status(401).json({ error: "Could not log you in", redirectTo: process.env.LOGIN_URL })
-    }
-
-    if (req.headers["impersonate-user"] && lookupUserRoles(user).includes("admin")) {
-      user = service.lookupUser(sanitize(req.headers["impersonate-user"]));
-    }
-    
-    if(!user.active){
-      return res.status(401).json({ error: `The user ${user.id} is deactivated`, redirectTo: process.env.LOGIN_URL })
     }
 
     res.locals.user = user

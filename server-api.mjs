@@ -2,9 +2,16 @@ import configLoader from './config/index.mjs';
 import express from 'express';
 import loader from "./loaders/index.mjs"
 import {createServer as createEventServer} from "./services/clientevents.mjs"
+import Entity from 'entitystorage';
+import yargs from 'yargs';
+const cliArgs = yargs.argv;
+
 const mode = "api";
 
 async function startServer() {
+  
+  await Entity.init(cliArgs.db || process.env.db || "storage");
+
   const config = configLoader(mode)
   const app = express();
 
