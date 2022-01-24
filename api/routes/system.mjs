@@ -1,7 +1,7 @@
 import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
-import Entity from "entitystorage"
+import Entity, {sanitize} from "entitystorage"
 import { getTimestamp } from "../../tools/date.mjs"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
@@ -14,7 +14,7 @@ export default (app) => {
 
   route.get('/log/:area', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(LogEntry.search(`tag:logentry area.prop:"id=${req.params.area}"`).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => e.toObj()));
+    res.json(LogEntry.search(`tag:logentry area.prop:"id=${sanitize(req.params.area)}"`).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => e.toObj()));
   });
 
   route.get('/log', function (req, res, next) {
@@ -45,7 +45,7 @@ export default (app) => {
   routeAPIKeys.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     if (!req.body.name || !req.body.key || !req.body.userId) throw "name, key and userId are mandatory"
-    let user = Entity.find("tag:user prop:id=" + req.body.userId)
+    let user = Entity.find(`tag:user prop:"id=${sanitize(req.body.userId)}"`)
     if (!user) throw `User ${req.body.userId} doesn't exist`
     new APIKey(req.body.name, req.body.key, user, req.body.daily)
     res.json({ success: true })
@@ -53,7 +53,7 @@ export default (app) => {
 
   routeAPIKeys.delete('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    APIKey.lookup(req.params.id)?.delete();
+    APIKey.lookup(sanitize(req.params.id))?.delete();
     res.json({ success: true })
   })
 

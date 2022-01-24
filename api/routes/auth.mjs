@@ -8,7 +8,7 @@ const route = Router();
 import service from "../../services/auth.mjs"
 import { service as userService } from "../../services/user.mjs"
 import jwt from 'jsonwebtoken'
-import Entity from "entitystorage"
+import {sanitize} from "entitystorage"
 import yargs from "yargs"
 import User from "../../models/user.mjs"
 import APIKey from '../../models/apikey.mjs';
@@ -73,7 +73,7 @@ export default (app) => {
       }
       user = service.getAdmin();
     } else {
-      user = User.lookup(req.body.username);
+      user = User.lookup(sanitize(req.body.username));
       if(!user.active || !user.hasPassword() || !user.validatePassword(req.body.password)){
         return res.json({success: false})
       }
@@ -131,6 +131,8 @@ export default (app) => {
       if (token == process.env.AXMAN_API_KEY) {
         user = service.getAxManUser();
       } 
+
+      token = (token && typeof token === "string") ? sanitize(token) : null;
       
       if(!user){
         let userId = userService.authTokenToUserId(token)
@@ -162,7 +164,7 @@ export default (app) => {
     }
 
     if (req.headers["impersonate-user"] && lookupUserRoles(user).includes("admin")) {
-      user = service.lookupUser(req.headers["impersonate-user"]);
+      user = service.lookupUser(sanitize(req.headers["impersonate-user"]));
     }
     
     if(!user.active){

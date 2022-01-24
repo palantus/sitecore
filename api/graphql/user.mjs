@@ -2,6 +2,7 @@ import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import userService from "../../services/user.mjs"
 import { validateAccess } from "../../services/auth.mjs"
+import { sanitize } from "entitystorage"
 
 import {
     GraphQLObjectType,
@@ -123,7 +124,7 @@ export default {
         description: "Get user",
         resolve: (parent, args, context) => {
           if(!validateAccess(null, context, {permission: "user.read"})) return;
-          return User.lookup(args.id)
+          return User.lookup(sanitize(args.id))
         }
       }
       fields.msUsers = {

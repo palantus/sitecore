@@ -1,4 +1,4 @@
-import Entity from "entitystorage";
+import Entity, {sanitize} from "entitystorage";
 import express from "express"
 const { Router, Request, Response } = express;
 import service from "../../services/user.mjs"
@@ -19,7 +19,7 @@ export default (app) => {
   userRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.body.id || !req.body.name) throw "id and name are mandatory for users"
-    res.json(service(res.locals).add(req.body.id, req.body.name, req.body.roles));
+    res.json(service(res.locals).add(sanitize(req.body.id), req.body.name, req.body.roles));
   });
 
   userRoute.get('/', async function (req, res, next) {
@@ -34,31 +34,31 @@ export default (app) => {
 
   userRoute.delete('/:id', async function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
-    res.json(service(res.locals).del(req.params.id));
+    res.json(service(res.locals).del(sanitize(req.params.id)));
   });
 
   userRoute.get("/counters", async function (req, res, next) {
     res.json({
       notifications: Entity.search(`tag:notification user.prop:id=${res.locals.user.id} !tag:dismissed`).length,
       actions: Entity.search(`tag:action prop:state=running owner.prop:id=${res.locals.user.id}`).length,
-      note: !req.query.page ? false : Entity.find(`tag:wiki prop:"id=${createId(req.query.page.slice(1))}"`) ? true : false
+      note: !req.query.page ? false : Entity.find(`tag:wiki prop:"id=${createId(sanitize(req.query.page).slice(1))}"`) ? true : false
     });
   });
 
   userRoute.get('/:id', async function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.read"})) return;
-    res.json(service(res.locals).get(req.params.id));
+    res.json(service(res.locals).get(sanitize(req.params.id)));
   });
 
   userRoute.post('/:id/assignToMSAccount/:msid', async function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
-    let result = service(res.locals).assignToMSAccount(req.params.id, req.params.msid);
+    let result = service(res.locals).assignToMSAccount(sanitize(req.params.id), sanitize(req.params.msid));
     res.json(typeof result === "string" ? { error: result } : true);
   });
 
   userRoute.patch('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
-    let user = User.lookup(req.params.id)
+    let user = User.lookup(sanitize(req.params.id))
     if (!user) throw "Unknown user"
 
     if (req.body.name !== undefined) user.name = req.body.name
@@ -112,7 +112,7 @@ export default (app) => {
   msRoute.patch('/:email', async function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.params.email) throw "email is required"
-    let msUser = MSUser.lookup(req.params.email)
+    let msUser = MSUser.lookup(sanitize(req.params.email))
     if(!msUser) throw "Unknown user"
     if(typeof req.body.vsts == "boolean") {
       if(req.body.vsts) msUser.tag("vsts")
@@ -131,7 +131,7 @@ export default (app) => {
   })
 
   roleRoute.get("/:id", (req, res) => {
-    let role = Role.lookup(req.params.id)
+    let role = Role.lookup(sanitize(req.params.id))
     if(!role) throw "Unknown role"
     res.json({id: role.id, permissions: role.rels.permission?.map(p => p.id)||[]});
   })
@@ -139,31 +139,31 @@ export default (app) => {
   roleRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     if (!req.body.id) throw "id is mandatory"
-    Role.lookupOrCreate(req.body.id)
+    Role.lookupOrCreate(sanitize(req.body.id))
     res.json({ success: true })
   })
 
   roleRoute.delete('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    Role.lookup(req.params.id)?.delete();
+    Role.lookup(sanitize(req.params.id))?.delete();
     res.json({ success: true })
   })
 
   userRoute.post('/:id/roles', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    let user = User.lookup(req.params.id)
+    let user = User.lookup(sanitize(req.params.id))
     if (!user) throw "Unknown user"
     if (!req.body.id) throw "id is mandatory"
-    user.addRole(req.body.id)
+    user.addRole(sanitize(req.body.id))
     res.json({success: true});
   });
 
   userRoute.delete('/:id/roles/:role', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    let user = User.lookup(req.params.id)
+    let user = User.lookup(sanitize(req.params.id))
     if (!user) throw "Unknown user"
     if (!req.params.role) throw "role is mandatory"
-    user.removeRole(req.params.role)
+    user.removeRole(sanitize(req.params.role))
     res.json({success: true});
   });
 
@@ -178,19 +178,19 @@ export default (app) => {
 
   roleRoute.post('/:id/permissions', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    let role = Role.lookup(req.params.id)
+    let role = Role.lookup(sanitize(req.params.id))
     if (!role) throw "Unknown role"
     if (!req.body.id) throw "id is mandatory"
-    role.addPermission(req.body.id)
+    role.addPermission(sanitize(req.body.id))
     res.json({success: true});
   });
 
   roleRoute.delete('/:id/permissions/:role', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    let role = Role.lookup(req.params.id)
+    let role = Role.lookup(sanitize(req.params.id))
     if (!role) throw "Unknown role"
     if (!req.params.role) throw "role is mandatory"
-    role.removePermission(req.params.role)
+    role.removePermission(sanitize(req.params.role))
     res.json({success: true});
   });
 };

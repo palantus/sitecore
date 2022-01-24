@@ -1,5 +1,6 @@
 import Notification from "../../models/notification.mjs"
 import User from "../../models/user.mjs"
+import { sanitize } from "entitystorage";
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -24,7 +25,7 @@ export default (app) => {
   });
 
   route.post('/:id/dismiss', async function (req, res, next) {
-    let notification = Notification.lookup(req.params.id)
+    let notification = Notification.lookup(sanitize(req.params.id))
     if (!notification) throw "Unknown notification: " + req.params.id
     notification.dismiss();
     res.json({ success: true })
