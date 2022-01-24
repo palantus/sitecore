@@ -39,7 +39,7 @@ class APIKey extends Entity {
   }
 
   static lookup(id){
-    return APIKey.find(`tag:apikey id:${id}`)
+    return APIKey.find(`tag:apikey id:"${id}"`)
   }
 
   toObj() {

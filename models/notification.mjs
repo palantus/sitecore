@@ -25,6 +25,6 @@ export default class Notification extends Entity{
   }
 
   static lookup(id){
-    return Notification.find(`tag:notification id:${id}`)
+    return Notification.find(`tag:notification id:"${id}"`)
   }
 }
