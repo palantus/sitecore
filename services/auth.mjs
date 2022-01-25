@@ -8,7 +8,7 @@ const cliArgs = yargs.argv;
 
 import dotenv from 'dotenv'
 import Role from "../models/role.mjs";
-import { lookupUserFromJWT, lookupUserRoles, cacheJWT} from "../tools/usercache.mjs";
+import { lookupUserFromJWT, cacheJWT, lookupUserPermissions} from "../tools/usercache.mjs";
 import { sanitize } from "entitystorage";
 import { service as userService } from "./user.mjs"
 import jwt from 'jsonwebtoken'
@@ -113,7 +113,7 @@ class Service {
       return {user: null, responseCode: 401, response: { error: "Could not log you in", redirectTo: process.env.LOGIN_URL }}
     }
 
-    if (impersonate && lookupUserRoles(user).includes("admin")) {
+    if (impersonate && lookupUserPermissions(user).includes("user.impersonate")) {
       user = this.lookupUser(sanitize(impersonate));
       if(!user){
         return {user: null, responseCode: 404, response: { error: `The user to impersonate doesn't exist`, redirectTo: process.env.LOGIN_URL }}
