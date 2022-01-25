@@ -13,7 +13,11 @@ export class OpenMenuItem extends Command{
 
     if(this.menuItems.length < 1){
       for(let subMenu of menu){
+        if(subMenu.role && !context.userRoles.includes(subMenu.role) && !context.userRoles.includes("admin")) continue;
+        if(subMenu.permission && !context.userPermissions.includes(subMenu.permission) && !context.userPermissions.includes("admin")) continue;
         for(let item of subMenu.items){
+          if(item.role && !context.userRoles.includes(item.role) && !context.userRoles.includes("admin")) continue;
+          if(item.permission && !context.userPermissions.includes(item.permission) && !context.userPermissions.includes("admin")) continue;
           this.menuItems.push({
             menu: subMenu.title,
             title: item.title,

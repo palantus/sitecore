@@ -21,7 +21,7 @@ export let getCommands = async (context, query) => {
       for(let cmdName in imp){
         let cmd = imp[cmdName]
         if(typeof cmd.preload === "function"){
-          cmd.preload();
+          cmd.preload(context);
         }
         commands.push(cmd)
       }

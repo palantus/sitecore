@@ -1,8 +1,7 @@
 const elementName = 'cmd-palette-component'
 
-import api from "/system/api.mjs"
-import {on, off} from "/system/events.mjs"
 import {getCommands} from "./commands.mjs"
+import {userRoles, userPermissions} from "/system/api.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -72,6 +71,14 @@ class Element extends HTMLElement {
     this.onInput = this.onInput.bind(this)
 
     this.context = {}
+    
+    Promise.all([
+      userRoles(),
+      userPermissions()
+    ]).then(result => {
+      this.userRoles = result[0]
+      this.userPermissions = result[1]
+    })
   }
 
   connectedCallback() {
@@ -122,7 +129,7 @@ class Element extends HTMLElement {
     container.classList.toggle("visible", forceValue)
     if(container.classList.contains("visible")){
       this.shadowRoot.querySelector("input").focus()
-      this.context = {}
+      this.context = {userRoles: this.userRoles, userPermissions: this.userPermissions}
     }
   }
 
