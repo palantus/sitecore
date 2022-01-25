@@ -28,6 +28,9 @@ class Service {
 
     if (!this.clientId || !this.secret)
       console.log("AZURE_APP_CLIENTID and AZURE_APP_SECRET must be in .env file to enable MS login")
+
+    if(!process.env.ACCESS_TOKEN_SECRET)
+      console.log("ACCESS_TOKEN_SECRET must be provided in .env to handle JWT")
   }
 
   async login(code, redirect) {
