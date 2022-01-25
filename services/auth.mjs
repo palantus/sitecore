@@ -27,12 +27,12 @@ class Service {
     this.secret = process.env.AZURE_APP_SECRET //from azure app
 
     if (!this.clientId || !this.secret)
-      throw "Please enter AZURE_APP_CLIENTID and AZURE_APP_SECRET in .env file"
+      console.log("AZURE_APP_CLIENTID and AZURE_APP_SECRET must be in .env file to enable MS login")
   }
 
   async login(code, redirect) {
     if (!this.clientId || !this.secret)
-      throw "Please enter AZURE_APP_CLIENTID and AZURE_APP_SECRET in .env file"
+      return null;
 
     let res = await fetch("https://login.microsoftonline.com/common/oauth2/v2.0/token",
       {
