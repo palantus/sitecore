@@ -1,5 +1,4 @@
 import WebSocket from 'ws'
-import jwt from 'jsonwebtoken'
 import service from "./auth.mjs"
 let activeConnections = []
 
@@ -43,7 +42,8 @@ async function handleClientRequest(messageText, ws){
         ws.send(JSON.stringify({type: "error", content: "You are not logged in"}))
         break;
       }
-      handleMessage(msg.content, ws, ws.userId)
+      //handleMessage(msg.content, ws, ws.userId)
+      console.log(`Message from ${ws.userId}: ${JSON.stringify(msg.content)}`)
       break;
   }
 }
