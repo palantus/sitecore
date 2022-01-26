@@ -71,3 +71,4 @@ mods
 mods/*
 !mods/sample
 .vscode
+.deployment
