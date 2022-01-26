@@ -4,10 +4,13 @@
 
 - SITE_TITLE: Title of the site
 - ADMIN_PASS: Password for user admin
+- ACCESS_TOKEN_SECRET: A secret string of characters used to encrypt JWT and user passwords. To make your sign-ins compatible with other apps, use the same secret on those as well.
 - PORT: port to listen on
 - PORT_API: port for API-mode (only useful if you have projects supporting multiple modes)
 - PORT_WWW: port for www-mode (only useful if you have projects supporting multiple modes)
 - PORT_COMBINED: port for combined-mode (only useful if you have projects supporting multiple modes)
+- ADMIN_MODE: Last resort, if you can't log in. By setting this to TRUE, you every request is seen as admin.
+- ISDEV: Set to TRUE if you are on a non-encrypted connection. Otherwise leave it out.
 
 ## Run using one of the following "main-files":
 
@@ -17,7 +20,7 @@
 
 ## Initial setup:
 
-- Set ADMIN_PASS in .env to a new admin password
+- Set ADMIN_PASS in .env to a new admin password (otherwise password is "admin")
 - start server and login using admin as username
 
 
@@ -29,7 +32,7 @@ Can be overridden by creating a menu.mjs in root folder of sitecore or a mod, wh
 Any menu or item in the menu, can have roles (array) or public (boolean) defined, to control which items are available to a given user.
 
 ## Mods
-Take a look at the mod sample in mods folder. It can be loaded by placing LOAD_SAMPLE=TRUE in .env.
+Take a look at the mod sample in mods folder. It is loaded by default, but can be disabled under System/Mods in the UI.
 
 ### Client files (js, css etc.)
 It is important to note that the www folder in a mod is exposed on the root of the site, meaning that the mod can overrule ANY public file from core, if it needs to. That is a great power, but consider using namespacing (subfolders) for mod files, to avoid accidental name clashes.

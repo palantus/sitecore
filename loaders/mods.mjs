@@ -3,7 +3,7 @@ import glob from 'glob-promise';
 import Entity from "entitystorage"
 
 export default async () => {
-  let mods = (await new Promise(r => fs.readdir('mods', (err, files) => {if(err) return r([]); r(files.filter(f => process.env.LOAD_SAMPLE === "TRUE" || f != "sample"))})))
+  let mods = (await new Promise(r => fs.readdir('mods', (err, files) => {if(err) return r([]); r(files)})))
 
   global.mods = []
   global.modRoutes = "let routes = [];\n"

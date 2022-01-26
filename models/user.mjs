@@ -67,11 +67,13 @@ class User extends Entity{
     addRole(id){
       this.rel(Role.lookupOrCreate(id), "role");
       clearUserRoleAndPermissionCache()
+      return this;
     }
 
     removeRole(id){
       this.removeRel(Role.lookup(id), "role");
       clearUserRoleAndPermissionCache()
+      return this;
     }
 
     get permissions(){

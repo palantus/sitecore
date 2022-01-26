@@ -25,7 +25,7 @@ export default (app) => {
     console.log("ERROR: Please provide a domain in cli args (domain) or .env (APIDOMAIN)")
 
   if (process.env.ADMIN_MODE === "true")
-    console.log("Warning: Is in dev mode, which means that user requests aren't authorized")
+    console.log("Warning: Is in ADMIN mode, which means that user requests aren't authorized")
 
   if (process.env.LOGIN_URL && process.env.LOGIN_URL.indexOf("<domain>")) {
     process.env.LOGIN_URL = process.env.LOGIN_URL.replace("<domain>", domain) + (service.apiPrefix ? "/" + service.apiPrefix : "")
@@ -65,17 +65,10 @@ export default (app) => {
   });
 
   route.post('/login', async (req, res, next) => {
-    let user = null;
-    if(process.env.ADMIN_PASS && req.body.username == "admin"){
-      if(req.body.password != process.env.ADMIN_PASS){
-        return res.json({success: false})
-      }
-      user = service.getAdmin();
-    } else {
-      user = User.lookup(sanitize(req.body.username));
-      if(!user.active || !user.hasPassword() || !user.validatePassword(req.body.password)){
-        return res.json({success: false})
-      }
+    let user = User.lookup(sanitize(req.body.username));
+
+    if(!user || !user.active || !user.hasPassword() || !user.validatePassword(req.body.password)){
+      return res.json({success: false})
     }
 
     let token = jwt.sign(user.toObj(), process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
