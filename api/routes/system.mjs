@@ -32,6 +32,19 @@ export default (app) => {
     return uiAPI(req, res, next);
   })
 
+  // Mods
+  route.get("/mods", (req, res, next) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    res.json(Entity.search(`tag:sitemod`).map(m => ({id: m.id, enabled: m.enabled || false})))
+  })
+  route.patch("/mod/:id", (req, res, next) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let mod = Entity.find(`tag:sitemod prop:"id=${sanitize(req.params.id)}"`)
+    if(!mod) throw "Unknown mod"
+    if(req.body.enabled !== undefined) mod.enabled = !!req.body.enabled
+    res.json({success: true})
+  })
+
   // API keys
   const routeAPIKeys = Router();
   app.use("/system/apikeys", routeAPIKeys)
