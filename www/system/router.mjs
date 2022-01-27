@@ -6,6 +6,7 @@ let routes = [
     {path: "/setup/msusers",          page: "../pages/setup/msusers.mjs"},
     {path: "/setup/roles",            page: "../pages/setup/roles.mjs"},
     {path: "/setup/mods",             page: "../pages/setup/mods.mjs"},
+    {path: "/setup",                  page: "../pages/setup/setup.mjs"},
     {path: "/setup/jobs",             page: "../pages/setup/jobs.mjs"},
     {path: "/systemtools",            page: "../pages/setup/tools.mjs"},
     {path: "/system/db",              page: "../pages/setup/db.mjs"},

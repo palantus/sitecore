@@ -8,6 +8,7 @@ import Entity from 'entitystorage';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
+import Setup from '../models/setup.mjs';
 
 const OpenApiValidator = OpenApiValidatorImport.OpenApiValidator;
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -84,14 +85,14 @@ export default async ({ app, mode, config }) => {
     siteConfig = {apiURL, siteURL, isDev, wsURL};
 
     app.get("/clientconfig.mjs", (req, res) => {
-
+      let setup = Setup.lookup()
       res.type('.js')
          .send(`export default {
             api: "${apiURL}",
             site: "${siteURL}",
             secure: ${isDev ? "false" : "true"},
             ws: "${wsURL}",
-            title: "${process.env.SITE_TITLE || "SC"}",
+            title: "${setup.siteTitle || "SiteCore"}",
             mods: ${JSON.stringify(global.mods)},
             menu: ${JSON.stringify(global.menu)}
           };`)

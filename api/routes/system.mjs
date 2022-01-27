@@ -6,6 +6,7 @@ import { getTimestamp } from "../../tools/date.mjs"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
+import Setup from "../../models/setup.mjs";
 
 export default (app) => {
 
@@ -30,6 +31,17 @@ export default (app) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     req.params.query = req.query.q;
     return uiAPI(req, res, next);
+  })
+
+  route.get("/setup", (req, res, next) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    res.json(Setup.lookup().toObj())
+  })
+
+  route.patch("/setup", (req, res, next) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    Object.assign(Setup.lookup(), req.body)
+    res.json(true)
   })
 
   // Mods
