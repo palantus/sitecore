@@ -2,8 +2,6 @@
 
 ## Setup using .env:
 
-- SITE_TITLE: Title of the site
-- ADMIN_PASS: Password for user admin
 - ACCESS_TOKEN_SECRET: A secret string of characters used to encrypt JWT and user passwords. To make your sign-ins compatible with other apps, use the same secret on those as well.
 - PORT: port to listen on
 - PORT_API: port for API-mode (only useful if you have projects supporting multiple modes)
