@@ -6,14 +6,12 @@ import MSUser from "../models/msuser.mjs"
 import yargs from "yargs";
 const cliArgs = yargs.argv;
 
-import dotenv from 'dotenv'
 import Role from "../models/role.mjs";
 import { lookupUserFromJWT, cacheJWT, lookupUserPermissions} from "../tools/usercache.mjs";
 import { sanitize } from "entitystorage";
 import { service as userService } from "./user.mjs"
 import jwt from 'jsonwebtoken'
 import APIKey from "../models/apikey.mjs";
-dotenv.config()
 
 let isDev = process.env.ISDEV === "TRUE"
 if (isDev) console.log("Running auth in developer mode (non-ssl)")

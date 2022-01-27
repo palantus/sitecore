@@ -5,10 +5,6 @@ import {default as graphql, fields} from './routes/graphql.mjs';
 import jobs from './routes/jobs.mjs';
 import system from './routes/system.mjs';
 import fs from 'fs'
-
-import dotenv from 'dotenv'
-dotenv.config()
-
 import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
