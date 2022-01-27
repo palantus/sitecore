@@ -32,7 +32,7 @@ template.innerHTML = `
 
   <div id="container">
     <h1>Server mods</h1>
-    <p>Note: Enabling/disabling mods only have an effect after the server is restarted.</p>
+    <p>Note: Enabling/disabling mods only has an effect after the server is restarted.</p>
 
     <table>
         <thead>
