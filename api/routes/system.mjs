@@ -35,7 +35,7 @@ export default (app) => {
   // Mods
   route.get("/mods", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(Entity.search(`tag:sitemod`).map(m => ({id: m.id, enabled: m.enabled || false})))
+    res.json(Entity.search(`tag:sitemod`).map(m => ({id: m.id, enabled: m.enabled || false, hasSetup: !!m.hasSetup})))
   })
   route.patch("/mod/:id", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;

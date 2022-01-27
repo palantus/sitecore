@@ -6,7 +6,8 @@ import "/components/action-bar-item.mjs"
 import "/components/field-ref.mjs"
 import "/components/field.mjs"
 import "/components/field-edit.mjs"
-import {on, off,} from "/system/events.mjs"
+import {on, off} from "/system/events.mjs"
+import {goto} from "/system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -37,7 +38,7 @@ template.innerHTML = `
         <thead>
             <tr>
               <th>Id</th>
-              <th></th>
+              <th>Enabled</th>
             </tr>
         </thead>
         <tbody id="mods">
@@ -54,6 +55,9 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.refreshData = this.refreshData.bind(this);
+    this.clicked = this.clicked.bind(this)
+
+    this.shadowRoot.getElementById("mods").addEventListener("click", this.clicked)
     
     this.refreshData();
   }
@@ -62,10 +66,15 @@ class Element extends HTMLElement {
     let mods = await api.get("system/mods")
     this.shadowRoot.getElementById("mods").innerHTML = mods.map(m => `
       <tr>
-        <td>${m.id}</td>
+        <td>${(m.hasSetup && m.enabled) ? `<field-ref ref="/${m.id}/setup">${m.id}</field-ref>` : `${m.id}`}</td>
         <td><field-edit field="enabled" type="checkbox" patch="system/mod/${m.id}" value="${m.enabled ? "true" : "false"}"></field-edit></td>
       </tr>
     `).join("")
+  }
+
+  clicked(e){
+    if(!e.target.classList.contains("setupbtn")) return;
+    goto(`/${e.target.getAttribute("data-mod")}/setup`)
   }
 
   connectedCallback() {

@@ -12,9 +12,11 @@ export default async () => {
     if(mod.enabled === false) continue;
     let content = await new Promise(r => fs.readFile(`mods/${id}/routes.mjs`, 'utf8', (err, data) => r(err ? "" : data)))
     global.modRoutes += `${content}\n\n`
+    mod.hasSetup = new RegExp(`path\:[\ ]*\"\/${id}\/setup\"`).test(content)
     global.mods.push({
       id,
-      files: (await glob(`mods/${id}/www/**/*.*`)).map(f => f.substring(`mods/${id}/www`.length))
+      files: (await glob(`mods/${id}/www/**/*.*`)).map(f => f.substring(`mods/${id}/www`.length)),
+      hasSetup: mod.hasSetup
     })
   }
   Entity.search("tag:sitemod").filter(m => !mods.includes(m.id)).forEach(m => m.delete())

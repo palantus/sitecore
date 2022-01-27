@@ -43,3 +43,7 @@ Take a look at my mod sitemod-wiki or sitemod-files. Basically you need to plads
 ### Add custom authentication
 
 You can add a auth.mjs file to the api folder in your mod. This will be added to the express chain first, meaning that you can use it to set eg. res.locals.user and thereby authenticate a user by some custom means.
+
+### Add setup page,
+
+Add a route for `/<modid>/setup` (eg. `/sample/setup`) in `routes.mjs`. If this route exists, the mod is clickable in the mods overview page. Clicking it will redirect to the setup page.
