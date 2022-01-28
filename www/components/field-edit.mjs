@@ -1,6 +1,7 @@
 let elementName = "field-edit"
 
 import api from "../system/api.mjs"
+import { fire } from "../system/events.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -9,7 +10,44 @@ template.innerHTML = `
     #options{display: none;}
     input:not([type='checkbox']), select{
       width: 100%;
+      background-color: white;
     }
+
+    @-webkit-keyframes savesuccess {
+      0% {background-color: white;}
+      22% {background-color: #aaffaa;}
+      100% {background-color: white;}
+    }
+        
+    .savesuccessflash {
+      animation-name: savesuccess;
+      animation-duration: 300ms;
+      animation-iteration-count: 1;
+      animation-timing-function: ease-in-out;
+      -webkit-animation-name: savesuccess;
+      -webkit-animation-duration: 300ms;
+      -webkit-animation-iteration-count: 1;
+      -webkit-animation-timing-function: ease-in-out;
+    }
+
+    @-webkit-keyframes savefail {
+      0% {background-color: white;}
+      22% {background-color: #ffaaaa;}
+      88% {background-color: #ffaaaa;}
+      100% {background-color: #ffaaaa;}
+    }
+        
+    .savefailflash {
+      animation-name: savefail;
+      animation-duration: 300ms;
+      animation-iteration-count: 1;
+      animation-timing-function: ease-in-out;
+      -webkit-animation-name: savefail;
+      -webkit-animation-duration: 300ms;
+      -webkit-animation-iteration-count: 1;
+      -webkit-animation-timing-function: ease-in-out;
+      background-color: #ffaaaa !important;
+    }    
   </style>
   <span class="field">
       <input></input>
@@ -78,9 +116,18 @@ class Element extends HTMLElement {
     patchObj[field] = value;
 
     this.setAttribute("value", value)
-    await api.patch(patch, patchObj)
+    this.getValueElement()?.classList.remove("savefailflash")
+    try{
+      await api.patch(patch, patchObj)
+      this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
 
-    this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
+      this.getValueElement()?.classList.add("savesuccessflash")
+      setTimeout(() => this.getValueElement()?.classList.remove("savesuccessflash"), 1000)
+    } catch(err){
+      console.log(err)
+      fire("log", {level: "error", message: err})
+      this.getValueElement()?.classList.add("savefailflash")
+    }
   }
 
   getValue(){
@@ -88,15 +135,29 @@ class Element extends HTMLElement {
         case "text":
         case "password":
         case "date":
-          return this.shadowRoot.querySelector("input").value;
         case "number":
-          return parseFloat(this.shadowRoot.querySelector("input").value);
         case "select":
-          return this.shadowRoot.querySelector("select").value;
+          return this.getValueElement().value;
         case "checkbox":
-          return this.shadowRoot.querySelector("input").matches(":checked");
+          return this.getValueElement().matches(":checked");
     }
     return undefined;
+  }
+
+  getValueElement(){
+    switch(this.getAttribute("type")){
+        case "text":
+        case "password":
+        case "date":
+          return this.shadowRoot.querySelector("input")
+        case "number":
+          return parseFloat(this.shadowRoot.querySelector("input"));
+        case "select":
+          return this.shadowRoot.querySelector("select");
+        case "checkbox":
+          return this.shadowRoot.querySelector("input");
+    }
+    return null;
   }
 
   disconnectedCallback() {
