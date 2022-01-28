@@ -11,7 +11,9 @@ export default class Setup extends Entity {
 
   toObj(){
     return {
-      siteTitle: this.siteTitle
+      siteTitle: this.siteTitle,
+      msSigninClientId: this.msSigninClientId,
+      msSigninSecretSet: !!this.msSigninSecret
     }
   }
 }

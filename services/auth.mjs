@@ -3,29 +3,22 @@
 import fetch from "node-fetch"
 import User from "../models/user.mjs"
 import MSUser from "../models/msuser.mjs"
-import yargs from "yargs";
-const cliArgs = yargs.argv;
-
 import Role from "../models/role.mjs";
 import { lookupUserFromJWT, cacheJWT, lookupUserPermissions} from "../tools/usercache.mjs";
 import { sanitize } from "entitystorage";
 import { service as userService } from "./user.mjs"
 import jwt from 'jsonwebtoken'
 import APIKey from "../models/apikey.mjs";
-
-let isDev = process.env.ISDEV === "TRUE"
-if (isDev) console.log("Running auth in developer mode (non-ssl)")
+import Setup from "../models/setup.mjs";
 
 class Service {
   init(){
-    this.apiPrefix = process.env.API_PREFIX || (global.sitecore_mode == "combined" ? "api" : "");
-    this.clientId = process.env.AZURE_APP_CLIENTID  //from azure app
-    this.scope = "https%3A%2F%2Fgraph.microsoft.com%2Fuser.read" //inkluder %20offline_access for refresh_token. %20 er fordi det er space separeret.
-    this.redirect = `http${isDev ? '' : 's'}://${cliArgs.domain || process.env.APIDOMAIN || process.env.DOMAIN}${this.apiPrefix ? "/" + this.apiPrefix : ""}/auth/redirect`  //registrered on azure app
-    this.secret = process.env.AZURE_APP_SECRET //from azure app
+    let setup = Setup.lookup()
 
-    if (!this.clientId || !this.secret)
-      console.log("AZURE_APP_CLIENTID and AZURE_APP_SECRET must be in .env file to enable MS login")
+    this.clientId = setup.msSigninClientId
+    this.scope = "https%3A%2F%2Fgraph.microsoft.com%2Fuser.read" //inkluder %20offline_access for refresh_token. %20 er fordi det er space separeret.
+    this.redirect = `${global.sitecore.apiURL}/auth/redirect`
+    this.secret = setup.msSigninSecret
 
     if(!process.env.ACCESS_TOKEN_SECRET)
       console.log("ACCESS_TOKEN_SECRET must be provided in .env to handle JWT")
@@ -100,8 +93,8 @@ class Service {
     if(!user){
       let potentialUser = await new Promise(resolve => {
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-          if (err) return resolve({user: null, responseCode: 401, response: { error: `Session expired`, redirectTo: process.env.LOGIN_URL }})
-          if (!user.id) return resolve({user: null, responseCode: 401, response: { error: `No user in session`, redirectTo: process.env.LOGIN_URL }})
+          if (err) return resolve({user: null, responseCode: 401, response: { error: `Session expired`, redirectTo: global.sitecore.loginURL }})
+          if (!user.id) return resolve({user: null, responseCode: 401, response: { error: `No user in session`, redirectTo: global.sitecore.loginURL }})
           resolve({user: cacheJWT(token, this.lookupUser(user.id))})
         })
       })
@@ -111,18 +104,18 @@ class Service {
     }
 
     if (!user) {
-      return {user: null, responseCode: 401, response: { error: "Could not log you in", redirectTo: process.env.LOGIN_URL }}
+      return {user: null, responseCode: 401, response: { error: "Could not log you in", redirectTo: global.sitecore.loginURL }}
     }
 
     if (impersonate && lookupUserPermissions(user).includes("user.impersonate")) {
       user = this.lookupUser(sanitize(impersonate));
       if(!user){
-        return {user: null, responseCode: 404, response: { error: `The user to impersonate doesn't exist`, redirectTo: process.env.LOGIN_URL }}
+        return {user: null, responseCode: 404, response: { error: `The user to impersonate doesn't exist`, redirectTo: global.sitecore.loginURL }}
       }
     }
     
     if(!user.active){
-      return {user: null, responseCode: 401, response: { error: `The user ${user.id} is deactivated`, redirectTo: process.env.LOGIN_URL }}
+      return {user: null, responseCode: 401, response: { error: `The user ${user.id} is deactivated`, redirectTo: global.sitecore.loginURL }}
     }
 
     return {user, responseCode: null, response: null};

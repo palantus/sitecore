@@ -15,13 +15,17 @@ async function startServer() {
   const config = configLoader(mode)
 
   const app = express();
-  loader({ expressApp: app, mode, config});
+  try{
+    await loader({ expressApp: app, mode, config});
+  } catch(err){
+    console.log(err)
+    process.exit(-1)
+  }
 
   const server = app.listen(config.port, err => {
     if (err) {
       console.log(err);
       process.exit(1);
-      return;
     }
     console.log(`Server listening on port: ${config.port}`);
   });

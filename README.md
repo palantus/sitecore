@@ -8,7 +8,10 @@
 - PORT_WWW: port for www-mode (only useful if you have projects supporting multiple modes)
 - PORT_COMBINED: port for combined-mode (only useful if you have projects supporting multiple modes)
 - ADMIN_MODE: Last resort, if you can't log in. By setting this to TRUE, you every request is seen as admin.
-- ISDEV: Set to TRUE if you are on a non-encrypted connection. Otherwise leave it out.
+- SECURE: set to TRUE if you are on a secure connection
+- SITE_HOST: domain for the site (including port, if non-default) - eg.: example.com or localhost:8080
+- API_HOST: (optional) domain for the API (including port, if non-default) - eg.: api.example.com or localhost:8080
+- COOKIEDOMAIN: Domain to set cookies on (eg. ".example.com" or "localhost"). Don't include port.
 
 ## Run using one of the following "main-files":
 

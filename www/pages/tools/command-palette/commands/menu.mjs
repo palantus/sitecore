@@ -12,7 +12,7 @@ export class OpenMenuItem extends Command{
     let query = removeKeywordsFromQuery(context.query, this.keywords)
 
     if(this.menuItems.length < 1){
-      for(let subMenu of menu){
+      for(let subMenu of menu()){
         if(subMenu.role && !context.userRoles.includes(subMenu.role) && !context.userRoles.includes("admin")) continue;
         if(subMenu.permission && !context.userPermissions.includes(subMenu.permission) && !context.userPermissions.includes("admin")) continue;
         for(let item of subMenu.items){

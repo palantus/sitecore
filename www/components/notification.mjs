@@ -91,7 +91,7 @@ class Element extends HTMLElement {
   }
 
   async dismiss(){
-    await api.post(`/notifications/${this.getAttribute("id")}/dismiss`)
+    await api.post(`notifications/${this.getAttribute("id")}/dismiss`)
     this.style.display = "none"
   }
 

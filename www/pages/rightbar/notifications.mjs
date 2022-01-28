@@ -47,13 +47,13 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById("dismissall").addEventListener("click", async () => {
       if(!await confirmDialog("Are you sure?")) return;
-      await api.post("/notifications/dismissall")
+      await api.post("notifications/dismissall")
       this.refreshData();
     })
   }
 
   async refreshData(){
-    let notifications = await api.get("/notifications")
+    let notifications = await api.get("notifications")
     this.shadowRoot.getElementById("noti").innerHTML = notifications.reverse().map(n => `
           <notification-component id="${n.id}" title="${n.details?.title||""}" timestamp="${n.timestamp.replace("T", " ").slice(0, 19)}">
             ${n.message}${n.details?.refs?.map(r => `<field-ref slot="ref${n.details.refs.indexOf(r)+1}" ref="${refToPath(r)}">${r.title||"Open"}</field-ref>`).join("")||""}

@@ -2,8 +2,13 @@ import fs from 'fs'
 import glob from 'glob-promise';
 import Entity from "entitystorage"
 
-export default async () => {
+export default async ({mode}) => {
   let mods = (await new Promise(r => fs.readdir('mods', (err, files) => {if(err) return r([]); r(files)})))
+
+  if(mode == "www"){
+    global.mods = mods.map(id => ({id}));
+    return;
+  }
 
   global.mods = []
   global.modRoutes = "let routes = [];\n"

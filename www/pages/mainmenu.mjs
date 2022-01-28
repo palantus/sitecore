@@ -1,6 +1,6 @@
 const elementName = 'main-menu'
 import {default as api, userRoles, userPermissions, getUser} from "../system/api.mjs";
-import {goto, state, isMobile, menu} from "../system/core.mjs"
+import {goto, state, isMobile, menu, ready} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
 
 const template = document.createElement('template');
@@ -167,6 +167,7 @@ class Page extends HTMLElement {
   }
 
   async refreshData(){
+    await ready;
     this.user = await getUser()
     this.userRoles = await userRoles()
     this.userPermissions = await userPermissions()
@@ -247,7 +248,7 @@ class Page extends HTMLElement {
     let container = this.shadowRoot.querySelector("#container")
     container.innerHTML = ""
     this.nextMenuId = 1;
-    this.addMenu(container, menu)
+    this.addMenu(container, menu())
     this.updateSelected();
   }
 

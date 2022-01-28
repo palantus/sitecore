@@ -28,9 +28,10 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     
     this.shadowRoot.getElementById("logout").addEventListener("click", () => {
-      api.post("/auth/logout")
-      api.logout();
-      location.reload(); 
+      api.post("auth/logout").then(() => {
+        api.logout();
+        location.reload(); 
+      })
     })
     this.refreshData()
   }

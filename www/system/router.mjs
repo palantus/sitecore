@@ -1,4 +1,4 @@
-import modRoutes from "/modroutes.mjs"
+import { apiURL } from "./core.mjs"
 
 let routes = [
     {path: "/login",                  page: "../pages/login.mjs"},
@@ -16,7 +16,10 @@ let routes = [
     {regexp: /\/setup\/role\/([a-z0-9\_\-]+)/,     page: "../pages/setup/role.mjs"},
 ]
 
-routes.push(...modRoutes)
+export async function init(){
+  let {default: modRoutes} = await import(`${apiURL()}/modroutes.mjs`)
+  routes.push(...modRoutes)
+}
 
 export default function route(path) {
     path = path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path //Remove trailing slash

@@ -1,6 +1,6 @@
 import { alertDialog } from "../components/dialog.mjs";
 import api from "../system/api.mjs";
-import {goto, state, apiURL} from "../system/core.mjs"
+import {goto, state, apiURL, siteTitle, ready} from "../system/core.mjs"
 
 const elementName = 'login-page'
 
@@ -33,7 +33,7 @@ template.innerHTML = `
     </style>
     <div id="container">
 
-        <h1>Welcome to SiteCore!</h1>
+        <h1>Welcome to <span id="sitetitle"></span>!</h1>
 
         <div>You are not signed in. You can sign in using an authorized Microsoft account or with username/password.</div>
         <br>
@@ -81,6 +81,9 @@ class IndexPage extends HTMLElement {
 
     this.shadowRoot.getElementById("username").value = localStorage.getItem("username") || ""
     this.shadowRoot.querySelector("form").addEventListener("submit", e => e.preventDefault());
+
+    this.shadowRoot.getElementById("sitetitle").innerText = siteTitle()
+    ready.then(() => this.shadowRoot.getElementById("sitetitle").innerText = siteTitle())
   }
 
   async login(){

@@ -257,16 +257,21 @@ export function userRolesCached() {
   let storedRoles = window.localStorage.getItem("userroles")
   return storedRoles ? JSON.parse(storedRoles) : []
 }
+
+let meRequested = false;
 export async function userRoles() {
   let me = api.lookupCache("me");
   if(!me){
     let storedRoles = window.localStorage.getItem("userroles")
     if(storedRoles) {
-      // Make sure to update cache, in case the roles change
-      api.get("me").then(me => {
-        let roles = me?.roles || []
-        window.localStorage.setItem("userroles", JSON.stringify(roles))
-      })
+      if(!meRequested){
+        // Make sure to update cache, in case the roles change
+        api.get("me").then(me => {
+          let roles = me?.roles || []
+          window.localStorage.setItem("userroles", JSON.stringify(roles))
+        })
+        meRequested = true;
+      }
       return JSON.parse(storedRoles)
     }
 
@@ -282,11 +287,14 @@ export async function userPermissions() {
   if(!me){
     let storedPermissions = window.localStorage.getItem("userpermissions")
     if(storedPermissions) {
-      // Make sure to update cache, in case the permissions change
-      api.get("me").then(me => {
-        let permissions = me?.permissions || []
-        window.localStorage.setItem("userpermissions", JSON.stringify(permissions))
-      })
+      if(!meRequested){
+        // Make sure to update cache, in case the permissions change
+        api.get("me").then(me => {
+          let permissions = me?.permissions || []
+          window.localStorage.setItem("userpermissions", JSON.stringify(permissions))
+        })
+        meRequested = true;
+      }
       return JSON.parse(storedPermissions)
     }
 

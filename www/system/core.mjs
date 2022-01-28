@@ -1,6 +1,9 @@
-import route from "./router.mjs"
+import route, { init as initRouter } from "./router.mjs"
 import { fire, on } from "./events.mjs"
-import config from "/clientconfig.mjs"
+import config from "/wwwconfig.mjs"
+let apiConfig;
+let readyResolve = null;
+export let ready = new Promise(r => {readyResolve = r})
 
 class AxmCore {
   async init() {
@@ -15,6 +18,16 @@ class AxmCore {
       mobile: queryArgs.mobile ? true : false,
       single: queryArgs.single ? true : false
     }
+
+    this.setWindowTitle();
+
+    apiConfig = (await import(`${config.api}/clientconfig.mjs`)).default;
+    
+    window.localStorage.setItem("SiteTitle", apiConfig.title)
+
+    await initRouter();
+
+    readyResolve();
 
     window.history.replaceState(this.state, null, this.state.path + window.location.search);
     this.render()
@@ -74,7 +87,7 @@ class AxmCore {
   }
 
   setWindowTitle() {
-    window.document.title = !this.state.path.slice(1) ? config.title : `${config.title}: ${this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replace("/", " ")}`
+    window.document.title = !this.state.path.slice(1) ? siteTitle() : `${siteTitle()}: ${this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replace("/", " ")}`
   }
 
   async pushStateQuery(query = {}, extendCurrent = false) {
@@ -165,8 +178,8 @@ export function isSecure() { return config.secure }
 export function apiURL() { return config.api }
 export function wsURL() { return config.ws }
 export function siteURL() { return config.site }
-export let siteTitle = config.title
-export let menu = config.menu
-export let mods = config.mods
 export function isSinglePageMode() { return state().query.single ? true : false }
+export function siteTitle(){return apiConfig?.title || window.localStorage.getItem("SiteTitle") || "SiteCore"}
+export function mods(){return apiConfig.mods}
+export function menu(){return apiConfig.menu}
 export { axm }

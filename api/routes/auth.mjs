@@ -5,28 +5,16 @@ const route = Router();
 import service from "../../services/auth.mjs"
 import jwt from 'jsonwebtoken'
 import {sanitize} from "entitystorage"
-import yargs from "yargs"
 import User from "../../models/user.mjs"
-import APIKey from '../../models/apikey.mjs';
 import { lookupUserPermissions, lookupUserRoles} from '../../tools/usercache.mjs';
-const cliArgs = yargs.argv
-
-let domain = process.env.APIDOMAIN || process.env.DOMAIN || cliArgs.domain
-let cookieDomain = process.env.COOKIEDOMAIN || process.env.APIDOMAIN || process.env.DOMAIN
-let isDev = process.env.ISDEV === "TRUE"
-export let axmURL = `http${isDev ? '' : 's'}://${domain}`;
+import Setup from "../../models/setup.mjs";
 
 export default (app) => {
-
-  if (!domain)
-    console.log("ERROR: Please provide a domain in cli args (domain) or .env (APIDOMAIN)")
 
   if (process.env.ADMIN_MODE === "true")
     console.log("Warning: Is in ADMIN mode, which means that user requests aren't authorized")
 
-  if (process.env.LOGIN_URL && process.env.LOGIN_URL.indexOf("<domain>")) {
-    process.env.LOGIN_URL = process.env.LOGIN_URL.replace("<domain>", domain) + (service.apiPrefix ? "/" + service.apiPrefix : "")
-  }
+  global.sitecore.loginURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${Setup.lookup().msSigninClientId}&response_type=code&redirect_uri=${encodeURIComponent(`${global.sitecore.apiURL}/auth/redirect`)}&response_mode=query&scope=offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read&state=`
 
   app.use("/auth", route)
 
@@ -40,23 +28,21 @@ export default (app) => {
       data.activeMSUser = msUser?.id
       let token = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
       //console.log(token)
-      res.cookie('jwtToken', token, { domain: cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
+      res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
       if (state.startsWith("http")) {
         let url = new URL(decodeURIComponent(state))
         url.searchParams.set("token", token);
-        console.log(`1: redirecting to: ${url}`)
         res.redirect(url)
       } else {
-        res.redirect(`${axmURL}/loginsuccess.html`)
+        res.redirect(`${global.sitecore.apiURL}/loginsuccess.html`)
       }
     } else {
       //res.sendStatus(404)
       if (state.startsWith("http")) {
         let url = new URL(decodeURIComponent(state))
-        console.log(`2: redirecting to: ${url}`)
         res.redirect(url)
       } else {
-        res.redirect(`${axmURL}/loginnouser.html`)
+        res.redirect(`${global.sitecore.apiURL}/loginnouser.html`)
       }
     }
   });
@@ -69,18 +55,17 @@ export default (app) => {
     }
 
     let token = jwt.sign(user.toObj(), process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
-    res.cookie('jwtToken', token, { domain: cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
+    res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
     res.json({success: true, token})
 	})
 
   route.get('/login', async (req, res, next) => {
     var redirect = new URL(req.query.redirect);
-    console.log(`3: redirecting to: ${process.env.LOGIN_URL}${redirect ? encodeURIComponent(redirect) : ""}`)
-    res.redirect(`${process.env.LOGIN_URL}${redirect ? encodeURIComponent(redirect) : ""}`)
+    res.redirect(`${global.sitecore.loginURL}${redirect ? encodeURIComponent(redirect) : ""}`)
   })
 
   route.use("/logout", (req, res, next) => {
-    res.cookie('jwtToken', "", { domain: cookieDomain, maxAge: 1000, httpOnly: true, secure: true, sameSite: "None" });
+    res.cookie('jwtToken', "", { domain: global.sitecore.cookieDomain, maxAge: 1000, httpOnly: true, secure: true, sameSite: "None" });
     res.json({ success: true })
   })
 
@@ -115,7 +100,7 @@ export default (app) => {
       else if (req.cookies.jwtToken)
         token = req.cookies.jwtToken
       if (!token)
-        return res.status(401).json({ error: "Not logged in", redirectTo: process.env.LOGIN_URL })
+        return res.status(401).json({ error: "Not logged in", redirectTo: global.sitecore.loginURL })
 
       token = (token && typeof token === "string") ? sanitize(token) : null;
       

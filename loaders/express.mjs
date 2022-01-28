@@ -1,10 +1,9 @@
 import express from 'express';
-import bodyParser from 'body-parser';
+//import bodyParser from 'body-parser';
 import cors from 'cors';
 import routes from '../api/index.mjs';
 import cookieParser from 'cookie-parser';
 import OpenApiValidatorImport from 'express-openapi-validator';
-import Entity from 'entitystorage';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
@@ -12,9 +11,6 @@ import Setup from '../models/setup.mjs';
 
 const OpenApiValidator = OpenApiValidatorImport.OpenApiValidator;
 const __dirname = dirname(fileURLToPath(import.meta.url));
-let isDev = process.env.ISDEV === "TRUE"
-
-let siteConfig = {};
 
 export default async ({ app, mode, config }) => {
 
@@ -61,51 +57,46 @@ export default async ({ app, mode, config }) => {
     }).install(app);
     */
 
-    // Load API routes
-    console.log(`Using api prefix: /${apiPrefix}`)
-    app.use(`/${apiPrefix}`, await routes());
-    app.use(`/${apiPrefix}`, (req, res) => {
-      res.sendStatus(404);
-    })
-  }
-
-  if(mode != "api"){
-    let apiDomain = process.env.APIDOMAIN || process.env.DOMAIN;
-    let siteDomain = process.env.SITEDOMAIN || process.env.DOMAIN || `localhost:${config.port}`;
-    let siteURL = `${siteDomain ? `http${isDev ? '' : 's'}://${siteDomain}` : ""}`;
-    let apiURL;
-    if(mode == "combined"){
-      apiURL = `${siteURL}${apiPrefix ? `/${apiPrefix}` : ""}`
-    } else {
-      apiURL = apiDomain ? `http${isDev ? '' : 's'}://${apiDomain}${apiPrefix ? `/${apiPrefix}` : ""}` : ""
-    }
-    let wsURL = mode == "combined" ? siteURL.replace("https://", "wss://").replace("http://", "ws://")
-                                   : `ws${isDev ? '' : 's'}://${apiDomain}`
-
-    siteConfig = {apiURL, siteURL, isDev, wsURL};
-
-    app.get("/clientconfig.mjs", (req, res) => {
-      let setup = Setup.lookup()
+    let setup = Setup.lookup()
+    let apiPrefixWithSlash = global.sitecore.apiPrefix ? `/${global.sitecore.apiPrefix}` : "";
+    app.get(`${apiPrefixWithSlash}/clientconfig.mjs`, (req, res) => {
       res.type('.js')
          .send(`export default {
-            api: "${apiURL}",
-            site: "${siteURL}",
-            secure: ${isDev ? "false" : "true"},
-            ws: "${wsURL}",
+            api: "${global.sitecore.apiURL}",
+            site: "${global.sitecore.siteURL}",
+            secure: ${global.sitecore.isSecure ? "true" : "false"},
+            ws: "${global.sitecore.wsURL}",
             title: "${setup.siteTitle || "SiteCore"}",
             mods: ${JSON.stringify(global.mods)},
             menu: ${JSON.stringify(global.menu)}
           };`)
          .end()
     })
-    app.get("/modroutes.mjs", (req, res) => res.type('.js').send(global.modRoutes).end())
     
-    for(let {id : mod} of global.mods){
-      app.use("/", express.static(join(__dirname, `../mods/${mod}/www`)))
+    app.get(`${apiPrefixWithSlash}/modroutes.mjs`, (req, res) => res.type('.js').send(global.modRoutes).end())
+    
+    // Load API routes
+    app.use(`/${global.sitecore.apiPrefix}`, await routes());
+    app.use(`/${global.sitecore.apiPrefix}`, (req, res) => {
+      res.sendStatus(404);
+    })
+  }
+
+  if(mode != "api"){
+    for(let {id} of global.mods){
+      app.use("/", express.static(join(__dirname, `../mods/${id}/www`)))
     }
-    
+    app.get("/wwwconfig.mjs", (req, res) => {
+      res.type('.js')
+         .send(`export default {
+            api: "${global.sitecore.apiURL}",
+            site: "${global.sitecore.siteURL}",
+            secure: ${global.sitecore.isSecure ? "true" : "false"},
+            ws: "${global.sitecore.wsURL}"
+          };`)
+         .end()
+    })
     app.use("/", express.static(join(__dirname, "../www"), {index: "index.html"}))
-    
     app.use("/", (req, res) => {
       if(req.query.single)
         res.sendFile(join(__dirname, "../www/index-single.html"))
@@ -145,5 +136,3 @@ export default async ({ app, mode, config }) => {
     });
   }
 };
-
-export let config = () => siteConfig;

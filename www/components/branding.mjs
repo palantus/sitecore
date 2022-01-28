@@ -30,7 +30,7 @@ class IndexPage extends HTMLElement {
     //this.shadowRoot.querySelector('img').src = this.getAttribute('avatar');
     
     this.shadowRoot.getElementById("text").addEventListener("click", () => goto("/"))
-    this.shadowRoot.getElementById("text").innerText = siteTitle
+    this.shadowRoot.getElementById("text").innerText = siteTitle()
     this.shadowRoot.getElementById("toggle").addEventListener("click", () => fire("toggle-menu", "branding"))
   }
 
