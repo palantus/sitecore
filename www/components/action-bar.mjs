@@ -27,6 +27,10 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     //this.shadowRoot.querySelector('h3').innerText = this.getAttribute('name');
     //this.shadowRoot.querySelector('img').src = this.getAttribute('avatar');
+
+    this.style.position = "sticky"
+    this.style.top = "0"
+    this.style.zIndex = 5;
   }
 
   connectedCallback() {
