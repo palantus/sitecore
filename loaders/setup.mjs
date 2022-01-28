@@ -14,7 +14,7 @@ export default ({mode}) => {
   setup.apiPrefix = mode == "combined" ? "api" : ""
   setup.apiURL = `http${setup.isSecure?'s':''}://${setup.apiHost}${setup.apiPrefix?`/${setup.apiPrefix}` : ''}`
   setup.wsURL = `ws${setup.isSecure?'s':''}://${setup.apiHost}`
-  setup.cookieDomain = process.env.COOKIEDOMAIN || apiHost
+  setup.cookieDomain = process.env.COOKIEDOMAIN || setup.apiHost
 
   global.sitecore = setup
 
