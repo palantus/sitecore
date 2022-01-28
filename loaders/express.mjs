@@ -14,8 +14,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default async ({ app, mode, config }) => {
 
-  let apiPrefix = process.env.API_PREFIX || (mode == "combined" ? "api" : "");
-
   if(mode != "www"){
     // Useful if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
     // It shows the real origin IP in the heroku or Cloudwatch logs
