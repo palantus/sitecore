@@ -5,7 +5,7 @@ let apiConfig;
 let readyResolve = null;
 export let ready = new Promise(r => {readyResolve = r})
 
-class AxmCore {
+class SiteCore {
   async init() {
     this.pages = {}
 
@@ -166,14 +166,14 @@ class AxmCore {
   };
 }
 
-let axm = new AxmCore();
-axm.init();
+let sc = new SiteCore();
+sc.init();
 
-export function goto(path, args) { axm.goto(path, args) }
-export function pushStateQuery(...args) { axm.pushStateQuery(...args) }
-export function removeQueryVar(...args) { axm.removeQueryVar(...args) }
-export function state() { return axm.state }
-export function isMobile() { return axm.isMobile() }
+export function goto(path, args) { sc.goto(path, args) }
+export function pushStateQuery(...args) { sc.pushStateQuery(...args) }
+export function removeQueryVar(...args) { sc.removeQueryVar(...args) }
+export function state() { return sc.state }
+export function isMobile() { return sc.isMobile() }
 export function isSecure() { return config.secure }
 export function apiURL() { return config.api }
 export function wsURL() { return config.ws }
@@ -182,4 +182,4 @@ export function isSinglePageMode() { return state().query.single ? true : false 
 export function siteTitle(){return apiConfig?.title || window.localStorage.getItem("SiteTitle") || "SiteCore"}
 export function mods(){return apiConfig.mods}
 export function menu(){return apiConfig.menu}
-export { axm }
+export { sc }

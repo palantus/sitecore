@@ -121,14 +121,6 @@ class Service {
     return {user, responseCode: null, response: null};
   }
 
-  getAxManUser() {
-    let user = User.lookup("axman")
-    if (!user) {
-      user = new User("axman", { name: "AxManagement" })
-    }
-    return user;
-  }
-
   getAdmin(){
     let admin = User.find("tag:user prop:id=admin role.prop:id=admin") || User.find("tag:user role.prop:id=admin")
     if(!admin) {

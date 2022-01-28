@@ -2,7 +2,7 @@
 	"background_color": "#ffffff",
 	"theme_color": "#333333",
 	"name": "SiteCore",
-	"short_name": "axm",
+	"short_name": "sc",
 	"display": "minimal-ui",
 	"start_url": "/",
 	"icons": [
