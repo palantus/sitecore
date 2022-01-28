@@ -68,7 +68,8 @@ export default async ({ app, mode, config }) => {
             ws: "${global.sitecore.wsURL}",
             title: "${setup.siteTitle || "SiteCore"}",
             mods: ${JSON.stringify(global.mods)},
-            menu: ${JSON.stringify(global.menu)}
+            menu: ${JSON.stringify(global.menu)},
+            msSigninEnabled: ${setup.msSigninClientId && setup.msSigninSecret ? "true" : "false"}
           };`)
          .end()
     })

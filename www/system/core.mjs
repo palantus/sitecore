@@ -182,4 +182,5 @@ export function isSinglePageMode() { return state().query.single ? true : false 
 export function siteTitle(){return apiConfig?.title || window.localStorage.getItem("SiteTitle") || "SiteCore"}
 export function mods(){return apiConfig.mods}
 export function menu(){return apiConfig.menu}
+export function getApiConfig(){return apiConfig}
 export { sc }

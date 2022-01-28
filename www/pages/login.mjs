@@ -1,6 +1,6 @@
 import { alertDialog } from "../components/dialog.mjs";
 import api from "../system/api.mjs";
-import {goto, state, apiURL, siteTitle, ready} from "../system/core.mjs"
+import {goto, state, apiURL, siteTitle, ready, getApiConfig} from "../system/core.mjs"
 
 const elementName = 'login-page'
 
@@ -30,16 +30,17 @@ template.innerHTML = `
       #flex > div{
         float: left;
       }
+      #mssignin{display: none;}
     </style>
     <div id="container">
 
         <h1>Welcome to <span id="sitetitle"></span>!</h1>
 
-        <div>You are not signed in. You can sign in using an authorized Microsoft account or with username/password.</div>
+        <div>You are not signed in. You can sign in using the provided choice(s) below.</div>
         <br>
 
         <div id="flex">
-          <div>
+          <div id="mssignin">
             <h3>Microsoft:</h3>
             <img src="/img/mssignin.png" id="loginms-btn" alt="Click here to login using a Microsoft account"></img><br/>
           </div>
@@ -83,7 +84,10 @@ class IndexPage extends HTMLElement {
     this.shadowRoot.querySelector("form").addEventListener("submit", e => e.preventDefault());
 
     this.shadowRoot.getElementById("sitetitle").innerText = siteTitle()
-    ready.then(() => this.shadowRoot.getElementById("sitetitle").innerText = siteTitle())
+    ready.then(() => {
+      this.shadowRoot.getElementById("sitetitle").innerText = siteTitle()
+      this.shadowRoot.getElementById("mssignin").style.display = getApiConfig().msSigninEnabled ? "block" : "none"
+    })
   }
 
   async login(){
