@@ -132,10 +132,11 @@ class Element extends HTMLElement {
 
   getValue(){
     switch(this.getAttribute("type")){
+        case "number":
+          return parseFloat(this.getValueElement().value);
         case "text":
         case "password":
         case "date":
-        case "number":
         case "select":
           return this.getValueElement().value;
         case "checkbox":
@@ -151,7 +152,7 @@ class Element extends HTMLElement {
         case "date":
           return this.shadowRoot.querySelector("input")
         case "number":
-          return parseFloat(this.shadowRoot.querySelector("input"));
+          return this.shadowRoot.querySelector("input");
         case "select":
           return this.shadowRoot.querySelector("select");
         case "checkbox":
