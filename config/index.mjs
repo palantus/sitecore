@@ -7,7 +7,7 @@ export default (mode) => {
     /**
      * Your favorite port
      */
-    port: parseInt(yargs.argv.port || process.env[`PORT_${mode.toUpperCase()}`] || process.env.PORT || 5789),
+    port: parseInt(yargs.argv.port || process.env[`PORT_${mode.toUpperCase()}`] || process.env.PORT || 8080),
 
     /**
      * API configs

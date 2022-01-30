@@ -33,7 +33,7 @@ class User extends Entity{
 
     setPassword(password){
       if(password){
-        let salt = (process.env.ACCESS_TOKEN_SECRET||"123").toString('hex'); 
+        let salt = (global.sitecore.accessTokenSecret||"123").toString('hex'); 
         this.password = pbkdf2Sync(password, salt,  1000, 64, `sha512`).toString(`hex`);
       } else {
         this.password = null;
@@ -42,7 +42,7 @@ class User extends Entity{
 
     validatePassword(possiblePassword){
       if(!this.password || !possiblePassword) return false;
-      let salt = (process.env.ACCESS_TOKEN_SECRET||"123").toString('hex'); 
+      let salt = (global.sitecore.accessTokenSecret||"123").toString('hex'); 
       let hash = pbkdf2Sync(possiblePassword,  salt, 1000, 64, `sha512`).toString(`hex`);
       return this.password === hash
     }

@@ -20,7 +20,7 @@ class Service {
     this.redirect = `${global.sitecore.apiURL}/auth/redirect`
     this.secret = setup.msSigninSecret
 
-    if(!process.env.ACCESS_TOKEN_SECRET)
+    if(!global.sitecore.accessTokenSecret)
       console.log("ACCESS_TOKEN_SECRET must be provided in .env to handle JWT")
   }
 
@@ -92,7 +92,7 @@ class Service {
 
     if(!user){
       let potentialUser = await new Promise(resolve => {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        jwt.verify(token, global.sitecore.accessTokenSecret, (err, user) => {
           if (err) return resolve({user: null, responseCode: 401, response: { error: `Session expired`, redirectTo: global.sitecore.loginURL }})
           if (!user.id) return resolve({user: null, responseCode: 401, response: { error: `No user in session`, redirectTo: global.sitecore.loginURL }})
           resolve({user: cacheJWT(token, this.lookupUser(user.id))})

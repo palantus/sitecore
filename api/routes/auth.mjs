@@ -26,7 +26,7 @@ export default (app) => {
     if (user) {
       let data = user.toObj();
       data.activeMSUser = msUser?.id
-      let token = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+      let token = jwt.sign(data, global.sitecore.accessTokenSecret, { expiresIn: '7d' })
       //console.log(token)
       res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
       if (state.startsWith("http")) {
@@ -54,7 +54,7 @@ export default (app) => {
       return res.json({success: false})
     }
 
-    let token = jwt.sign(user.toObj(), process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+    let token = jwt.sign(user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
     res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
     res.json({success: true, token})
 	})
