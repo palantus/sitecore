@@ -3,15 +3,14 @@ import express from 'express';
 import loader from "./loaders/index.mjs"
 import {createServer as createEventServer} from "./services/clientevents.mjs"
 import Entity from 'entitystorage';
+import 'dotenv/config'
 import yargs from 'yargs';
 const cliArgs = yargs.argv;
 
 async function startServer() {
   
-  
-  const config = configLoader(mode)
-
   const mode = process.env.MODE || "combined";
+  const config = configLoader(mode)
   
   if(mode != "www"){
     await Entity.init(cliArgs.db || process.env.db || "storage");

@@ -1,5 +1,4 @@
 import yargs from "yargs"
-import 'dotenv/config'
 
 export default (mode) => {
 
