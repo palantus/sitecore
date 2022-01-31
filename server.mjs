@@ -6,13 +6,13 @@ import Entity from 'entitystorage';
 import yargs from 'yargs';
 const cliArgs = yargs.argv;
 
-const mode = "combined";
-
 async function startServer() {
   
   await Entity.init(cliArgs.db || process.env.db || "storage");
   
   const config = configLoader(mode)
+
+  const mode = process.env.MODE || "combined";
 
   const app = express();
   try{
