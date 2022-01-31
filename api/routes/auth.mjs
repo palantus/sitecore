@@ -74,7 +74,7 @@ export default (app) => {
       let admin = service.getAdmin();
       res.locals.user = admin
       res.locals.roles = lookupUserRoles(admin)
-      res.locals.permissions = lookupUserPermissions(admin.permissions);
+      res.locals.permissions = lookupUserPermissions(admin);
       next();
       return;
     }
