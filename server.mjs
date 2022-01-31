@@ -8,11 +8,14 @@ const cliArgs = yargs.argv;
 
 async function startServer() {
   
-  await Entity.init(cliArgs.db || process.env.db || "storage");
   
   const config = configLoader(mode)
 
   const mode = process.env.MODE || "combined";
+  
+  if(mode != "www"){
+    await Entity.init(cliArgs.db || process.env.db || "storage");
+  }
 
   const app = express();
   try{
