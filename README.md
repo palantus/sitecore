@@ -12,7 +12,7 @@
 - SITE_HOST: domain for the site (including port, if non-default) - eg.: example.com or localhost:8080
 - API_HOST: (optional) domain for the API (including port, if non-default) - eg.: api.example.com or localhost:8080
 - COOKIEDOMAIN: Domain to set cookies on (eg. ".example.com" or "localhost"). Don't include port.
-- db: relative path to database and blob storage. Will be created if it doesn't exist. Default is "storage".
+- STORAGE: relative path to database and blob storage. Will be created if it doesn't exist. Default is "storage".
 
 ## Run using one of the following "main-files":
 

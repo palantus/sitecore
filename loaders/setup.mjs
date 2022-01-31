@@ -2,7 +2,7 @@ import config from "../config/index.mjs"
 import { v4 as uuidv4 } from 'uuid';
 import fs from "fs"
 
-export default ({mode}) => {
+export default ({mode, storagePath}) => {
   let setup = {}
 
   let setupToAppend = ""
@@ -34,6 +34,8 @@ export default ({mode}) => {
     setup.accessTokenSecret = uuidv4()
     setupToAppend += `\nACCESS_TOKEN_SECRET=${setup.accessTokenSecret}`
   }
+
+  setup.storagePath = storagePath;
 
   if(setupToAppend){
     fs.appendFile(".env", setupToAppend, function (err) {

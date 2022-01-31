@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs, {join} from 'fs'
 import {validateAccess} from "../../services/auth.mjs"
 
 export default (app) => {
@@ -7,7 +7,7 @@ export default (app) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
 
     let jobs = []
-    fs.readdir('jobs', (err, files) => {
+    fs.readdir(join(global.sitecore.storagePath, 'jobs'), (err, files) => {
       if(err) return res.json([])
       files.forEach(file => {
         jobs.push({name: file})
@@ -18,7 +18,7 @@ export default (app) => {
   app.post("/jobs/:id/run", async function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     
-    let {default: job} = await import(`../../jobs/${req.params.id}`);
+    let {default: job} = await import(join(global.sitecore.storagePath, 'jobs', req.params.id));
     if(job){
       res.json({success:true, result: await job()});
     }

@@ -6,12 +6,12 @@ import setupLoader from './setup.mjs';
 import serviceLoader from '../services/serviceRoot.mjs';
 import SearchQueryParser from "searchqueryparser";
 
-export default async ({ expressApp, mode, config }) => {
+export default async ({ expressApp, mode, config, storagePath }) => {
   if(mode != "www"){
     await (new SearchQueryParser()).init()
   }
 
-  setupLoader({ app: expressApp, mode, config })
+  setupLoader({ app: expressApp, mode, config, storagePath })
   
   await modsLoader({ app: expressApp, mode, config });
   

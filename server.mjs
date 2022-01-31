@@ -11,14 +11,14 @@ async function startServer() {
   
   const mode = process.env.MODE || "combined";
   const config = configLoader(mode)
-  
+  let storagePath = cliArgs.storage || process.env.STORAGE || "storage"
   if(mode != "www"){
-    await Entity.init(cliArgs.db || process.env.db || "storage");
+    await Entity.init(storagePath);
   }
 
   const app = express();
   try{
-    await loader({ expressApp: app, mode, config});
+    await loader({ expressApp: app, mode, config, storagePath});
   } catch(err){
     console.log(err)
     process.exit(-1)
