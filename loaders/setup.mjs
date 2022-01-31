@@ -1,6 +1,8 @@
 import config from "../config/index.mjs"
 import { v4 as uuidv4 } from 'uuid';
 import fs from "fs"
+import {join} from "path"
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default ({mode, storagePath}) => {
   let setup = {}
@@ -35,7 +37,8 @@ export default ({mode, storagePath}) => {
     setupToAppend += `\nACCESS_TOKEN_SECRET=${setup.accessTokenSecret}`
   }
 
-  setup.storagePath = storagePath;
+  setup.storagePath = join(__dirname, storagePath);
+  console.log(setup.storagePath);
 
   if(setupToAppend){
     fs.appendFile(".env", setupToAppend, function (err) {

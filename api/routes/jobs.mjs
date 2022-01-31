@@ -1,5 +1,6 @@
-import fs, {join} from 'fs'
+import fs from 'fs'
 import {validateAccess} from "../../services/auth.mjs"
+import {join} from "path"
 
 export default (app) => {
 
