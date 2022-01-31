@@ -5,13 +5,14 @@ import {createServer as createEventServer} from "./services/clientevents.mjs"
 import Entity from 'entitystorage';
 import 'dotenv/config'
 import yargs from 'yargs';
+import {resolve} from "path"
 const cliArgs = yargs.argv;
 
 async function startServer() {
   
   const mode = process.env.MODE || "combined";
   const config = configLoader(mode)
-  let storagePath = cliArgs.storage || process.env.STORAGE || "storage"
+  let storagePath = resolve(cliArgs.storage || process.env.STORAGE || "storage")
   if(mode != "www"){
     await Entity.init(storagePath);
   }
