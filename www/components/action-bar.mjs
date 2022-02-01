@@ -28,9 +28,12 @@ class Element extends HTMLElement {
     //this.shadowRoot.querySelector('h3').innerText = this.getAttribute('name');
     //this.shadowRoot.querySelector('img').src = this.getAttribute('avatar');
 
+    // Causes weird behaviour when scrolled down and closing a dialog (jumps down)
+    /*
     this.style.position = "sticky"
     this.style.top = "0"
     this.style.zIndex = 5;
+    */
   }
 
   connectedCallback() {
