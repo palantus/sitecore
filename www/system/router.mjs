@@ -2,6 +2,7 @@ import { apiURL } from "./core.mjs"
 
 let routes = [
     {path: "/login",                  page: "../pages/login.mjs"},
+    {path: "/",                       page: "../pages/index.mjs"},
     {path: "/setup/users",            page: "../pages/setup/users.mjs"},
     {path: "/setup/msusers",          page: "../pages/setup/msusers.mjs"},
     {path: "/setup/roles",            page: "../pages/setup/roles.mjs"},
@@ -18,7 +19,7 @@ let routes = [
 
 export async function init(){
   let {default: modRoutes} = await import(`${apiURL()}/modroutes.mjs`)
-  routes.push(...modRoutes)
+  routes.unshift(...modRoutes)
 }
 
 export default function route(path) {
