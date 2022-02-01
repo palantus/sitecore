@@ -10,7 +10,7 @@ const cliArgs = yargs.argv;
 
 async function startServer() {
   
-  const mode = process.env.MODE || "combined";
+  const mode = yargs.argv.mode || process.env.MODE || "combined";
   const config = configLoader(mode)
   let storagePath = resolve(cliArgs.storage || process.env.STORAGE || "storage")
   if(mode != "www"){
@@ -33,12 +33,14 @@ async function startServer() {
     console.log(`Server listening on port: ${config.port}`);
   });
 
-  const wsServer = createEventServer();
-  server.on('upgrade', (request, socket, head) => {
-    wsServer.handleUpgrade(request, socket, head, socket => {
-      wsServer.emit('connection', socket, request);
+  if(mode != "www"){
+    const wsServer = createEventServer();
+    server.on('upgrade', (request, socket, head) => {
+      wsServer.handleUpgrade(request, socket, head, socket => {
+        wsServer.emit('connection', socket, request);
+      });
     });
-  });
+  }
 }
 
 startServer();

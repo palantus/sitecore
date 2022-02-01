@@ -7,6 +7,7 @@ export default ({mode, storagePath}) => {
 
   let setupToAppend = ""
 
+  setup.mode = mode
   setup.siteHost = process.env.SITE_HOST || (mode == "combined" ? process.env.API_HOST : null)
   setup.apiHost = mode == "combined" ? setup.siteHost : process.env.API_HOST || setup.siteHost
   setup.isSecure = !!(process.env.SECURE == "TRUE" || process.env.SECURE == "true")
@@ -46,5 +47,6 @@ export default ({mode, storagePath}) => {
 
   global.sitecore = setup
 
+  console.log("Loaded with the following setup:")
   console.log(global.sitecore)
 }

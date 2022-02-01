@@ -14,11 +14,13 @@
 - COOKIEDOMAIN: Domain to set cookies on (eg. ".example.com" or "localhost"). Don't include port.
 - STORAGE: relative path to database and blob storage. Will be created if it doesn't exist. Default is "storage".
 
-## Run using one of the following "main-files":
+## Run mode
 
-- server-api.mjs: Only expose an api from this server/instance
-- server-www.mjs: Only expose the client files from this server/instance
-- server.mjs: expose both the api (standard prefix /api, can be overridden using API_PREFIX) and the client files
+- api: Only expose an api from this server/instance
+- www: Only expose the static client files from this server/instance
+- combined: expose both the api (standard prefix /api, can be overridden using API_PREFIX) and the client files
+
+Default is combined. It can be changed by setting `MODE` in .env or passing `mode` as parameter
 
 ## Initial setup:
 
