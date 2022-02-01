@@ -23,10 +23,16 @@ class APIKey extends Entity {
       dailyTokensToKeyMap.clear()
       cacheDate = new Date().toISOString().substring(0, 10);
       for(let key of APIKey.search("tag:apikey prop:daily=true")){
-        dailyTokensToKeyMap.set(createHash('sha256').update(key.key+cacheDate).digest('hex'), key)
+        dailyTokensToKeyMap.set(key.generateDailyToken(cacheDate), key)
       }
     }
     return dailyTokensToKeyMap.get(token) || APIKey.find(`tag:apikey prop:"key=${token}" !prop:daily=true`) 
+  }
+
+  generateDailyToken(date){
+    if(!this.daily) return null;
+    let cacheDate = date || new Date().toISOString().substring(0, 10);
+    return createHash('sha256').update(this.key+cacheDate).digest('hex')
   }
 
   delete(){

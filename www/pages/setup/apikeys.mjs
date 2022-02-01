@@ -5,7 +5,7 @@ import "/components/action-bar.mjs"
 import "/components/action-bar-item.mjs"
 import "/components/field-ref.mjs"
 import "/components/field.mjs"
-import {showDialog} from "/components/dialog.mjs"
+import {showDialog, promptDialog} from "/components/dialog.mjs"
 import {on, off, fire} from "/system/events.mjs"
 import {uuidv4} from "/libs/uuid.mjs"
 
@@ -48,7 +48,7 @@ template.innerHTML = `
               <th>Name</th>
               <th>User</th>
               <th>Issued</th>
-              <th>Daily key</th>
+              <th>Daily</th>
               <th></th>
             </tr>
         </thead>
@@ -92,6 +92,9 @@ class Element extends HTMLElement {
       let id = evt.target.getAttribute("data-id");
       await api.del("system/apikeys/" + id)
       this.refreshData()
+    } else if(evt.target.classList.contains("getDaily")){
+      let id = evt.target.getAttribute("data-id");
+      promptDialog("Daily key, valid for today:", (await api.get(`system/apikeys/${id}/daily`)).key)
     }
   }
 
@@ -148,7 +151,10 @@ class Element extends HTMLElement {
                 <td>${key.userId}</td>
                 <td>${key.issueDate?.substring(0, 19).replace("T", " ") ||"N/A"}</td>
                 <td>${key.daily ? "Yes" : "No"}</td>
-                <td><button data-id="${key.id}" class="deletekey">Delete</button></td>
+                <td>
+                  <button data-id="${key.id}" class="deletekey">Delete</button>
+                  ${key.daily ? `<button data-id="${key.id}" class="getDaily">Generate daily key</button>` : ""}
+                </td>
             </tr>
         `
         tab.appendChild(row);

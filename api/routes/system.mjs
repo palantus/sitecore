@@ -66,6 +66,11 @@ export default (app) => {
     res.json(Entity.search("tag:apikey").map(k => { return { id: k._id, name: k.name, userId: k.related.user?.id||null, issueDate: k.issueDate, daily: k.daily||false } }))
   });
 
+  routeAPIKeys.get('/:id/daily', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    res.json({key: APIKey.lookup(sanitize(req.params.id))?.generateDailyToken()})
+  });
+
   routeAPIKeys.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     if (!req.body.name || !req.body.key || !req.body.userId) throw "name, key and userId are mandatory"
