@@ -22,22 +22,22 @@ export default (app) => {
     res.json(service(res.locals).add(sanitize(req.body.id), req.body.name, req.body.roles));
   });
 
-  userRoute.get('/', async function (req, res, next) {
+  userRoute.get('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.read"})) return;
     res.json(service(res.locals).active());
   });
 
-  userRoute.get('/list', async function (req, res, next) {
+  userRoute.get('/list', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.read"})) return;
     res.json(User.search("tag:user !tag:obsolete").map(u => ({id: u.id, name: u.name})));
   });
 
-  userRoute.delete('/:id', async function (req, res, next) {
+  userRoute.delete('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     res.json(service(res.locals).del(sanitize(req.params.id)));
   });
 
-  userRoute.get("/counters", async function (req, res, next) {
+  userRoute.get("/counters", function (req, res, next) {
     res.json({
       notifications: Entity.search(`tag:notification user.prop:id=${res.locals.user.id} !tag:dismissed`).length,
       actions: Entity.search(`tag:action prop:state=running owner.prop:id=${res.locals.user.id}`).length,
@@ -45,12 +45,12 @@ export default (app) => {
     });
   });
 
-  userRoute.get('/:id', async function (req, res, next) {
+  userRoute.get('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.read"})) return;
     res.json(service(res.locals).get(sanitize(req.params.id)));
   });
 
-  userRoute.post('/:id/assignToMSAccount/:msid', async function (req, res, next) {
+  userRoute.post('/:id/assignToMSAccount/:msid', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     let result = service(res.locals).assignToMSAccount(sanitize(req.params.id), sanitize(req.params.msid));
     res.json(typeof result === "string" ? { error: result } : true);
@@ -73,7 +73,7 @@ export default (app) => {
   const meRoute = Router();
   app.use("/me", meRoute)
 
-  meRoute.get('/', async function (req, res, next) {
+  meRoute.get('/', function (req, res, next) {
     let u = service(res.locals).me()
     let userObject = u.toObj();
     userObject.msUsers?.forEach(ms => {
@@ -87,13 +87,13 @@ export default (app) => {
     if (u) res.json(userObject); else res.sendStatus(404);
   });
 
-  meRoute.patch('/setup', async function (req, res, next) {
+  meRoute.patch('/setup', function (req, res, next) {
     let u = service(res.locals).me()
     if (!u) throw "No user"
     Object.assign(u.setup, req.body)
   });
 
-  meRoute.get('/token', async (req, res, next) => {
+  meRoute.get('/token', (req, res, next) => {
 		res.json({token: service(res.locals).getTempAuthToken(res.locals.user)})
 	})
   
@@ -102,14 +102,14 @@ export default (app) => {
   const msRoute = Router();
   app.use("/msuser", msRoute)
 
-  msRoute.post('/', async function (req, res, next) {
+  msRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.body.email) throw "Email is required"
     let msUser = new MSUser(null, {email: req.body.email})
     res.json(true);
   });
 
-  msRoute.patch('/:email', async function (req, res, next) {
+  msRoute.patch('/:email', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.params.email) throw "email is required"
     let msUser = MSUser.lookup(sanitize(req.params.email))

@@ -35,7 +35,7 @@ class Service {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         // Note offline_access: necessary for getting refresh_token
-        body: `client_id=${this.clientId}&scope=${this.scope}&code=${code}&redirect_uri=${redirect || this.redirect}&grant_type=authorization_code&client_secret=${this.secret}`
+        body: `client_id=${this.clientId}&scope=${this.scope}&code=${encodeURIComponent(code)}&redirect_uri=${redirect || this.redirect}&grant_type=authorization_code&client_secret=${this.secret}`
       })
     res = await res.json();
 

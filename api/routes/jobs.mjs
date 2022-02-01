@@ -19,9 +19,14 @@ export default (app) => {
   app.post("/jobs/:id/run", async function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     
-    let {default: job} = await import(join(global.sitecore.storagePath, 'jobs', req.params.id));
-    if(job){
-      res.json({success:true, result: await job()});
+    try{
+      let {default: job} = await import(join(global.sitecore.storagePath, 'jobs', req.params.id));
+      if(job){
+        res.json({success:true, result: await job()});
+      }
+    } catch(err){
+      console.log(err)
+      res.json({success: false, error: err})
     }
   });
 };

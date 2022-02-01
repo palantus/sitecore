@@ -14,7 +14,7 @@ export default (app) => {
   const route = Router();
   app.use("/notifications", route)
 
-  route.get('/', async function (req, res, next) {
+  route.get('/', function (req, res, next) {
     res.json(Notification.search(`tag:notification !tag:dismissed user.prop:id=${res.locals.user.id}`).map(n => ({
       id: n._id,
       area: n.area,
@@ -24,14 +24,14 @@ export default (app) => {
     })))
   });
 
-  route.post('/:id/dismiss', async function (req, res, next) {
+  route.post('/:id/dismiss', function (req, res, next) {
     let notification = Notification.lookup(sanitize(req.params.id))
     if (!notification) throw "Unknown notification: " + req.params.id
     notification.dismiss();
     res.json({ success: true })
   });
 
-  route.post('/dismissall', async function (req, res, next) {
+  route.post('/dismissall', function (req, res, next) {
     Notification.search(`tag:notification !tag:dismissed user.prop:id=${res.locals.user.id}`).forEach(n => n.dismiss())
     res.json({ success: true })
   });

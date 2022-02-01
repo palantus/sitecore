@@ -22,32 +22,37 @@ export default (app) => {
     const requestToken = req.query.code
     const state = req.query.state
 
-    let { user, msUser } = await service.login(requestToken)
-    if (user) {
-      let data = user.toObj();
-      data.activeMSUser = msUser?.id
-      let token = jwt.sign(data, global.sitecore.accessTokenSecret, { expiresIn: '7d' })
-      //console.log(token)
-      res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
-      if (state.startsWith("http")) {
-        let url = new URL(decodeURIComponent(state))
-        url.searchParams.set("token", token);
-        res.redirect(url)
+    try{
+      let { user, msUser } = await service.login(requestToken)
+      if (user) {
+        let data = user.toObj();
+        data.activeMSUser = msUser?.id
+        let token = jwt.sign(data, global.sitecore.accessTokenSecret, { expiresIn: '7d' })
+        //console.log(token)
+        res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
+        if (state.startsWith("http")) {
+          let url = new URL(decodeURIComponent(state))
+          url.searchParams.set("token", token);
+          res.redirect(url)
+        } else {
+          res.redirect(`${global.sitecore.apiURL}/loginsuccess.html`)
+        }
       } else {
-        res.redirect(`${global.sitecore.apiURL}/loginsuccess.html`)
+        //res.sendStatus(404)
+        if (state.startsWith("http")) {
+          let url = new URL(decodeURIComponent(state))
+          res.redirect(url)
+        } else {
+          res.redirect(`${global.sitecore.apiURL}/loginnouser.html`)
+        }
       }
-    } else {
-      //res.sendStatus(404)
-      if (state.startsWith("http")) {
-        let url = new URL(decodeURIComponent(state))
-        res.redirect(url)
-      } else {
-        res.redirect(`${global.sitecore.apiURL}/loginnouser.html`)
-      }
+    } catch(err){
+      console.log(err)
+      res.status(501).json({success: false, error: "Failed to log in"})
     }
   });
 
-  route.post('/login', async (req, res, next) => {
+  route.post('/login', (req, res, next) => {
     let user = User.lookup(sanitize(req.body.username));
 
     if(!user || !user.active || !user.hasPassword() || !user.validatePassword(req.body.password)){
@@ -59,7 +64,7 @@ export default (app) => {
     res.json({success: true, token})
 	})
 
-  route.get('/login', async (req, res, next) => {
+  route.get('/login', (req, res, next) => {
     var redirect = new URL(req.query.redirect);
     res.redirect(`${global.sitecore.loginURL}${redirect ? encodeURIComponent(redirect) : ""}`)
   })
@@ -105,11 +110,16 @@ export default (app) => {
       token = (token && typeof token === "string") ? sanitize(token) : null;
       
 
-      let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"])
-      if(foundUser){
-        user = foundUser;
-      } else {
-        return res.status(responseCode||401).json(response || "Could not find user")
+      try{
+        let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"])
+        if(foundUser){
+          user = foundUser;
+        } else {
+          return res.status(responseCode||401).json(response || "Could not find user")
+        }
+      } catch(err){
+        console.log(err)
+        res.status(501).json({success: false, error: "Failed to log in"})
       }
     }
 
