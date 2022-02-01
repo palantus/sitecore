@@ -23,7 +23,11 @@ export default (app) => {
     const state = req.query.state
 
     try{
-      let { user, msUser } = await service.login(requestToken)
+      let loginResult = await service.login(requestToken)
+
+      let user = loginResult?.user
+      let msUser = loginResult?.msUser
+
       if (user) {
         let data = user.toObj();
         data.activeMSUser = msUser?.id
@@ -38,13 +42,7 @@ export default (app) => {
           res.redirect(`${global.sitecore.apiURL}/loginsuccess.html`)
         }
       } else {
-        //res.sendStatus(404)
-        if (state.startsWith("http")) {
-          let url = new URL(decodeURIComponent(state))
-          res.redirect(url)
-        } else {
-          res.redirect(`${global.sitecore.apiURL}/loginnouser.html`)
-        }
+        res.send(`<html><body><h1>Oops</h1><p>Your account has not been authorized to login as a user. Contact administrator, if you believe this to be a mistake.</p><a href="${global.sitecore.siteURL}/login">Go back to site</a></body></html>`)
       }
     } catch(err){
       console.log(err)
