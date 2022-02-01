@@ -10,9 +10,13 @@ export default async () => {
     admin = new User("admin", {name: "Admin"})
     console.log("Created initial admin user 'admin'");
 
-    admin.setPassword(process.env.ADMIN_PASS || "admin")
-    if(!process.env.ADMIN_PASS)
+    if(!process.env.ADMIN_PASS){
       console.log("Setting admin password to 'admin'. Please change password!")
+      admin.setPassword("admin")
+    }
+  }
+  if(process.env.ADMIN_PASS) {
+    admin.setPassword(process.env.ADMIN_PASS)
   }
   admin.addRole("admin")
 }
