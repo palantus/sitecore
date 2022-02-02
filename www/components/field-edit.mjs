@@ -81,27 +81,34 @@ class Element extends HTMLElement {
         this.shadowRoot.querySelector("select").appendChild(e)
       })
     } else {
-      let lookup = this.getAttribute("lookup");
-      if(lookup){
-        let dataTypes = await api.get("system/datatypes", {cache: true})
-        let permissions = await userPermissions()
-        let type = dataTypes.find(t => t.id == lookup && (!t.permission || permissions.includes(t.permission)))
-        if(type){
-          let options = (await api.get(type.api.path, {cache: true})).map(val => ({id: val[type.api.fields.id], name: val[type.api.fields.name]}))
-                                                                     .sort((a, b) => a.name < b.name ? -1 : 1)
-                                                                     .map(({id, name}) => `<option value="${id}">${name}</option>`)
-                                                                     .join("");
-          if(this.getAttribute("type") == "select"){
-            this.shadowRoot.querySelector("select").innerHTML = `<option value=""></option>${options}`
-          } else {
-            this.shadowRoot.getElementById("lookuplist").innerHTML = options
-            this.shadowRoot.querySelector("input").setAttribute("list", "lookuplist")
-          }
-        }
-      }
+      await this.refreshLookups()
     }
 
     this.shadowRoot.querySelectorAll("select,input").forEach(e => e.addEventListener("change", this.valueChanged))
+  }
+
+  async refreshLookups(){
+    let lookup = this.getAttribute("lookup");
+    if(lookup){
+      let dataTypes = await api.get("system/datatypes", {cache: true})
+      let permissions = await userPermissions()
+      let type = dataTypes.find(t => t.id == lookup && (!t.permission || permissions.includes(t.permission)))
+      if(type){
+        let options = (await api.get(type.api.path, {cache: true})).map(val => ({id: val[type.api.fields.id], name: val[type.api.fields.name]}))
+                                                                   .sort((a, b) => a.name < b.name ? -1 : 1)
+                                                                   .map(({id, name}) => `<option value="${id}">${name}</option>`)
+                                                                   .join("");
+        if(this.getAttribute("type") == "select"){
+          this.shadowRoot.querySelector("select").innerHTML = `<option value=""></option>${options}`
+        } else {
+          this.shadowRoot.getElementById("lookuplist").innerHTML = options
+          this.shadowRoot.querySelector("input").setAttribute("list", "lookuplist")
+        }
+      }
+    } else {
+      this.shadowRoot.querySelector("input").setAttribute("list", "lookuplist")
+      this.shadowRoot.querySelector("select").innerHTML = `<option value=""></option>`
+    }
   }
 
   async valueChanged(e){
@@ -109,7 +116,6 @@ class Element extends HTMLElement {
     
     let patch = this.getAttribute("patch")
     let field = this.getAttribute("field") || this.getAttribute("id")
-    if(!patch || !field) return;
 
     let value = this.getValue();
     if(value === undefined) return;
@@ -120,7 +126,8 @@ class Element extends HTMLElement {
     this.setAttribute("value", value)
     this.getValueElement()?.classList.remove("savefailflash")
     try{
-      await api.patch(patch, patchObj)
+      if(patch && field)
+        await api.patch(patch, patchObj)
       this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
 
       this.getValueElement()?.classList.add("savesuccessflash")
@@ -202,7 +209,7 @@ class Element extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["value", "type", "disabled"];
+    return ["value", "type", "disabled", "lookup"];
   }  
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -215,6 +222,9 @@ class Element extends HTMLElement {
       case "type":
       case "disabled":
         this.refresh();
+        break;
+      case "lookup":
+        this.refreshLookups();
         break;
     }
   }
