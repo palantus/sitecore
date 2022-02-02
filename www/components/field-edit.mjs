@@ -1,6 +1,6 @@
 let elementName = "field-edit"
 
-import api from "../system/api.mjs"
+import api, { userPermissions } from "../system/api.mjs"
 import { fire } from "../system/events.mjs";
 
 const template = document.createElement('template');
@@ -70,33 +70,35 @@ class Element extends HTMLElement {
   }
 
   async connectedCallback() {
-    this.querySelectorAll("option")?.forEach(e => {
-      this.shadowRoot.querySelector("select").appendChild(e)
-    })
-
     this.refresh();
     let value = this.getAttribute("value")
     if(value !== null && value !== undefined){
       this.setValue(value)
     }
 
-    let lookup = this.getAttribute("lookup");
-    if(lookup){
-      switch(lookup){
-        case "tags":
-          this.shadowRoot.getElementById("lookuplist").innerHTML = (await api.get("tags/simple")).map(t => `<option value="${t}">${t}</option>`).join("")
-          break;
-        case "servers":
-          this.shadowRoot.getElementById("lookuplist").innerHTML = (await api.get("server")).map(s => `<option value="${s.id}">${s.id}</option>`).join("")
-          break;
-        case "runbooks":
-          this.shadowRoot.getElementById("lookuplist").innerHTML = (await api.get("runbooks")).sort((a, b) => a.title < b.title ? -1 : 1).map(s => `<option value="${s.id}">${s.title}</option>`).join("")
-          break;
-        case "users":
-          this.shadowRoot.getElementById("lookuplist").innerHTML = (await api.get("user/list")).sort((a, b) => a.id < b.id ? -1 : 1).map(s => `<option value="${s.id}">${s.name}</option>`).join("")
-          break;
+    if(this.getAttribute("type") == "select" && this.querySelector("option")){
+      this.querySelectorAll("option")?.forEach(e => {
+        this.shadowRoot.querySelector("select").appendChild(e)
+      })
+    } else {
+      let lookup = this.getAttribute("lookup");
+      if(lookup){
+        let dataTypes = await api.get("system/datatypes", {cache: true})
+        let permissions = await userPermissions()
+        let type = dataTypes.find(t => t.id == lookup && (!t.permission || permissions.includes(t.permission)))
+        if(type){
+          let options = (await api.get(type.api.path, {cache: true})).map(val => ({id: val[type.api.fields.id], name: val[type.api.fields.name]}))
+                                                                     .sort((a, b) => a.name < b.name ? -1 : 1)
+                                                                     .map(({id, name}) => `<option value="${id}">${name}</option>`)
+                                                                     .join("");
+          if(this.getAttribute("type") == "select"){
+            this.shadowRoot.querySelector("select").innerHTML = `<option value=""></option>${options}`
+          } else {
+            this.shadowRoot.getElementById("lookuplist").innerHTML = options
+            this.shadowRoot.querySelector("input").setAttribute("list", "lookuplist")
+          }
+        }
       }
-      this.shadowRoot.querySelector("input").setAttribute("list", "lookuplist")
     }
 
     this.shadowRoot.querySelectorAll("select,input").forEach(e => e.addEventListener("change", this.valueChanged))

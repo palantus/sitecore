@@ -9,6 +9,7 @@ class Permission extends Entity {
   }
 
   static lookup(id){
+    if(!id) return null;
     return Permission.find(`tag:permission prop:"id=${id}"`)
   }
 

@@ -1,4 +1,4 @@
-import Permission from "../models/permission.mjs"
+import DataType from "../models/datatype.mjs";
 import Role from "../models/role.mjs"
 import User from "../models/user.mjs"
 
@@ -19,4 +19,7 @@ export default async () => {
     admin.setPassword(process.env.ADMIN_PASS)
   }
   admin.addRole("admin")
+
+  DataType.lookupOrCreate("user", {title: "User", permission: "user.read", nameField: "name"})
+  DataType.lookupOrCreate("type", {title: "Type", nameField: "title", api: "system/datatypes"})
 }

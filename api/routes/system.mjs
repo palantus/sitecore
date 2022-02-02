@@ -7,6 +7,7 @@ import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
 import Setup from "../../models/setup.mjs";
+import DataType from "../../models/datatype.mjs";
 
 export default (app) => {
 
@@ -20,6 +21,10 @@ export default (app) => {
   route.get('/log', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     res.json(Entity.search("tag:logentry").sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => ({ timestamp: e.timestamp, text: e.text })));
+  });
+
+  route.get('/datatypes', function (req, res, next) {
+    res.json(DataType.all().map(dt => dt.toObj()));
   });
 
   route.get('/logareas', function (req, res, next) {
