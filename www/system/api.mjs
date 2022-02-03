@@ -51,8 +51,10 @@ class API {
 
   lookupCache(path){
     let url = `${apiURL()}/${path}`;
-    if (this.cache && this.cache.has(url))
-      return this.cache.get(url)
+    if (this.cache && this.cache.has(url)){
+      let cachedResult = this.cache.get(url)
+      return (cachedResult instanceof Promise) ? null : cachedResult
+    }
     return null;
   }
 
@@ -60,26 +62,40 @@ class API {
     if (this.failedLoginState === true) return;
     let url = `${apiURL()}/${path}`;
 
-    if (cache && this.cache.has(url))
-      return this.cache.get(url)
-
-    let res = await fetch(url, {
-      headers: this.getHeaders(false)
-    })
-    if (res.status < 300 || returnIfError === true) {
-      let jsonResult = await res.json();
-      this.cache.set(url, jsonResult)
-      return jsonResult;
-    } else if (res.status == 401) {
-      this.login()
-    } else if (res.status >= 400 && res.status < 500) {
-      let retObj = await res.json()
-      console.log(`${res.status}: ${res.statusText}`, retObj)
-      fire("log", { level: "error", message: retObj.message || retObj.error })
-      throw retObj.message || retObj.error
-    } else {
-      fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
+    if (cache && this.cache.has(url)){
+      let cachedResult = this.cache.get(url)
+      if(cachedResult instanceof Promise){
+        return await cachedResult;
+      }
+      return cachedResult;
     }
+
+    let requestPromise = new Promise(async (resolve, reject) => {
+      let res = await fetch(url, {headers: this.getHeaders(false)})
+
+      if (res.status < 300 || returnIfError === true) {
+        let jsonResult = await res.json();
+        this.cache.set(url, jsonResult)
+        resolve(jsonResult);
+        return jsonResult;
+      } else if (res.status == 401) {
+        this.login()
+        reject();
+      } else if (res.status >= 400 && res.status < 500) {
+        let retObj = await res.json()
+        console.log(`${res.status}: ${res.statusText}`, retObj)
+        fire("log", { level: "error", message: retObj.message || retObj.error })
+        reject();
+        throw retObj.message || retObj.error
+      } else {
+        fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
+        reject();
+      }
+    })
+    if(!this.cache.has(url))
+      this.cache.set(url, requestPromise);
+
+    return requestPromise;
   }
 
   async post(path, data) {

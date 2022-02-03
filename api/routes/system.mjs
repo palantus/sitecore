@@ -27,6 +27,12 @@ export default (app) => {
     res.json(DataType.all().map(dt => dt.toObj()));
   });
 
+  route.get('/datatypes/:id', function (req, res, next) {
+    let type = DataType.lookup(sanitize(req.params.id))
+    if(!type) return res.status(401).json("Datatype doesn't exist");
+    res.json(type.toObj());
+  });
+
   route.get('/logareas', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     res.json(Entity.search("tag:logarea").map(e => ({ id: e.id })));

@@ -19,7 +19,7 @@ export default async () => {
     admin.setPassword(process.env.ADMIN_PASS)
   }
   admin.addRole("admin")
-
-  DataType.lookupOrCreate("user", {title: "User", permission: "user.read", nameField: "name"})
+  
+  DataType.lookupOrCreate("user", {title: "User", permission: "user.read", nameField: "name", uiPath: "setup/users"})
   DataType.lookupOrCreate("type", {title: "Type", nameField: "title", api: "system/datatypes"})
 }

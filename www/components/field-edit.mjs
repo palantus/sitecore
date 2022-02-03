@@ -76,7 +76,7 @@ class Element extends HTMLElement {
       this.setValue(value)
     }
 
-    if(this.getAttribute("type") == "select" && this.querySelector("option")){
+    if(this.getAttribute("type") == "select" && this.querySelector("option") && !this.shadowRoot.querySelector("option")){
       this.querySelectorAll("option")?.forEach(e => {
         this.shadowRoot.querySelector("select").appendChild(e)
       })
@@ -96,7 +96,7 @@ class Element extends HTMLElement {
       if(type){
         let options = (await api.get(type.api.path, {cache: true})).map(val => ({id: val[type.api.fields.id], name: val[type.api.fields.name]}))
                                                                    .sort((a, b) => a.name < b.name ? -1 : 1)
-                                                                   .map(({id, name}) => `<option value="${id}">${name}</option>`)
+                                                                   .map(({id, name}) => `<option value="${id}">${type.ui.showId ? `${id}: ${name}` : name}</option>`)
                                                                    .join("");
         if(this.getAttribute("type") == "select"){
           this.shadowRoot.querySelector("select").innerHTML = `<option value=""></option>${options}`
@@ -152,6 +152,12 @@ class Element extends HTMLElement {
           return this.getValueElement().matches(":checked");
     }
     return undefined;
+  }
+
+  getValueTitle(){
+    let value = this.getValue()
+    return this.shadowRoot.querySelector(`option[value="${value}"]`)?.text
+                || this.querySelector(`option[value="${value}"]`)?.text
   }
 
   getValueElement(){
