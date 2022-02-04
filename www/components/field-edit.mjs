@@ -67,6 +67,12 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.valueChanged = this.valueChanged.bind(this)
+
+    if(this.getAttribute("type") == "select"){
+      this.querySelectorAll("option")?.forEach(e => {
+        this.shadowRoot.querySelector("select").appendChild(e)
+      })
+    }
   }
 
   async connectedCallback() {
@@ -76,11 +82,7 @@ class Element extends HTMLElement {
       this.setValue(value)
     }
 
-    if(this.getAttribute("type") == "select" && this.querySelector("option") && !this.shadowRoot.querySelector("option")){
-      this.querySelectorAll("option")?.forEach(e => {
-        this.shadowRoot.querySelector("select").appendChild(e)
-      })
-    } else {
+    if(this.getAttribute("type") == "select" && !this.shadowRoot.querySelector("option")){
       await this.refreshLookups()
     }
 
