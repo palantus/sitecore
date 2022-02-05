@@ -1,4 +1,4 @@
-const elementName = 'rightbar-noti-component'
+const elementName = 'rightbar-notifications-component'
 
 import api from "/system/api.mjs"
 import "/pages/rightbar/rightcard.mjs"

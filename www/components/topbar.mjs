@@ -81,7 +81,7 @@ template.innerHTML = `
 
   <div id="container">
     <span id="log" class="hidden"></span>
-    <img class="noti" id="noti-toggle" src="/img/bell.png" alt="Notifications" title="Notifications"/>
+    <img class="noti" id="notifications-toggle" src="/img/bell.png" alt="Notifications" title="Notifications"/>
     <span class="counter" id="noti-counter"></span>
     <img class="profile" id="user-toggle" src="/img/profile.png" alt="Profile" title="Profile"/>
   </div>
@@ -98,11 +98,11 @@ class Element extends HTMLElement {
     this.refreshCounters = this.refreshCounters.bind(this);
 
     /*
-    this.shadowRoot.getElementById("noti-toggle").addEventListener("click", () => {
+    this.shadowRoot.getElementById("notifications-toggle").addEventListener("click", () => {
       this.shadowRoot.getElementById("notifications").classList.toggle("shown")
     })
     */
-    this.shadowRoot.querySelectorAll("#user-toggle,#noti-toggle").forEach(e => e.addEventListener("click", event => {
+    this.shadowRoot.querySelectorAll("#user-toggle,#notifications-toggle").forEach(e => e.addEventListener("click", event => {
       let rightBar = document.querySelector("#grid-container .right rightbar-component");
       let pageId = event.target.id.replace("-toggle", "")
       rightBar.setAttribute("page", rightBar.getAttribute("page") == pageId ? "" : pageId)
