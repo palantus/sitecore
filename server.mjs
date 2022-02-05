@@ -19,7 +19,7 @@ async function startServer() {
 
   const app = express();
   try{
-    await loader({ expressApp: app, mode, config, storagePath});
+    await loader({ app, mode, config, storagePath});
   } catch(err){
     console.log(err)
     process.exit(-1)

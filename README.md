@@ -33,16 +33,18 @@ Can be overridden by creating a menu.mjs in root folder of sitecore or a mod, wh
 
 ### Permissions
 
-Any menu or item in the menu, can have roles (array) or public (boolean) defined, to control which items are available to a given user.
+Any menu, or item in the menu, can have `roles` (array), `permissions` (array) or `public` (boolean) defined, to control which items are available to a given user.
 
 ## Mods
-Take a look at the mod sample in mods folder. It is loaded by default, but can be disabled under System/Mods in the UI.
+Take a look at the mod sample in mods folder. It is loaded by default, but can be disabled under System/Mods in the UI. For more advanced samples, check out `sitemod-files`, `sitemod-wiki`, `sitemod-lists` or `sitemod-passec` in my repositories.
 
 ### Client files (js, css etc.)
 It is important to note that the www folder in a mod is exposed on the root of the site, meaning that the mod can overrule ANY public file from core, if it needs to. That is a great power, but consider using namespacing (subfolders) for mod files, to avoid accidental name clashes.
 
+If you want to use the api/mods part of SiteCore, but not the UI, just replace index.html in a mod!
+
 ### Extending command palette (F1)
-Take a look at my mod sitemod-wiki or sitemod-files. Basically you need to plads a javascript file in www/commands/ which exports the commands.
+Take a look at my mod sitemod-wiki or sitemod-files. Basically you need to place a javascript file in `www/commands/` which exports the commands.
 
 ### Add custom authentication
 
