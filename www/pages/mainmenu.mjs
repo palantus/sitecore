@@ -1,5 +1,6 @@
 const elementName = 'main-menu'
-import {default as api, userRoles, userPermissions, getUser} from "../system/api.mjs";
+import {userRoles, userPermissions, isSignedIn} from "../system/user.mjs";
+import {getUser} from "../system/user.mjs";
 import {goto, state, isMobile, menu, ready} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
 
@@ -168,9 +169,15 @@ class Page extends HTMLElement {
 
   async refreshData(){
     await ready;
-    this.user = await getUser()
-    this.userRoles = await userRoles()
-    this.userPermissions = await userPermissions()
+    if(isSignedIn()){
+      this.user = await getUser()
+      this.userRoles = await userRoles()
+      this.userPermissions = await userPermissions()
+    } else {
+      this.user = null;
+      this.userRoles = []
+      this.userPermissions = []
+    }
     this.refreshMenu();
   }
 
@@ -209,6 +216,7 @@ class Page extends HTMLElement {
       if(item.role && !this.userRoles.includes(item.role) && !this.userRoles.includes("admin")) continue;
       if(item.permission && !this.userPermissions.includes(item.permission) && !this.userPermissions.includes("admin")) continue;
       if(item.public !== true && !this.user) continue;
+      if(item.hideWhenSignedIn && this.user) continue;
       anyAdded = true;
 
       let itemDiv = document.createElement("div")

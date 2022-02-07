@@ -1,7 +1,15 @@
 export let menu = [
   {
+    title: "Me",
+    public: true,
+    hideWhenSignedIn: true,
+    items: [
+      {title: "Login", path: "/login", public: true}
+    ]
+  },
+  {
     title: "System",
-    role: "admin",
+    permission: "admin",
     items: [
       {title: "API keys", path: "/system/apikeys"},
       {title: "Jobs", path: "/setup/jobs"},

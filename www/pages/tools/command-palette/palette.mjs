@@ -1,7 +1,7 @@
 const elementName = 'cmd-palette-component'
 
 import {getCommands} from "./commands.mjs"
-import {userRoles, userPermissions} from "/system/api.mjs";
+import {userRoles, userPermissions} from "/system/user.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `

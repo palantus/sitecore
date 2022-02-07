@@ -5,6 +5,7 @@ import { on, off, fire } from "../system/events.mjs"
 import "/components/notification.mjs";
 import { onMessage } from "/system/message.mjs";
 import api from "/system/api.mjs";
+import { isSignedIn } from "../system/user.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -134,10 +135,13 @@ class Element extends HTMLElement {
   }
 
   async refreshCounters() {
-    let counters = await api.get(`user/counters?page=${state().path}`)
-    if (!counters) return;
-    this.shadowRoot.getElementById("noti-counter").style.display = counters.notifications < 1 ? "none" : "inline"
-    this.shadowRoot.getElementById("noti-counter").innerText = counters.notifications
+    if(!isSignedIn()) return;
+    try{
+      let counters = await api.get(`user/counters?page=${state().path}`)
+      if (!counters) return;
+      this.shadowRoot.getElementById("noti-counter").style.display = counters.notifications < 1 ? "none" : "inline"
+      this.shadowRoot.getElementById("noti-counter").innerText = counters.notifications
+    } catch(err){}
   }
 
   clearCurLogItem() {
@@ -145,7 +149,6 @@ class Element extends HTMLElement {
   }
 
   disconnectedCallback() {
-    off("changed-project", "topbar")
     off("log", "topbar")
   }
 }

@@ -1,5 +1,5 @@
 import { alertDialog } from "../components/dialog.mjs"
-import { state, apiURL, isSinglePageMode, goto, removeQueryVar } from "./core.mjs"
+import { state, apiURL, isSinglePageMode, removeQueryVar } from "./core.mjs"
 import { on, fire } from "./events.mjs"
 import messageServer from "./message.mjs"
 
@@ -7,27 +7,32 @@ class API {
   cache = new Map()
   activeCacheableRequests = {}
 
-  constructor() {
-    this.setToken()
-    on("changed-project", "api", () => {
-      this.failedLoginState = false;
+  checkInit(){
+    if(!this.isInitialized)
       this.setToken()
-    })
+    this.isInitialized = true;
   }
 
-  setToken() {
-    let urlToken = state().query.token
-    let tokenKey = `apitoken`
-    if (urlToken) {
-      this.token = urlToken;
-      localStorage.setItem(tokenKey, this.token)
-      localStorage.removeItem("userroles")
-      removeQueryVar("token");
-    } else {
-      this.token = localStorage.getItem(tokenKey)
+  setToken(newToken) {
+    if(newToken){
+      this.token = newToken
+    }
+    
+    if(!this.token){
+      let urlToken = state().query.token
+      if (urlToken) {
+        this.token = urlToken;
+        removeQueryVar("token");
+      }
     }
 
-    if (this.token) {
+    if(!this.token){
+      this.token = localStorage.getItem('apitoken')
+    }
+
+    if(this.token){
+      localStorage.setItem('apitoken', this.token)
+
       this.failedLoginState = false;
       if (!isSinglePageMode()) {
         messageServer.connect();
@@ -37,7 +42,7 @@ class API {
         alertDialog("Could not sign in")
         this.failedLoginState = true;
       } else {
-        this.login();
+        //this.notLoggedIn();
       }
     }
 
@@ -46,10 +51,16 @@ class API {
   removeToken(){
     localStorage.removeItem("apitoken")
     localStorage.removeItem("userroles")
+    localStorage.removeItem("userpermissions")
     delete this.token;
   }
 
+  hasToken(){
+    return !!this.token
+  }
+
   lookupCache(path){
+    this.checkInit();
     let url = `${apiURL()}/${path}`;
     if (this.cache && this.cache.has(url)){
       let cachedResult = this.cache.get(url)
@@ -59,6 +70,7 @@ class API {
   }
 
   async get(path, { returnIfError = false, cache = false, maxAge } = {}) {
+    this.checkInit();
     if (this.failedLoginState === true) return;
     let url = `${apiURL()}/${path}`;
     
@@ -81,7 +93,7 @@ class API {
         resolve(jsonResult);
         return jsonResult;
       } else if (res.status == 401) {
-        this.login()
+        //this.notLoggedIn()
         reject();
       } else if (res.status >= 400 && res.status < 500) {
         let retObj = await res.json()
@@ -100,6 +112,7 @@ class API {
   }
 
   async post(path, data) {
+    this.checkInit();
     if (this.failedLoginState === true) return;
     let res = await fetch(`${apiURL()}/${path}`, {
       method: "POST",
@@ -109,7 +122,7 @@ class API {
     if (res.status < 300) {
       return await res.json();
     } else if (res.status == 401) {
-      this.login()
+      //this.notLoggedIn()
     } else if (res.status >= 400/* && res.status < 500*/) {
       let retObj = await res.json()
       console.log(`${res.status}: ${res.statusText}`, retObj)
@@ -119,6 +132,7 @@ class API {
   }
 
   async upload(path, formData) {
+    this.checkInit();
     if (this.failedLoginState === true) return;
     let res = await fetch(`${apiURL()}/${path}`, {
       method: "POST",
@@ -128,7 +142,7 @@ class API {
     if (res.status < 300) {
       return await res.json();
     } else if (res.status == 401) {
-      this.login()
+      //this.notLoggedIn()
     } else if (res.status >= 400/* && res.status < 500*/) {
       let retObj = await res.json()
       console.log(`${res.status}: ${res.statusText}`, retObj)
@@ -138,6 +152,7 @@ class API {
   }
 
   async patch(path, data) {
+    this.checkInit();
     if (this.failedLoginState === true) return;
     let res = await fetch(`${apiURL()}/${path}`, {
       method: "PATCH",
@@ -147,7 +162,7 @@ class API {
     if (res.status < 300) {
       return await res.json();
     } else if (res.status == 401) {
-      this.login()
+      //this.notLoggedIn()
     } else if (res.status >= 400/* && res.status < 500*/) {
       let retObj = await res.json()
       console.log(`${res.status}: ${res.statusText}`, retObj)
@@ -157,6 +172,7 @@ class API {
   }
 
   async del(path) {
+    this.checkInit();
     if (this.failedLoginState === true) return;
     let res = await fetch(`${apiURL()}/${path}`,
       {
@@ -166,7 +182,7 @@ class API {
     if (res.status < 300) {
       return await res.json();
     } else if (res.status == 401) {
-      this.login()
+      //this.notLoggedIn()
     } else if (res.status >= 400/* && res.status < 500*/) {
       let retObj = await res.json()
       console.log(`${res.status}: ${res.statusText}`, retObj)
@@ -176,6 +192,7 @@ class API {
   }
 
   async query(query, variables) {
+    this.checkInit();
     if (this.failedLoginState === true) return;
     let res = await fetch(`${apiURL()}/graphql`, {
       method: 'POST',
@@ -206,7 +223,7 @@ class API {
       else
         return res;
     } else if (res.status == 401) {
-      this.login()
+      //this.notLoggedIn()
     } else if (res.status == 400) {
       console.log(await res.json())
     } else {
@@ -214,18 +231,20 @@ class API {
     }
   }
 
-  login() {
-    if (window.location.pathname.startsWith("/login")) return;
-    let redirectUrl = window.location.pathname;
-    goto(`/login?redirect=${encodeURIComponent(redirectUrl)}`)
+  /*
+  notLoggedIn(){
+    throw "Not signed in"
   }
+  */
 
   logout(){
+    this.checkInit();
     this.removeToken();
     this.cache = new Map()
   }
 
   async fetch(path, options) {
+    this.checkInit();
     if (this.failedLoginState === true) return;
     let parms = options || {}
     parms.headers = this.getHeaders(true)
@@ -233,7 +252,7 @@ class API {
     if (res.status < 300 || parms.returnIfError === true) {
       return res;
     } else if (res.status == 401) {
-      this.login()
+      //this.notLoggedIn()
     } else if (res.status >= 400 && res.status < 500) {
       alertDialog("Server fejl")
       console.log(await res.text())
@@ -265,59 +284,4 @@ function parseJwt(token) {
 */
 
 export let api = new API()
-
 export default api
-export function getToken() { return api.token }
-export function getUser() { return api.get("me", {cache: true})}
-export function getApiUrl() { return `${apiURL()}` }
-export function userRolesCached() {
-  let storedRoles = window.localStorage.getItem("userroles")
-  return storedRoles ? JSON.parse(storedRoles) : []
-}
-
-let meRequested = false;
-export async function userRoles() {
-  let me = api.lookupCache("me");
-  if(!me){
-    let storedRoles = window.localStorage.getItem("userroles")
-    if(storedRoles) {
-      if(!meRequested){
-        // Make sure to update cache, in case the roles change
-        api.get("me").then(me => {
-          let roles = me?.roles || []
-          window.localStorage.setItem("userroles", JSON.stringify(roles))
-        })
-        meRequested = true;
-      }
-      return JSON.parse(storedRoles)
-    }
-
-    me = await api.get("me")
-  }
-  let roles = me?.roles || []
-  window.localStorage.setItem("userroles", JSON.stringify(roles))
-  return roles;
-}
-
-export async function userPermissions() {
-  let me = api.lookupCache("me");
-  if(!me){
-    let storedPermissions = window.localStorage.getItem("userpermissions")
-    if(storedPermissions) {
-      if(!meRequested){
-        // Make sure to update cache, in case the permissions change
-        api.get("me").then(me => {
-          let permissions = me?.permissions || []
-          window.localStorage.setItem("userpermissions", JSON.stringify(permissions))
-        })
-        meRequested = true;
-      }
-      return JSON.parse(storedPermissions)
-    }
-
-    me = await api.get("me")
-  }
-  let permissions = me?.permissions || []
-  window.localStorage.setItem("userpermissions", JSON.stringify(permissions))
-  return permissions;
-}

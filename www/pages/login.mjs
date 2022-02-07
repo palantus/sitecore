@@ -1,6 +1,7 @@
 import { alertDialog } from "../components/dialog.mjs";
 import api from "../system/api.mjs";
 import {goto, state, apiURL, siteTitle, ready, getApiConfig} from "../system/core.mjs"
+import { refreshStatus } from "../system/user.mjs";
 
 const elementName = 'login-page'
 
@@ -68,17 +69,19 @@ class IndexPage extends HTMLElement {
     this.shadowRoot.querySelector("#loginms-btn").addEventListener("click", () => {
       let redirect = state().query.redirect;
       let url = new URL(window.location)
-      url.pathname = redirect
+      url.pathname = redirect || "/"
       url.searchParams.delete("redirect")
       window.location = `${apiURL()}/auth/login?redirect=${encodeURIComponent(url.toString())}`
     })
 
     this.shadowRoot.querySelector("#login-btn").addEventListener("click", this.login)
+    /*
     this.shadowRoot.querySelectorAll("input").forEach(e => e.addEventListener("keydown", e => {
       if(e.keyCode == 13){
         this.login();
       }
     }))
+    */
 
     this.shadowRoot.getElementById("username").value = localStorage.getItem("username") || ""
     this.shadowRoot.querySelector("form").addEventListener("submit", e => e.preventDefault());
@@ -91,10 +94,16 @@ class IndexPage extends HTMLElement {
   }
 
   async login(){
+    console.log(state().query)
     let username = this.shadowRoot.getElementById("username").value;
     let password = this.shadowRoot.getElementById("password").value;
     let response = await api.post("auth/login", {username, password})
     if(response.success == true){
+      api.setToken(response.token)
+      await refreshStatus()
+      let redirect = state().query.redirect || "/"
+      goto(redirect)
+      /*
       localStorage.setItem("username", username)
       let redirect = state().query.redirect;
       if(redirect){
@@ -107,6 +116,7 @@ class IndexPage extends HTMLElement {
       } else {
         goto(`/?token=${response.token}`)
       }
+      */
     } else {
       alertDialog("Wrong username/password combination. If you continue seeing this error and you are sure that the combination is correct, your user might be deactivated")
     }
@@ -114,7 +124,10 @@ class IndexPage extends HTMLElement {
 
   connectedCallback() {
     //this.shadowRoot.querySelector('#toggle-info').addEventListener('click', () => this.toggleInfo());
-    this.shadowRoot.querySelector("input").focus()
+    if(this.shadowRoot.getElementById("username").value)
+      this.shadowRoot.getElementById("password").focus()
+    else
+    this.shadowRoot.getElementById("username").focus()
   }
 
   disconnectedCallback() {

@@ -1,8 +1,8 @@
 import { apiURL } from "./core.mjs"
 
 let routes = [
-    {path: "/login",                  page: "../pages/login.mjs"},
-    {path: "/",                       page: "../pages/index.mjs"},
+    {path: "/login",                  page: "../pages/login.mjs", publicAccess: true},
+    {path: "/",                       page: "../pages/index.mjs", publicAccess: true},
     {path: "/setup/users",            page: "../pages/setup/users.mjs"},
     {path: "/setup/msusers",          page: "../pages/setup/msusers.mjs"},
     {path: "/setup/roles",            page: "../pages/setup/roles.mjs"},
@@ -22,8 +22,8 @@ export async function init(){
   routes.unshift(...modRoutes)
 }
 
-export default function route(path) {
+export default function lookupRoute(path) {
     path = path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path //Remove trailing slash
     let r = routes.find(r => r.path ? r.path == path : r.regexp ? r.regexp.test(path) : false)
-    return r ? r.page : null;
+    return r || null;
 }
