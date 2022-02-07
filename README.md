@@ -37,6 +37,8 @@ For a given item/menu, you can set the following properties:
 - `public`: If set to `true`, the item is shown, even though the user isn't signed in
 - `hideWhenSignedIn`: If set to `true`, the item is hidden when the user is signed in (useful for eg. welcome pages or login pages)
 
+Note that for public pages, the route must be set to `public: true` as well. Otherwise, the user will be redirected to the login page.
+
 ### Permissions
 
 Any menu, or item in the menu, can have `roles` (array), `permissions` (array) or `public` (boolean) defined, to control which items are available to a given user.
