@@ -31,6 +31,12 @@ Default is combined. It can be changed by setting `MODE` in .env or passing `mod
 ## Main menu:
 Can be overridden by creating a menu.mjs in root folder of sitecore or a mod, which has a default export of type array. Otherwise, the menu consists of a merge of all ui.mjs files in sitecore and mod root folders.
 
+For a given item/menu, you can set the following properties:
+- `role`: Role that the user must have (eg. `admin`)
+- `permission`: Permission that the user must have (eg. `user.read`)
+- `public`: If set to `true`, the item is shown, even though the user isn't signed in
+- `hideWhenSignedIn`: If set to `true`, the item is hidden when the user is signed in (useful for eg. welcome pages or login pages)
+
 ### Permissions
 
 Any menu, or item in the menu, can have `roles` (array), `permissions` (array) or `public` (boolean) defined, to control which items are available to a given user.
