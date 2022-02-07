@@ -72,3 +72,4 @@ mods/*
 !mods/sample
 .vscode
 .deployment
+gitpull.sh
