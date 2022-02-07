@@ -36,6 +36,7 @@ class Element extends HTMLElement {
       let field = this.querySelector(`:first-child`);
       field.style.width = fieldWidth
       field.style.display = "inline-block"
+      field.style.verticalAlign = "middle";
 
       let div = document.createElement("div")
       div.classList.add("list-element")
