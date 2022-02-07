@@ -53,29 +53,31 @@ class API {
     let url = `${apiURL()}/${path}`;
     if (this.cache && this.cache.has(url)){
       let cachedResult = this.cache.get(url)
-      return (cachedResult instanceof Promise) ? null : cachedResult
+      return (cachedResult instanceof Promise) ? null : cachedResult.result
     }
     return null;
   }
 
-  async get(path, { returnIfError = false, cache = false } = {}) {
+  async get(path, { returnIfError = false, cache = false, maxAge } = {}) {
     if (this.failedLoginState === true) return;
     let url = `${apiURL()}/${path}`;
-
+    
     if (cache && this.cache.has(url)){
       let cachedResult = this.cache.get(url)
-      if(cachedResult instanceof Promise){
-        return await cachedResult;
+      while(cachedResult instanceof Promise){
+        await cachedResult
+        cachedResult = this.cache.get(url)
       }
-      return cachedResult;
+      if(!maxAge || new Date().getTime() - cachedResult.ts <= maxAge)
+        return cachedResult.result;
     }
-
+    
     let requestPromise = new Promise(async (resolve, reject) => {
       let res = await fetch(url, {headers: this.getHeaders(false)})
 
       if (res.status < 300 || returnIfError === true) {
         let jsonResult = await res.json();
-        this.cache.set(url, jsonResult)
+        this.cache.set(url, {result: jsonResult, ts: new Date().getTime()})
         resolve(jsonResult);
         return jsonResult;
       } else if (res.status == 401) {
@@ -92,8 +94,7 @@ class API {
         reject();
       }
     })
-    if(!this.cache.has(url))
-      this.cache.set(url, requestPromise);
+    this.cache.set(url, requestPromise);
 
     return requestPromise;
   }
