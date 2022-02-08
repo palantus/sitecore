@@ -4,7 +4,7 @@ export let menu = [
     public: true,
     hideWhenSignedIn: true,
     items: [
-      {title: "Login", path: "/login", public: true}
+      {title: "Sign in", path: "/login", public: true}
     ]
   },
   {

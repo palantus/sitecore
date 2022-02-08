@@ -35,9 +35,9 @@ template.innerHTML = `
     </style>
     <div id="container">
 
-        <h1>Welcome to <span id="sitetitle"></span>!</h1>
+        <h1>Sign in to <span id="sitetitle"></span></h1>
 
-        <div>You are not signed in. You can sign in using the provided choice(s) below.</div>
+        <div>You can sign in using the provided choice(s) below.</div>
         <br>
 
         <div id="flex">
