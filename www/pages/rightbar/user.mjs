@@ -57,7 +57,7 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById("status").innerHTML = 
             me ? `Signed in as <b>${me.id}</b> with email <b>${me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"}</b>`
-            : `Not signed in`
+            : `You are not signed in`
     this.shadowRoot.getElementById("logout").style.display = me ? "button" : "none"
     this.shadowRoot.getElementById("login").style.display = me ? "none" : "button"
   }
