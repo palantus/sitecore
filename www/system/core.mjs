@@ -26,7 +26,7 @@ class SiteCore {
     
     window.localStorage.setItem("SiteTitle", apiConfig.title)
 
-    await initRouter();
+    await Promise.all([refreshStatus(), initRouter()])
 
     readyResolve();
 

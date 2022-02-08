@@ -56,6 +56,7 @@ class API {
   }
 
   hasToken(){
+    this.checkInit()
     return !!this.token
   }
 

@@ -71,21 +71,6 @@ class Element extends HTMLElement {
     this.onInput = this.onInput.bind(this)
 
     this.context = {}
-    
-    Promise.all([
-      userRoles(),
-      userPermissions()
-    ]).then(result => {
-      this.userRoles = result[0]
-      this.userPermissions = result[1]
-    })
-  }
-
-  connectedCallback() {
-    document.addEventListener("keydown", this.keypressDocument)
-    this.shadowRoot.getElementById("container").addEventListener("click", this.bgClick)
-    this.shadowRoot.getElementById("command").addEventListener("input", this.onInput)
-    this.shadowRoot.getElementById("command").addEventListener("keydown", this.keypressCommand)
   }
 
   keypressCommand(e){
@@ -124,12 +109,12 @@ class Element extends HTMLElement {
     this.toggle();
   }
 
-  toggle(forceValue){
+  async toggle(forceValue){
     let container = this.shadowRoot.getElementById("container");
     container.classList.toggle("visible", forceValue)
     if(container.classList.contains("visible")){
       this.shadowRoot.querySelector("input").focus()
-      this.context = {userRoles: this.userRoles, userPermissions: this.userPermissions}
+      this.context = {userRoles: await userRoles(), userPermissions: await userPermissions()}
     }
   }
 
@@ -166,6 +151,13 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById("command").value = ""
       this.shadowRoot.getElementById("commands").innerHTML = ""
     }
+  }
+
+  connectedCallback() {
+    document.addEventListener("keydown", this.keypressDocument)
+    this.shadowRoot.getElementById("container").addEventListener("click", this.bgClick)
+    this.shadowRoot.getElementById("command").addEventListener("input", this.onInput)
+    this.shadowRoot.getElementById("command").addEventListener("keydown", this.keypressCommand)
   }
 
   disconnectedCallback() {
