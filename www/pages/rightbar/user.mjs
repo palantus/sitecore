@@ -16,7 +16,8 @@ template.innerHTML = `
       <h2>Status</h2>
 
       <p id="status"></p>
-      <button id="logout">Log out</button>
+      <button id="logout">Sign out</button>
+      <button id="login">Sign in</button>
   </div>
 `;
 
@@ -58,6 +59,7 @@ class Element extends HTMLElement {
             me ? `Signed in as <b>${me.id}</b> with email <b>${me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"}</b>`
             : `Not signed in`
     this.shadowRoot.getElementById("logout").style.display = me ? "button" : "none"
+    this.shadowRoot.getElementById("login").style.display = me ? "none" : "button"
   }
 }
 
