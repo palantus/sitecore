@@ -86,7 +86,14 @@ class API {
     }
     
     let requestPromise = new Promise(async (resolve, reject) => {
-      let res = await fetch(url, {headers: this.getHeaders(false)})
+      let res;
+      try{
+        res = await fetch(url, {headers: this.getHeaders(false)})
+      } catch(err){
+        fire("log", { level: "error", message: `Request returned an error. Information: ${err}`})
+        reject();
+        return;
+      }
 
       if (res.status < 300 || returnIfError === true) {
         let jsonResult = await res.json();
