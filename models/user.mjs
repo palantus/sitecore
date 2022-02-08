@@ -101,6 +101,7 @@ class User extends Entity{
             msUsers: MSUser.search(`tag:msuser rel:${this}=user`).map(msu => msu.toObj()),
             active: !this.tags.includes("obsolete"),
             virtual: this.tags.includes("virtual"),
+            roles: this.roles
         }
     }
 }
