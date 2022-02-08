@@ -2,8 +2,8 @@ const elementName = 'rightbar-user-component'
 
 import api from "/system/api.mjs"
 import "/pages/rightbar/rightcard.mjs"
-import {on, off} from "/system/events.mjs"
 import "/components/field.mjs"
+import { goto } from "/system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -28,6 +28,7 @@ class Element extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     
+    this.shadowRoot.getElementById("login").addEventListener("click", () => goto("/login"))
     this.shadowRoot.getElementById("logout").addEventListener("click", () => {
       api.post("auth/logout").then(() => {
         api.logout();
