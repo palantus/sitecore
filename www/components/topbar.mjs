@@ -1,6 +1,6 @@
 let elementName = "topbar-component"
 
-import { state } from "../system/core.mjs"
+import { ready, state } from "../system/core.mjs"
 import { on, off, fire } from "../system/events.mjs"
 import "/components/notification.mjs";
 import { onMessage } from "/system/message.mjs";
@@ -135,6 +135,7 @@ class Element extends HTMLElement {
   }
 
   async refreshCounters() {
+    await ready;
     if(!isSignedIn()) return;
     try{
       let counters = await api.get(`user/counters?page=${state().path}`)
