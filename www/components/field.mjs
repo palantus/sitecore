@@ -1,7 +1,5 @@
 let elementName = "field-component"
 
-import {goto} from "../../system/core.mjs"
-
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
