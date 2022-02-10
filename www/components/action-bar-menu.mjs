@@ -26,6 +26,7 @@ template.innerHTML = `
       transform: translateY(-10px);
       transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
       color: white;
+      min-width: 200px;
     }
 
     .dropdown:focus-within{
@@ -37,7 +38,6 @@ template.innerHTML = `
       transform: translateY(0);
       pointer-events: auto;
       cursor: initial;
-      min-width: 200px;
     }
     #button:after{
       content: '';
