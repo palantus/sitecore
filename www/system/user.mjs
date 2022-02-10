@@ -1,7 +1,7 @@
 import api from "./api.mjs";
 import {fire} from "./events.mjs"
 
-let user = null;
+export let user = null;
 
 export async function refreshStatus(){
   let newUser
