@@ -31,11 +31,9 @@ class SiteCore {
     readyResolve();
 
     window.history.replaceState(this.state, null, this.state.path + window.location.search);
-    on("changed-page", "core-window-title", () => this.setWindowTitle())
 
     this.render().then(successful => {
       if(!successful) return;
-      fire("changed-page", this.state)
       fire("changed-page-not-back", this.state)
     })
 
@@ -66,9 +64,7 @@ class SiteCore {
       }
     } else {
       this.state = state
-      if(await this.render()){
-        fire("changed-page", this.state)
-      }
+      await this.render()
     }
   }
 
@@ -83,16 +79,16 @@ class SiteCore {
     this.state.query = Object.fromEntries(new URLSearchParams(args).entries())
 
     this.state.path = path.indexOf("?") >= 0 ? path.split("?")[0] : path
+    this.state.title = this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replace("/", " ")
 
     this.pushCurState()
     if(await this.render(forceRefresh)){
-      fire("changed-page", this.state)
       fire("changed-page-not-back", this.state)
     }
   }
 
   setWindowTitle() {
-    window.document.title = !this.state.path.slice(1) ? siteTitle() : `${siteTitle()}: ${this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replace("/", " ")}`
+    window.document.title = !this.state.path.slice(1) ? siteTitle() : `${siteTitle()}: ${this.state.title || this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replace("/", " ")}`
   }
 
   async pushStateQuery(query = {}, extendCurrent = false) {
@@ -167,12 +163,15 @@ class SiteCore {
       }
     }
 
-    document.querySelector("#main").innerHTML = ''
-    document.querySelector("#main").append(newPage)
+    document.getElementById("main").innerHTML = ''
+    document.getElementById("main").append(newPage)
 
     this.pages[path] = newPage
 
     this.renderPromise = null;
+
+    fire("changed-page", this.state)
+    this.setWindowTitle()
     resolve();
     return true;
   }
@@ -207,4 +206,5 @@ export function siteTitle(){return apiConfig?.title || window.localStorage.getIt
 export function mods(){return apiConfig.mods}
 export function menu(){return apiConfig.menu}
 export function getApiConfig(){return apiConfig}
+export function setPageTitle(title){sc.state.title = title; sc.setWindowTitle()}
 export { sc }
