@@ -17,16 +17,17 @@ template.innerHTML = `
       position: absolute;
       left: 0;
       top: calc(100% + .25rem);
-      background: var(--dark-back);
       padding: .75rem;
       border-radius: .25rem;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
+      background: var(--dark-back);
       opacity: 0;
       pointer-events: none;
       transform: translateY(-10px);
       transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
       color: white;
-      min-width: 200px;
+      min-width: 200px; 
+      backdrop-filter: blur(5px);
     }
 
     .dropdown:focus-within{
