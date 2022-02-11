@@ -94,7 +94,6 @@ class IndexPage extends HTMLElement {
   }
 
   async login(){
-    console.log(state().query)
     let username = this.shadowRoot.getElementById("username").value;
     let password = this.shadowRoot.getElementById("password").value;
     let response = await api.post("auth/login", {username, password})
