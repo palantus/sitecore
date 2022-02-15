@@ -18,6 +18,8 @@ template.innerHTML = `
       <p id="status"></p>
       <button id="logout">Sign out</button>
       <button id="login">Sign in</button>
+
+      <button id="profile">View my profile</button>
   </div>
 `;
 
@@ -35,6 +37,7 @@ class Element extends HTMLElement {
         location.reload(); 
       })
     })
+    this.shadowRoot.getElementById("profile").addEventListener("click", () => goto("/profile"))
     this.refreshData()
   }
 

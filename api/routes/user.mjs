@@ -96,6 +96,22 @@ export default (app) => {
   meRoute.get('/token', (req, res, next) => {
 		res.json({token: service(res.locals).getTempAuthToken(res.locals.user)})
 	})
+
+  meRoute.post('/changepass', function (req, res, next) {
+    let u = service(res.locals).me()
+    if (!u) throw "No user"
+
+    if(!req.body.newPass || !req.body.existingPass) throw "missing newPass or existingPass"
+    
+    if(u.validatePassword(req.body.existingPass)){
+      u.setPassword(req.body.newPass)
+    } else {
+      res.status(501).json({success: false, error: "Wrong password"})
+      return;
+    }
+
+    res.json(true)
+  });
   
   /* MS Users */
 
