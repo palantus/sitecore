@@ -32,7 +32,7 @@ template.innerHTML = `
     <h3>User <span id="user-id"></span></h3>
 
     <field-list labels-pct="20">
-      <field-edit type="text" label="Name" id="name" disabled></field-edit>
+      <field-edit type="text" label="Name" id="name"></field-edit>
       <field-edit type="password" label="Password" id="password"></field-edit>
       <field-edit type="checkbox" label="Active" id="active"></field-edit>
     </field-list>
