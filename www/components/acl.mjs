@@ -63,7 +63,7 @@ template.innerHTML = `
       padding-right: 10px;
     }
     field-edit{
-      min-width: 130px;
+      min-width: 150px;
     }
     .hidden{display: none;}
   </style>
