@@ -74,7 +74,6 @@ template.innerHTML = `
       <table>
         <tr class="owner">
           <td>Owner:</td>
-          <td></td>
           <td>
             <field-edit type="select" id="owner" lookup="user" disabled>
             </field-edit>
@@ -83,7 +82,6 @@ template.innerHTML = `
 
         <tr class="read access">
           <td>Read</td>
-          <td>Access:</td>
           <td>
             <field-edit type="select" id="accessRead">
               <option value="public">Public</option>
@@ -96,18 +94,15 @@ template.innerHTML = `
         </tr>
         <tr class="read role">
           <td></td>
-          <td>Role:</td>
           <td><field-edit id="roleRead" type="select" lookup="role"></field-edit></td>
         </tr>
         <tr class="read users">
           <td></td>
-          <td>Users:</td>
           <td><field-edit id="usersRead" type="text" lookup="user"></field-edit></td>
         </tr>
 
         <tr class="write access">
           <td>Write</td>
-          <td>Access:</td>
           <td>
             <field-edit type="select" id="accessWrite">
               <option value="shared">All users</option>
@@ -119,18 +114,15 @@ template.innerHTML = `
         </tr>
         <tr class="write role">
           <td></td>
-          <td>Role:</td>
           <td><field-edit id="roleWrite" type="select" lookup="role"></field-edit></td>
         </tr>
         <tr class="write users">
           <td></td>
-          <td>Users:</td>
           <td><field-edit id="usersWrite" type="text" lookup="user"></field-edit></td>
         </tr>
 
         <tr class="execute access">
           <td>Execute</td>
-          <td>Access:</td>
           <td>
             <field-edit type="select" id="accessExecute">
               <option value="public">Public</option>
@@ -143,12 +135,10 @@ template.innerHTML = `
         </tr>
         <tr class="execute role">
           <td></td>
-          <td>Role:</td>
           <td><field-edit id="roleExecute" type="select" lookup="role"></field-edit></td>
         </tr>
         <tr class="execute users">
           <td></td>
-          <td>Users:</td>
           <td><field-edit id="usersExecute" type="text" lookup="user"></field-edit></td>
         </tr>
       </table>
