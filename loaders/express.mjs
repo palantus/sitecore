@@ -3,13 +3,11 @@ import express from 'express';
 import cors from 'cors';
 import routes from '../api/index.mjs';
 import cookieParser from 'cookie-parser';
-import OpenApiValidatorImport from 'express-openapi-validator';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
 import Setup from '../models/setup.mjs';
 
-const OpenApiValidator = OpenApiValidatorImport.OpenApiValidator;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default async ({ app, mode, config }) => {
@@ -41,20 +39,7 @@ export default async ({ app, mode, config }) => {
     app.use(express.text());
     app.use(express.urlencoded({ extended: false }));
     app.use(cookieParser());
-    app.use('/spec', express.static(join(__dirname, '../openapi.yaml')));
-
-    // 1. Install the OpenApiValidator on your express app
     
-    /*
-    await new OpenApiValidator({
-      apiSpec: './openapi.yaml',
-      validateResponses: false
-      // securityHandlers: {
-      //   ApiKeyAuth: (req, scopes, schema) => true,
-      // },
-    }).install(app);
-    */
-
     let setup = Setup.lookup()
     let apiPrefixWithSlash = global.sitecore.apiPrefix ? `/${global.sitecore.apiPrefix}` : "";
     app.get(`${apiPrefixWithSlash}/clientconfig.mjs`, (req, res) => {
