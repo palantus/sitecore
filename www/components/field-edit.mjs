@@ -133,12 +133,13 @@ class Element extends HTMLElement {
     this.setAttribute("value", value)
     this.getValueElement()?.classList.remove("savefailflash")
     try{
-      if(patch && field)
+      if(patch && field){
         await api.patch(patch, patchObj)
+        this.getValueElement()?.classList.add("savesuccessflash")
+        setTimeout(() => this.getValueElement()?.classList.remove("savesuccessflash"), 1000)
+      }
       this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
 
-      this.getValueElement()?.classList.add("savesuccessflash")
-      setTimeout(() => this.getValueElement()?.classList.remove("savesuccessflash"), 1000)
     } catch(err){
       console.log(err)
       fire("log", {level: "error", message: err})

@@ -6,6 +6,7 @@ import jobs from './routes/jobs.mjs';
 import system from './routes/system.mjs';
 import fs from 'fs'
 import express from "express"
+import { aclPostAuth, aclPreAuth } from "./routes/acl.mjs"
 const { Router, Request, Response } = express;
 const route = Router();
 
@@ -19,7 +20,9 @@ export default async () => {
     }
   }
 
+  aclPreAuth(app)
   auth(app);
+  aclPostAuth(app)
   user(app);
   notifications(app);
   jobs(app);
