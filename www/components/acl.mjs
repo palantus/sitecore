@@ -98,7 +98,7 @@ template.innerHTML = `
         </tr>
         <tr class="read users">
           <td></td>
-          <td><field-edit id="usersRead" type="text" lookup="user"></field-edit></td>
+          <td><field-edit id="usersRead" type="text" lookup="user" placeholder="user1, user2, ..."></field-edit></td>
         </tr>
 
         <tr class="write access">
@@ -118,7 +118,7 @@ template.innerHTML = `
         </tr>
         <tr class="write users">
           <td></td>
-          <td><field-edit id="usersWrite" type="text" lookup="user"></field-edit></td>
+          <td><field-edit id="usersWrite" type="text" lookup="user" placeholder="user1, user2, ..."></field-edit></td>
         </tr>
 
         <tr class="execute access">
@@ -139,7 +139,7 @@ template.innerHTML = `
         </tr>
         <tr class="execute users">
           <td></td>
-          <td><field-edit id="usersExecute" type="text" lookup="user"></field-edit></td>
+          <td><field-edit id="usersExecute" type="text" lookup="user" placeholder="user1, user2, ..."></field-edit></td>
         </tr>
       </table>
 
