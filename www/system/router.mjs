@@ -3,6 +3,7 @@ import { apiURL } from "./core.mjs"
 let routes = [
     {path: "/login",                  page: "../pages/login.mjs", publicAccess: true},
     {path: "/",                       page: "../pages/index.mjs", publicAccess: true},
+    {path: "/default-home",           page: "../pages/index-default.mjs", publicAccess: true},
     {path: "/setup/users",            page: "../pages/setup/users.mjs"},
     {path: "/setup/msusers",          page: "../pages/setup/msusers.mjs"},
     {path: "/setup/roles",            page: "../pages/setup/roles.mjs"},

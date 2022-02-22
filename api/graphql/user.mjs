@@ -41,6 +41,7 @@ export const UserType = new GraphQLObjectType({
       forumName: { type: GraphQLString },
       vstsUserId: { type: GraphQLString },
       email: { type: GraphQLString },
+      home: { type: GraphQLString, resolve: u => u.setup.home||null },
       roles: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
       permissions: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
       active: {type: GraphQLNonNull(GraphQLBoolean)}

@@ -73,6 +73,19 @@ export default (app) => {
   const meRoute = Router();
   app.use("/me", meRoute)
 
+  meRoute.get('/setup', function (req, res, next) {
+    let u = service(res.locals).me()
+    if (!u) throw "No user"
+    res.json(u.setup?.props||{})
+  });
+
+  meRoute.patch('/setup', function (req, res, next) {
+    let u = service(res.locals).me()
+    if (!u) throw "No user"
+    Object.assign(u.setup, req.body)
+    res.json({success: true})
+  });
+
   meRoute.get('/', function (req, res, next) {
     let u = service(res.locals).me()
     let userObject = u.toObj();
@@ -84,13 +97,8 @@ export default (app) => {
     userObject.activeMSUser = res.locals.user.activeMSUser
     userObject.roles = u.roles
     userObject.permissions = u.permissions
+    userObject.setup = u.setup?.props||{}
     if (u) res.json(userObject); else res.sendStatus(404);
-  });
-
-  meRoute.patch('/setup', function (req, res, next) {
-    let u = service(res.locals).me()
-    if (!u) throw "No user"
-    Object.assign(u.setup, req.body)
   });
 
   meRoute.get('/token', (req, res, next) => {

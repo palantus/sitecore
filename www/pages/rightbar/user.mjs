@@ -3,7 +3,7 @@ const elementName = 'rightbar-user-component'
 import api from "/system/api.mjs"
 import "/pages/rightbar/rightcard.mjs"
 import "/components/field.mjs"
-import { goto } from "/system/core.mjs"
+import { goto, state } from "/system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -11,6 +11,7 @@ template.innerHTML = `
     #container{color: white; padding: 10px;}
     h2{margin: 0px; border-bottom: 1px solid lightgray; padding-bottom: 5px;}
     span{color: var(--accent-color-light);}
+    button{margin-bottom: 5px;}
   </style>
   <div id="container">
       <h2>Status</h2>
@@ -18,8 +19,10 @@ template.innerHTML = `
       <p id="status"></p>
       <button id="logout">Sign out</button>
       <button id="login">Sign in</button>
-
+      <br>
       <button id="profile">View my profile</button>
+      <br>
+      <button id="sethome">Set this page as home</button>
   </div>
 `;
 
@@ -38,6 +41,13 @@ class Element extends HTMLElement {
       })
     })
     this.shadowRoot.getElementById("profile").addEventListener("click", () => goto("/profile"))
+    this.shadowRoot.getElementById("sethome").addEventListener("click", async () => {
+      let path = state().path
+      let home = path.length < 1 ? "/"
+              : state().query.filter ? `${path}?filter=${state().query.filter}`
+              : path
+      await api.patch("me/setup", {home})
+    })
     this.refreshData()
   }
 

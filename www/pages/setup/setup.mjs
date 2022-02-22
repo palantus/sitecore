@@ -31,6 +31,8 @@ template.innerHTML = `
     <h2>General</h2>
     <field-list labels-pct="20">
       <field-edit type="text" label="Site title" id="siteTitle"></field-edit>
+      <field-edit type="text" label="Home - public" id="homePublic"></field-edit>
+      <field-edit type="text" label="Home - signed in" id="homeInternal"></field-edit>
     </field-list>
     <br><br>
 
@@ -60,6 +62,8 @@ class Element extends HTMLElement {
     let setup = await api.get("system/setup")
 
     this.shadowRoot.getElementById('siteTitle').setAttribute("value", setup.siteTitle||"")
+    this.shadowRoot.getElementById('homePublic').setAttribute("value", setup.homePublic||"")
+    this.shadowRoot.getElementById('homeInternal').setAttribute("value", setup.homeInternal||"")
 
     this.shadowRoot.getElementById('msSigninClientId').setAttribute("value", setup.msSigninClientId||"")
     this.shadowRoot.getElementById('msSigninSecret').setAttribute("value", setup.msSigninSecretSet ? "*********" : "")

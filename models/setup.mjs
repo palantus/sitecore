@@ -12,6 +12,8 @@ export default class Setup extends Entity {
   toObj(){
     return {
       siteTitle: this.siteTitle,
+      homePublic: this.homePublic,
+      homeInternal: this.homeInternal,
       msSigninClientId: this.msSigninClientId,
       msSigninSecretSet: !!this.msSigninSecret
     }

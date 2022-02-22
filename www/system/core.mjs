@@ -68,7 +68,7 @@ class SiteCore {
     }
   }
 
-  async goto(path, {forceRefresh} = {}) {
+  async goto(path, {forceRefresh, replace = false} = {}) {
     this.state = Object.assign({}, this.state)
 
     let args = ""
@@ -81,7 +81,7 @@ class SiteCore {
     this.state.path = path.indexOf("?") >= 0 ? path.split("?")[0] : path
     this.state.title = this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replace("/", " ")
 
-    this.pushCurState()
+    this.pushCurState({replace})
     if(await this.render(forceRefresh)){
       fire("changed-page-not-back", this.state)
     }

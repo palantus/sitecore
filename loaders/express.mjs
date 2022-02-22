@@ -52,7 +52,9 @@ export default async ({ app, mode, config }) => {
             title: "${setup.siteTitle || "SiteCore"}",
             mods: ${JSON.stringify(global.mods)},
             menu: ${JSON.stringify(global.menu)},
-            msSigninEnabled: ${setup.msSigninClientId && setup.msSigninSecret ? "true" : "false"}
+            msSigninEnabled: ${setup.msSigninClientId && setup.msSigninSecret ? "true" : "false"},
+            homePublic: ${setup.homePublic ? `"${setup.homePublic}"` : "null"},
+            homeInternal: ${setup.homeInternal ? `"${setup.homeInternal}"` : "null"},
           };`)
          .end()
     })
