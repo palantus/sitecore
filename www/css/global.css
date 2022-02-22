@@ -95,7 +95,8 @@ table.datalist.empty{display: none;}
 
 button.styled{
   width: 120px;
-  height: 30px;
+  padding-top: 5px;
+  padding-bottom: 5px;
   box-shadow: 1px 1px 5px #ccc;
   background: rgba(255, 255, 255, 1);
   border-radius: 7px;
