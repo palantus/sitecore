@@ -23,13 +23,17 @@ template.innerHTML = `
         margin-bottom: 5px;
       }
       #flex{
-        
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
       }
       #flex div{
         padding: 10px;
       }
       #flex > div{
-        float: left;
+        border: 1px solid gray;
+        border-radius: 5px;
+        box-shadow: 3px 3px 15px gray;
       }
       #mssignin{display: none;}
     </style>
@@ -91,6 +95,16 @@ class IndexPage extends HTMLElement {
       this.shadowRoot.getElementById("sitetitle").innerText = siteTitle()
       this.shadowRoot.getElementById("mssignin").style.display = getApiConfig().msSigninEnabled ? "block" : "none"
     })
+
+    let loginComponents = getApiConfig().mods.map(m => m.files.filter(f => /\/login\-[a-zA-z0-9]+\.mjs/.test(f))).flat();
+
+    for(let path of loginComponents){
+      import(path).then(i => {
+        let div = document.createElement("div")
+        div.innerHTML = `<${i.name}></${i.name}>`
+        this.shadowRoot.getElementById("flex").appendChild(div)
+      })
+    }
   }
 
   async login(){
@@ -102,20 +116,6 @@ class IndexPage extends HTMLElement {
       await refreshStatus()
       let redirect = state().query.redirect || "/"
       goto(redirect)
-      /*
-      localStorage.setItem("username", username)
-      let redirect = state().query.redirect;
-      if(redirect){
-        let path = redirect.endsWith("/") ? redirect.slice(0, -1) : redirect
-        let url = new URL(window.location)
-        url.pathname = path
-        url.searchParams.set("token", response.token)
-        url.searchParams.delete("redirect")
-        window.location = url
-      } else {
-        goto(`/?token=${response.token}`)
-      }
-      */
     } else {
       alertDialog("Wrong username/password combination. If you continue seeing this error and you are sure that the combination is correct, your user might be deactivated")
     }
