@@ -11,6 +11,7 @@ template.innerHTML = `
             margin: 4px 0 0.5em 3px;
             font-weight: 400;
             line-height: 1.2;
+            user-select: none;
         }
         #toggle{
           margin-right: 10px;
