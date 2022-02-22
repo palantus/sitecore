@@ -61,3 +61,7 @@ You can add a auth.mjs file to the api folder in your mod. This will be added to
 ### Add setup page,
 
 Add a route for `/<modid>/setup` (eg. `/sample/setup`) in `routes.mjs`. If this route exists, the mod is clickable in the mods overview page. Clicking it will redirect to the setup page.
+
+### Add custom sign in method
+
+Create a component in a file called `login-XXXX.mjs` in your mod and it will be shown on the login page. Note that it must export a property called `name` which contains the custom element name that should be used.
