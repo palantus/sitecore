@@ -7,7 +7,6 @@ import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import { createId } from "../../tools/id.mjs"
 import Role from "../../models/role.mjs";
-import Permission from "../../models/permission.mjs";
 
 export default (app) => {
 
@@ -150,16 +149,6 @@ export default (app) => {
   const roleRoute = Router();
   app.use("/role", roleRoute)
 
-  roleRoute.get("/", (req, res) => {
-    res.json(Role.all().map(({id}) => ({id})));
-  })
-
-  roleRoute.get("/:id", (req, res) => {
-    let role = Role.lookup(sanitize(req.params.id))
-    if(!role) throw "Unknown role"
-    res.json({id: role.id, permissions: role.rels.permission?.map(p => p.id)||[]});
-  })
-
   roleRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     if (!req.body.id) throw "id is mandatory"
@@ -195,10 +184,6 @@ export default (app) => {
   
   const permissionRoute = Router();
   app.use("/permission", permissionRoute)
-
-  permissionRoute.get("/", (req, res) => {
-    res.json(Permission.all().map(({id}) => ({id})));
-  })
 
   roleRoute.post('/:id/permissions', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;

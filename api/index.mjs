@@ -4,6 +4,7 @@ import notifications from './routes/notifications.mjs';
 import {default as graphql, fields} from './routes/graphql.mjs';
 import jobs from './routes/jobs.mjs';
 import system from './routes/system.mjs';
+import pub from './routes/public.mjs';
 import fs from 'fs'
 import express from "express"
 import { aclPostAuth, aclPreAuth } from "./routes/acl.mjs"
@@ -20,6 +21,7 @@ export default async () => {
     }
   }
 
+  pub(app)
   aclPreAuth(app)
   auth(app);
   aclPostAuth(app)

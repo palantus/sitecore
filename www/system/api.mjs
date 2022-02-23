@@ -102,15 +102,18 @@ class API {
         return jsonResult;
       } else if (res.status == 401) {
         //this.notLoggedIn()
+        this.cache.delete(url)
         reject();
       } else if (res.status >= 400 && res.status < 500) {
         let retObj = await res.json()
         console.log(`${res.status}: ${res.statusText}`, retObj)
         fire("log", { level: "error", message: retObj.message || retObj.error })
+        this.cache.delete(url)
         reject();
         throw retObj.message || retObj.error
       } else {
         fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
+        this.cache.delete(url)
         reject();
       }
     })
