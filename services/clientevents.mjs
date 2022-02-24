@@ -9,6 +9,13 @@ export function sendEvent(userId, eventName, data){
   })
 }
 
+export function sendMessage(userId, message, args){
+  activeConnections.forEach(c => {
+    if(c.userId != userId && userId) return;
+    c.send(JSON.stringify({type: "message", content: {message, args}}))
+  })
+}
+
 async function handleClientRequest(messageText, ws){
   let msg = JSON.parse(messageText)
 
@@ -55,9 +62,21 @@ export function createServer(){
       ws.on('message', (message) => {handleClientRequest(message, ws); return false;})
       ws.on('close', () => {activeConnections.splice(activeConnections.indexOf(ws), 1); /*console.log("Connection closed")*/})
       ws.on('error', (err) => {console.log(err)})
+      ws.on('pong', () => ws.isAlive = true)
       activeConnections.push(ws)
       /*console.log("new connection")*/
   });
+
+  setInterval(function ping() {
+    wss.clients.forEach(function each(ws) {
+      if (ws.isAlive === false) {
+        console.log("Connection didn't respond to ping. Terminating.")
+        return ws.terminate();
+      }  
+      ws.isAlive = false;
+      ws.ping(() => null);
+    });
+  }, 3000);
 
   return wss;
 }
