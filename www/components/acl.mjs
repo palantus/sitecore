@@ -244,6 +244,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("usersWrite").setAttribute("value", rights.write?.users||"")
     this.shadowRoot.getElementById("usersExecute").setAttribute("value", rights.execute?.users||"")
 
+    this.shadowRoot.getElementById("button").className = "";
     this.shadowRoot.getElementById("button").classList.add(rights.read?.access||"private");
     this.shadowRoot.getElementById("button").innerText = rights.read?.access == "role" ? `role:${rights.read?.role||"N/A"}` 
                                                       : rights.read?.access == "users" ? `users:${(rights.read?.users||[]).join(",")}` 
