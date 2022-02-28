@@ -16,6 +16,10 @@ function fire(eventName, data){
   handlers[eventName]?.forEach(h => h.fn(data))
 }
 
+export function fireSelfSync(name, data){
+  messageServer.send({type: "selfsync", event: {name, data}})
+}
+
 class MessageServer{
   constructor(){
     this.loginPromise = new Promise((resolve) => this.loginPromiseResolve = resolve);
@@ -84,4 +88,5 @@ class MessageServer{
   }
 }
 
-export default new MessageServer();
+let messageServer = new MessageServer()
+export default messageServer;

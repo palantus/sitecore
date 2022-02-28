@@ -49,8 +49,19 @@ async function handleClientRequest(messageText, ws){
         ws.send(JSON.stringify({type: "error", content: "You are not logged in"}))
         break;
       }
-      //handleMessage(msg.content, ws, ws.userId)
+      handleMessage(msg.content, ws, ws.userId)
       console.log(`Message from ${ws.userId}: ${JSON.stringify(msg.content)}`)
+      break;
+  }
+}
+
+function handleMessage(message, ws, userId){
+  switch(message.type){
+    case "selfsync":
+      activeConnections.forEach(c => {
+        if(c.userId != userId || c == ws) return;
+        c.send(JSON.stringify({type: "event", content: message.event}))
+      })
       break;
   }
 }
