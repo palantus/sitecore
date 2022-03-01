@@ -8,13 +8,15 @@ export default class ACL{
     this.aclString = entity.acl || type.acl
 
     this.acl = ACL.parse(this.aclString)
+    this.acl.supportInheritance = !!type.aclInheritance
+    this.type = type
   }
 
   handlePatch(aclString){
     let newAcl = ACL.parse(aclString)
     
     let conv = (a, r, u) => {
-      if(!["private", "shared", "role", "public", "users"].includes(a)) return "private";
+      if(!["private", "shared", "role", "public", "users", "inherit"].includes(a)) return "private";
       if(a == "role" && !Role.lookup(r)) return "private";
       return a == "role" ? `${a}:${r}` 
            : a == "users" ? `${a}:${u}` 
@@ -59,6 +61,7 @@ export default class ACL{
     if(!entity || !type) return;
     let def = ACL.getDefaultEntity(user, type)
     entity.acl = def?.acl || type.acl || undefined
+    entity.rel(user, "owner")
   }
 
   static getDefaultEntity(user, type){
@@ -96,7 +99,11 @@ export default class ACL{
         result = !role || !!user?.roles.includes(role)
         break;
       case "private":
-        result = user && user._id == this.entity.related.owner?._id
+        let owner = this.entity.related.owner;
+        if(!owner && user && user.permissions.includes("admin"))
+          result = true
+        else
+          result = user && user._id == owner?._id
         break;
       case "shared": 
         result = !!user
@@ -104,6 +111,10 @@ export default class ACL{
       case "users":
         let users = this.usersFromCode(accessTypeCode)
         result = users && users.includes(user.id)
+        break;
+      case "inherit":
+        let parent = this.entity.related.parent
+        result = parent ? new ACL(parent, this.type.aclParent).hasAccess(user, accessTypeCode) : false 
         break;
       default:
         result = !!user

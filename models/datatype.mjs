@@ -8,7 +8,7 @@ class DataType extends Entity {
     this.tag("datatype")
   }
 
-  initFromOptions({title, permission = null, api, idField = "id", nameField = "id", uiPath, showId, apiExhaustiveList, query, acl}){
+  initFromOptions({title, permission = null, api, idField = "id", nameField = "id", uiPath, showId, apiExhaustiveList, query, acl, aclInheritance, aclInheritFrom}){
     this.title = title;
     this.api = api || this.id;
     this.idField = idField;
@@ -18,7 +18,9 @@ class DataType extends Entity {
     this.apiExhaustiveList = typeof apiExhaustiveList === "boolean" ? apiExhaustiveList : true
     this.query = query || null
     this.acl = acl || null
-    
+    this.aclInheritance = !!aclInheritance
+    this.rel(aclInheritFrom, "aclinheritfrom")
+
     this.rel(Permission.lookup(permission), "permission", true)
 
     return this
@@ -34,6 +36,10 @@ class DataType extends Entity {
 
   static all(){
     return DataType.search(`tag:datatype`);
+  }
+
+  get aclParent(){
+    return DataType.from(this.related.aclinheritfrom)||this
   }
 
   toObj() {
@@ -52,7 +58,12 @@ class DataType extends Entity {
         path: this.uiPath || null,
         showId: this.showId || false
       },
-      permission: this.related.permission?.id || null
+      permission: this.related.permission?.id || null,
+      acl: {
+        inheritFromType: this.related.aclinheritfrom?.id || null,
+        supportInheritance: !!this.aclInheritance,
+        default: this.acl || null
+      }
     }
   }
 }

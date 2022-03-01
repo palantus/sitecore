@@ -99,11 +99,13 @@ class API {
         let jsonResult = await res.json();
         this.cache.set(url, {result: jsonResult, ts: new Date().getTime()})
         resolve(jsonResult);
-        return jsonResult;
       } else if (res.status == 401) {
         //this.notLoggedIn()
         this.cache.delete(url)
         reject();
+      } else if (res.status == 404) {
+        this.cache.delete(url)
+        resolve(null)
       } else if (res.status >= 400 && res.status < 500) {
         let retObj = await res.json()
         console.log(`${res.status}: ${res.statusText}`, retObj)

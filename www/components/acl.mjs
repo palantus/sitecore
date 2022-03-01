@@ -55,6 +55,7 @@ template.innerHTML = `
 
     #button.public{color: #0f0;}
     #button.shared{color: #7676f7;}
+    #button.inherit{color: #7676f7;}
     #button.role{color: #0ff;}
     #button.private{color: #f00;}
     #button.users{color: #d7a6ff}
@@ -85,6 +86,7 @@ template.innerHTML = `
           <td>
             <field-edit type="select" id="accessRead">
               <option value="public">Public</option>
+              <option value="inherit" hidden>Inherit</option>
               <option value="shared">All users</option>
               <option value="users">Specific users</option>
               <option value="role">Members of Role</option>
@@ -106,6 +108,7 @@ template.innerHTML = `
           <td>
             <field-edit type="select" id="accessWrite">
               <option value="shared">All users</option>
+              <option value="inherit" hidden>Inherit</option>
               <option value="users">Specific users</option>
               <option value="role">Members of Role</option>
               <option value="private">Private (only owner)</option>
@@ -126,6 +129,7 @@ template.innerHTML = `
           <td>
             <field-edit type="select" id="accessExecute">
               <option value="public">Public</option>
+              <option value="inherit" hidden>Inherit</option>
               <option value="shared">All users</option>
               <option value="users">Specific users</option>
               <option value="role">Members of Role</option>
@@ -152,19 +156,6 @@ template.innerHTML = `
     </span>
   </span>
 `;
-
-/*
-
-  TODO:
-  - man skal kunne vælge hvilke af rwx som skal være tilgængelige (attribute). 
-    - Fang ændringer, da den skal bruges til fx. kun at kunne ændre w hvis man har w i forvejen.
-  - attribute til typen af content (wiki, list osv.). Skal bruges til at kunne gemme defaults pr. type
-    - Skal eksistere som en DataType, så man ikke bare kan oprette nye typer via api
-  - skal nok blot have et internt entity id, som den så selv styrer det via
-  - fælles api som får entity id til at patche/get
-  - Vis access på knappen til popup eller fx. "role:team" med små bogstaver og evt. farvekodning
-  - Man må ikke kunne reducere egne rettigheder
-*/
 
 class Element extends HTMLElement {
   constructor() {
@@ -249,6 +240,10 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("button").innerText = rights.read?.access == "role" ? `role:${rights.read?.role||"N/A"}` 
                                                       : rights.read?.access == "users" ? `users:${(rights.read?.users||[]).join(",")}` 
                                                       : (rights.read?.access||"private")
+
+    this.shadowRoot.getElementById("accessRead").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !rights.supportInheritance)
+    this.shadowRoot.getElementById("accessWrite").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !rights.supportInheritance)
+    this.shadowRoot.getElementById("accessExecute").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !rights.supportInheritance)
 
     this.refreshView()
 
