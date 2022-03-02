@@ -13,6 +13,8 @@ template.innerHTML = `
     h2{margin: 0px; border-bottom: 1px solid lightgray; padding-bottom: 5px;}
     span{color: var(--accent-color-light);}
     button{margin-bottom: 5px;}
+    #signedin{display: none;}
+    #signedout{display: none;}
   </style>
   <div id="container">
       <h2>Status</h2>
