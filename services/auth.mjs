@@ -194,3 +194,8 @@ export default service
 export function validateAccess(...args){return service.validateAccess(...args)}
 export function ifPermission(...args){return service.ifPermission(...args)}
 export function ifPermissionThrow(...args){return service.ifPermissionThrow(...args)}
+
+export function noGuest(req, res, next){
+  if(res.locals.user && res.locals.user.id != "guest") return next();
+  return res.status(401).json({ error: "This endpoint requires that you are signed in", redirectTo: global.sitecore.loginURL })
+}

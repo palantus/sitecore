@@ -11,6 +11,8 @@ import Setup from "../../models/setup.mjs";
 
 export default (app) => {
 
+  const guest = User.lookup("guest")
+
   if (process.env.ADMIN_MODE === "true")
     console.log("Warning: Is in ADMIN mode, which means that user requests aren't authorized")
 
@@ -102,23 +104,26 @@ export default (app) => {
         token = authHeader.split(' ')[1]
       else if (req.cookies.jwtToken)
         token = req.cookies.jwtToken
-      if (!token)
-        return res.status(401).json({ error: "Not logged in", redirectTo: global.sitecore.loginURL })
 
       token = (token && typeof token === "string") ? sanitize(token) : null;
-      
-
-      try{
-        let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"])
-        if(foundUser){
-          user = foundUser;
-        } else {
-          return res.status(responseCode||401).json(response || "Could not find user")
+    
+      if(token){
+        try{
+          let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"])
+          if(foundUser){
+            user = foundUser;
+          } else {
+            return res.status(responseCode||401).json(response || "Could not find user from token")
+          }
+        } catch(err){
+          console.log(err)
+          res.status(501).json({success: false, error: "Failed to log in"})
         }
-      } catch(err){
-        console.log(err)
-        res.status(501).json({success: false, error: "Failed to log in"})
       }
+    }
+
+    if(!user){
+      user = guest
     }
 
     res.locals.user = user

@@ -18,7 +18,7 @@ export async function refreshStatus(){
 }
 
 export function isSignedIn(){
-  return !!user?.id
+  return user?.id && user.id != "guest"
 }
 
 export function getUser() { return api.get("me", {cache: true})}

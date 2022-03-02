@@ -1,13 +1,9 @@
 import Notification from "../../models/notification.mjs"
 import User from "../../models/user.mjs"
 import { sanitize } from "entitystorage";
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 import express from "express"
 const { Router, Request, Response } = express;
-const route = Router();
 
 export default (app) => {
 
@@ -15,7 +11,7 @@ export default (app) => {
   app.use("/notifications", route)
 
   route.get('/', function (req, res, next) {
-    res.json(Notification.search(`tag:notification !tag:dismissed user.prop:id=${res.locals.user.id}`).map(n => ({
+    res.json(Notification.search(`tag:notification !tag:dismissed user.id:${res.locals.user}`).map(n => ({
       id: n._id,
       area: n.area,
       message: n.message,
@@ -27,19 +23,20 @@ export default (app) => {
   route.post('/:id/dismiss', function (req, res, next) {
     let notification = Notification.lookup(sanitize(req.params.id))
     if (!notification) throw "Unknown notification: " + req.params.id
+    if (notification.related.user?._id != res.locals.user._id) throw "Not your notification";
     notification.dismiss();
     res.json({ success: true })
   });
 
   route.post('/dismissall', function (req, res, next) {
-    Notification.search(`tag:notification !tag:dismissed user.prop:id=${res.locals.user.id}`).forEach(n => n.dismiss())
+    Notification.search(`tag:notification !tag:dismissed user.id:${res.locals.user}`).forEach(n => n.dismiss())
     res.json({ success: true })
   });
 
   route.post('/', function (req, res, next) {
     if(!req.body.area) throw "area missing";
     if(!req.body.message) throw "message missing";
-    new Notification(User.lookup(res.locals.userId) || res.locals.user, req.body.area, req.body.message, req.body.details || null)
+    new Notification(res.locals.user, req.body.area, req.body.message, req.body.details || null)
     res.json({ success: true })
   });
 

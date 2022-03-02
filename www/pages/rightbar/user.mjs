@@ -4,6 +4,7 @@ import api from "/system/api.mjs"
 import "/pages/rightbar/rightcard.mjs"
 import "/components/field.mjs"
 import { goto, state } from "/system/core.mjs"
+import { isSignedIn } from "/system/user.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -17,12 +18,16 @@ template.innerHTML = `
       <h2>Status</h2>
 
       <p id="status"></p>
-      <button id="logout">Sign out</button>
-      <button id="login">Sign in</button>
-      <br>
-      <button id="profile">View my profile</button>
-      <br>
-      <button id="sethome">Set this page as home</button>
+      <div id="signedin">
+        <button id="logout">Sign out</button>
+        <br>
+        <button id="profile">View my profile</button>
+        <br>
+        <button id="sethome">Set this page as home</button>
+      </div>
+      <div id="signedout">
+        <button id="login">Sign in</button>
+      </div>
   </div>
 `;
 
@@ -70,10 +75,10 @@ class Element extends HTMLElement {
     }`))?.me
 
     this.shadowRoot.getElementById("status").innerHTML = 
-            me ? `Signed in as <b>${me.id}</b> with email <b>${me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"}</b>`
+            isSignedIn() ? `Signed in as <b>${me.id}</b> with email <b>${me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"}</b>`
             : `You are not signed in`
-    this.shadowRoot.getElementById("logout").style.display = me ? "button" : "none"
-    this.shadowRoot.getElementById("login").style.display = me ? "none" : "button"
+    this.shadowRoot.getElementById("signedin").style.display = isSignedIn() ? "block" : "none"
+    this.shadowRoot.getElementById("signedout").style.display = isSignedIn() ? "none" : "block"
   }
 }
 

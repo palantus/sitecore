@@ -106,7 +106,7 @@ export default class ACL{
           result = user && user._id == owner?._id
         break;
       case "shared": 
-        result = !!user
+        result = user && user.id != "guest"
         break;
       case "users":
         let users = this.usersFromCode(accessTypeCode)

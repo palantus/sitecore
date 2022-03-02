@@ -2,11 +2,12 @@ import Entity, {sanitize} from "entitystorage";
 import express from "express"
 const { Router, Request, Response } = express;
 import service from "../../services/user.mjs"
-import {validateAccess} from "../../services/auth.mjs"
+import {noGuest, validateAccess} from "../../services/auth.mjs"
 import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import { createId } from "../../tools/id.mjs"
 import Role from "../../models/role.mjs";
+import Permission from "../../models/permission.mjs";
 
 export default (app) => {
 
@@ -78,7 +79,7 @@ export default (app) => {
     res.json(u.setup?.props||{})
   });
 
-  meRoute.patch('/setup', function (req, res, next) {
+  meRoute.patch('/setup', noGuest, function (req, res, next) {
     let u = service(res.locals).me()
     if (!u) throw "No user"
     Object.assign(u.setup, req.body)
@@ -100,11 +101,11 @@ export default (app) => {
     if (u) res.json(userObject); else res.sendStatus(404);
   });
 
-  meRoute.get('/token', (req, res, next) => {
+  meRoute.get('/token', noGuest, (req, res, next) => {
 		res.json({token: service(res.locals).getTempAuthToken(res.locals.user)})
 	})
 
-  meRoute.post('/changepass', function (req, res, next) {
+  meRoute.post('/changepass', noGuest, function (req, res, next) {
     let u = service(res.locals).me()
     if (!u) throw "No user"
 
@@ -162,6 +163,16 @@ export default (app) => {
     res.json({ success: true })
   })
 
+  roleRoute.get("/:id", (req, res) => {
+    let role = Role.lookup(sanitize(req.params.id))
+    if(!role) throw "Unknown role"
+    res.json({id: role.id, permissions: role.rels.permission?.map(p => p.id)||[]});
+  })
+
+  roleRoute.get("/", (req, res) => {
+    res.json(Role.all().map(({id}) => ({id})));
+  })
+
   userRoute.post('/:id/roles', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     let user = User.lookup(sanitize(req.params.id))
@@ -194,12 +205,16 @@ export default (app) => {
     res.json({success: true});
   });
 
-  roleRoute.delete('/:id/permissions/:role', function (req, res, next) {
+  roleRoute.delete('/:id/permissions/:perm', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     let role = Role.lookup(sanitize(req.params.id))
     if (!role) throw "Unknown role"
-    if (!req.params.role) throw "role is mandatory"
-    role.removePermission(sanitize(req.params.role))
+    if (!req.params.perm) throw "perm is mandatory"
+    role.removePermission(sanitize(req.params.perm))
     res.json({success: true});
   });
+
+  permissionRoute.get("/", (req, res) => {
+    res.json(Permission.all().map(({id}) => ({id})));
+  })
 };

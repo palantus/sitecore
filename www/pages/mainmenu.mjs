@@ -1,6 +1,5 @@
 const elementName = 'main-menu'
-import {userRoles, userPermissions, isSignedIn} from "../system/user.mjs";
-import {getUser} from "../system/user.mjs";
+import {userRoles, userPermissions, getUser, isSignedIn} from "/system/user.mjs";
 import {goto, state, isMobile, menu, ready} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
 
@@ -212,11 +211,12 @@ class Page extends HTMLElement {
 
   addMenu(parent, items, parentMenuId){
     let anyAdded = false;
+    let signedIn = isSignedIn();
     for(let item of items){
       if(item.role && !this.userRoles.includes(item.role) && !this.userRoles.includes("admin")) continue;
       if(item.permission && !this.userPermissions.includes(item.permission) && !this.userPermissions.includes("admin")) continue;
-      if(item.public !== true && !this.user) continue;
-      if(item.hideWhenSignedIn && this.user) continue;
+      if(item.public !== true && !signedIn) continue;
+      if(item.hideWhenSignedIn && signedIn) continue;
       anyAdded = true;
 
       let itemDiv = document.createElement("div")

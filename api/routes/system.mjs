@@ -6,6 +6,7 @@ import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
 import Setup from "../../models/setup.mjs";
+import DataType from "../../models/datatype.mjs";
 
 export default (app) => {
 
@@ -85,4 +86,13 @@ export default (app) => {
     res.json({ success: true })
   })
 
+  route.get('/datatypes', function (req, res, next) {
+    res.json(DataType.all().map(dt => dt.toObj()));
+  });
+
+  route.get('/datatypes/:id', function (req, res, next) {
+    let type = DataType.lookup(sanitize(req.params.id))
+    if(!type) return res.status(401).json("Datatype doesn't exist");
+    res.json(type.toObj());
+  });
 };

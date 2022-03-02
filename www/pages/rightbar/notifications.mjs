@@ -3,11 +3,12 @@ const elementName = 'rightbar-notifications-component'
 import api from "/system/api.mjs"
 import "/pages/rightbar/rightcard.mjs"
 import "/components/notification.mjs";
-import { onMessage } from "../../system/message.mjs";
+import { onMessage } from "/system/message.mjs";
 import "/components/field.mjs"
 import {refToPath} from "/libs/refs.mjs"
 import {on, off} from "/system/events.mjs"
-import { confirmDialog } from "../../components/dialog.mjs";
+import { confirmDialog } from "/components/dialog.mjs";
+import { isSignedIn } from "/system/user.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -53,6 +54,7 @@ class Element extends HTMLElement {
   }
 
   async refreshData(){
+    if(!isSignedIn()) return;
     let notifications = await api.get("notifications")
     if(notifications === undefined) return;
     this.shadowRoot.getElementById("noti").innerHTML = notifications.reverse().map(n => `

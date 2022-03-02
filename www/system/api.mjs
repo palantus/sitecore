@@ -276,7 +276,7 @@ class API {
 
   getHeaders(hasContent) {
     let headers = {
-      "Authorization": "Bearer " + this.token
+      "Authorization": this.token ? "Bearer " + this.token : undefined
     }
     if (hasContent) headers["Content-Type"] = "application/json"
     if (state().impersonate) headers["impersonate-user"] = state().impersonate

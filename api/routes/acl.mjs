@@ -3,7 +3,7 @@ import User from "../../models/user.mjs";
 import DataType from "../../models/datatype.mjs";
 import Entity, { sanitize } from "entitystorage";
 
-export function aclPreAuth(app) {
+export default (app) => {
 
   app.get("/acl/:type/:id", function (req, res, next) {
     let type = DataType.lookup(sanitize(req.params.type))
@@ -16,9 +16,6 @@ export function aclPreAuth(app) {
     let acl = new ACL(entity, type)
     res.json(acl.toObj())
   });
-}
-
-export function aclPostAuth(app) {
 
   app.patch("/acl/:type/default", function (req, res, next) {
     if(!req.body.acl || typeof req.body.acl !== "string" || req.body.acl.length > 100) throw "Invalid acl"
