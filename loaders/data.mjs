@@ -19,6 +19,12 @@ export default async () => {
     admin.setPassword(process.env.ADMIN_PASS)
   }
   admin.addRole("admin")
+
+  let guest = User.lookup("guest");
+  if(!guest){
+    guest = new User("guest", {name: "Guest"})
+    console.log("Created 'guest' user");
+  }  
   
   DataType.lookupOrCreate("user", {title: "User", permission: "user.read", nameField: "name", uiPath: "setup/users"})
   DataType.lookupOrCreate("type", {title: "Type", nameField: "title", api: "system/datatypes"})
