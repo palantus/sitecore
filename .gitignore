@@ -58,7 +58,6 @@ typings/
 .env
 
 
-package-lock.json
 storage
 storage_intern
 test.js
