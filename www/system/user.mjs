@@ -10,9 +10,9 @@ export async function refreshStatus(){
   } catch(err){
     newUser = null;
   }
-  if(user && !newUser)
+  if(user && user.id != "guest" && (!newUser || newUser.id == "guest"))
     fire("logged-out")
-  if(newUser && (!user || user?.id != newUser?.id))
+  if(newUser && newUser.id != "guest" && (!user || user?.id != newUser?.id || user.id =="guest"))
     fire("logged-in")
   user = newUser
 }
