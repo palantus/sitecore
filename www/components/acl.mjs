@@ -285,6 +285,12 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelectorAll("button").forEach(e => e.classList.toggle("hidden", true))
     }
 
+    let rights = this.getAttribute("rights") || "rw"
+    this.shadowRoot.getElementById("button").setAttribute("title", (acl.read && rights.includes("r") ? `Read: ${acl.read.access} ${(acl.read?.users?.join(",")||"")+(acl.read?.role||"")}\n` : '')
+                                                                   + (acl.write && rights.includes("w") ? `Write: ${acl.write.access} ${(acl.write?.users?.join(",")||"")+(acl.write?.role||"")}\n` : '')
+                                                                   + (acl.execute && rights.includes("x") ? `Execute: ${acl.execute.access} ${(acl.execute?.users?.join(",")||"")+(acl.execute?.role||"")}\n` : '')
+                                                                   + `Shares: ${acl.shares.length}`)
+
     this.refreshView()
 
     this.shadowRoot.getElementById("owner").setAttribute("patch", `acl/${this.typeId}/${this.entityId}`);
