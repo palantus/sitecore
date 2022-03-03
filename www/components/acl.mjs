@@ -114,8 +114,9 @@ template.innerHTML = `
           <td>Write:</td>
           <td>
             <field-edit type="select" id="accessWrite">
-              <option value="shared">All users</option>
+              <option value="public">Public</option>
               <option value="inherit" hidden>Inherit</option>
+              <option value="shared">All users</option>
               <option value="users">Specific users</option>
               <option value="role">Members of Role</option>
               <option value="private">Private (only owner)</option>
