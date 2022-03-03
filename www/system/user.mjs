@@ -26,9 +26,9 @@ export function getUser() { return api.get("me", {cache: true})}
 let meRequested = false;
 export async function userRoles() {
   let me = user || api.lookupCache("me");
-  if(!me && isSignedIn()){
+  if(!me){
     let storedRoles = window.localStorage.getItem("userroles")
-    if(storedRoles) {
+    if(storedRoles && isSignedIn()) {
       if(!meRequested){
         // Make sure to update cache, in case the roles change
         api.get("me").then(me => {
@@ -49,9 +49,9 @@ export async function userRoles() {
 
 export async function userPermissions() {
   let me = user || api.lookupCache("me");
-  if(!me && isSignedIn()){
+  if(!me){
     let storedPermissions = window.localStorage.getItem("userpermissions")
-    if(storedPermissions) {
+    if(isSignedIn() && storedPermissions) {
       if(!meRequested){
         // Make sure to update cache, in case the permissions change
         api.get("me").then(me => {
