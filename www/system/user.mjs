@@ -21,7 +21,7 @@ export function isSignedIn(){
   return user?.id && user.id != "guest"
 }
 
-export function getUser(force) { return api.get("me", {cache: force ? false : true})}
+export function getUser() { return api.get("me", {cache: true})}
 
 let meRequested = false;
 export async function userRoles() {

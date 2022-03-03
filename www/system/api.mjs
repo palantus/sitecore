@@ -47,6 +47,7 @@ class API {
     }
 
     this.shareKey = state().query.shareKey || this.shareKey
+    this.cache = new Map()
   }
 
   removeToken(){
