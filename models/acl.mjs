@@ -140,7 +140,7 @@ export default class ACL{
     let owner = this.owner
     return {
       owner: owner?.id||null,
-      canEdit: owner?._id == user?._id || isAdmin,
+      canEdit: (owner?._id == user?._id || isAdmin) && user?._id != "guest",
       ...this.acl
     }
   }

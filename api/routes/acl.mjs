@@ -26,7 +26,7 @@ export default (app) => {
     })
   });
 
-  route.patch("/:type/default", function (req, res, next) {
+  route.patch("/:type/default", noGuest, function (req, res, next) {
     if(!req.body.acl || typeof req.body.acl !== "string" || req.body.acl.length > 100) throw "Invalid acl"
     let type = DataType.lookup(sanitize(req.params.type))
     if(!type) throw "Unknown type"
@@ -35,7 +35,7 @@ export default (app) => {
     res.json({success: true})
   });
 
-  route.patch("/:type/:id", function (req, res, next) {
+  route.patch("/:type/:id", noGuest, function (req, res, next) {
     let type = DataType.lookup(sanitize(req.params.type))
     if(!type) throw "Unknown type"
     if(!type.acl) throw "Type doesn't allow ACLs"
