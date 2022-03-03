@@ -46,6 +46,7 @@ class API {
       }
     }
 
+    this.shareKey = state().query.shareKey || this.shareKey
   }
 
   removeToken(){
@@ -276,7 +277,8 @@ class API {
 
   getHeaders(hasContent) {
     let headers = {
-      "Authorization": this.token ? "Bearer " + this.token : undefined
+      "Authorization": this.token ? "Bearer " + this.token : undefined,
+      "Share-Key": state().query.shareKey || this.shareKey || ""
     }
     if (hasContent) headers["Content-Type"] = "application/json"
     if (state().impersonate) headers["impersonate-user"] = state().impersonate

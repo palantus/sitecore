@@ -51,6 +51,7 @@ template.innerHTML = `
       font-family: "Lucida Console", "Courier New", monospace;
       font-size: 12px;
       cursor: pointer;
+      user-select: none;
     }
 
     #button.public{color: #0f0;}
@@ -63,10 +64,16 @@ template.innerHTML = `
     table td:not(:last-child){
       padding-right: 10px;
     }
-    field-edit{
-      min-width: 150px;
-    }
+    table td{vertical-align: top;}
+    
     .hidden{display: none;}
+    div.share{
+      display: flex;
+      min-width: 300px;
+    }
+    div.share field-edit[field=name]{
+      margin-right: 10px;
+    }
   </style>
   <span class="dropdown" data-dropdown>
     <span tabindex=0 id="button"></span>
@@ -76,7 +83,7 @@ template.innerHTML = `
         <tr class="owner">
           <td>Owner:</td>
           <td>
-            <field-edit type="select" id="owner" lookup="user" disabled>
+            <field-edit type="text" id="owner" lookup="user" disabled>
             </field-edit>
           </td>
         </tr>
@@ -104,7 +111,7 @@ template.innerHTML = `
         </tr>
 
         <tr class="write access">
-          <td>Write</td>
+          <td>Write:</td>
           <td>
             <field-edit type="select" id="accessWrite">
               <option value="shared">All users</option>
@@ -125,7 +132,7 @@ template.innerHTML = `
         </tr>
 
         <tr class="execute access">
-          <td>Execute</td>
+          <td>Execute:</td>
           <td>
             <field-edit type="select" id="accessExecute">
               <option value="public">Public</option>
@@ -144,6 +151,17 @@ template.innerHTML = `
         <tr class="execute users">
           <td></td>
           <td><field-edit id="usersExecute" type="text" lookup="user" placeholder="user1, user2, ..."></field-edit></td>
+        </tr>
+
+        <tr>
+          <td>Shares:</td>
+          <td>
+            <table>
+              <tbody id="shares">
+              </tbody>
+            </table>
+            <button id="add-share" title="Add share">Add</button>
+          </td>
         </tr>
       </table>
 
@@ -168,10 +186,13 @@ class Element extends HTMLElement {
     this.refreshView = this.refreshView.bind(this)
     this.setDefault = this.setDefault.bind(this)
     this.save = this.save.bind(this)
+    this.shareClick = this.shareClick.bind(this)
 
     this.shadowRoot.getElementById("save").addEventListener("click", this.save)
     this.shadowRoot.getElementById("reset").addEventListener("click", this.refreshData)
     this.shadowRoot.getElementById("default").addEventListener("click", this.setDefault)
+    this.shadowRoot.getElementById("add-share").addEventListener("click", () => api.post(`acl/${this.typeId}/${this.entityId}/share`).then(this.refreshData))
+    this.shadowRoot.getElementById("shares").addEventListener("click", this.shareClick)
 
     this.shadowRoot.getElementById("accessRead").addEventListener("value-changed", this.refreshView)
     this.shadowRoot.getElementById("accessWrite").addEventListener("value-changed", this.refreshView)
@@ -185,26 +206,29 @@ class Element extends HTMLElement {
 
     if(rights.includes("r")){
       this.shadowRoot.querySelector("tr.read.access").classList.toggle("hidden", false)
+      this.shadowRoot.querySelectorAll("field-edit.read").forEach(e => e.classList.toggle("hidden", false))
       this.shadowRoot.querySelector("tr.read.role").classList.toggle("hidden", this.shadowRoot.getElementById("accessRead").getValue() != "role")
       this.shadowRoot.querySelector("tr.read.users").classList.toggle("hidden", this.shadowRoot.getElementById("accessRead").getValue() != "users")
     } else {
-      this.shadowRoot.querySelectorAll("tr.read").forEach(tr => tr.classList.toggle("hidden", true))
+      this.shadowRoot.querySelectorAll("tr.read,field-edit.read").forEach(tr => tr.classList.toggle("hidden", true))
     }  
 
     if(rights.includes("w")){
       this.shadowRoot.querySelector("tr.write.access").classList.toggle("hidden", false)
+      this.shadowRoot.querySelectorAll("field-edit.write").forEach(e => e.classList.toggle("hidden", false))
       this.shadowRoot.querySelector("tr.write.role").classList.toggle("hidden", this.shadowRoot.getElementById("accessWrite").getValue() != "role")
       this.shadowRoot.querySelector("tr.write.users").classList.toggle("hidden", this.shadowRoot.getElementById("accessWrite").getValue() != "users")
     } else {
-      this.shadowRoot.querySelectorAll("tr.write").forEach(tr => tr.classList.toggle("hidden", true))
+      this.shadowRoot.querySelectorAll("tr.write,field-edit.write").forEach(tr => tr.classList.toggle("hidden", true))
     }  
 
     if(rights.includes("x")){
       this.shadowRoot.querySelector("tr.execute.access").classList.toggle("hidden", false)
+      this.shadowRoot.querySelectorAll("field-edit.execute").forEach(e => e.classList.toggle("hidden", false))
       this.shadowRoot.querySelector("tr.execute.role").classList.toggle("hidden", this.shadowRoot.getElementById("accessExecute").getValue() != "role")
       this.shadowRoot.querySelector("tr.execute.users").classList.toggle("hidden", this.shadowRoot.getElementById("accessExecute").getValue() != "users")
     } else {
-      this.shadowRoot.querySelectorAll("tr.execute").forEach(tr => tr.classList.toggle("hidden", true))
+      this.shadowRoot.querySelectorAll("tr.execute,field-edit.execute").forEach(tr => tr.classList.toggle("hidden", true))
     }  
 
     this.shadowRoot.getElementById("buttons").style.display = this.hasAttribute("disabledefault") ? "none" : "block"
@@ -219,31 +243,46 @@ class Element extends HTMLElement {
     if(!this.entityId) return;
     if(this.hasAttribute("disabled")) return;
 
-    let rights = await api.get(`acl/${this.typeId}/${this.entityId}`)
+    let acl = await api.get(`acl/${this.typeId}/${this.entityId}`)
 
-    this.shadowRoot.getElementById("owner").setAttribute("value", rights.owner)
+    this.shadowRoot.getElementById("owner").setAttribute("value", acl.owner)
 
-    this.shadowRoot.getElementById("accessRead").setAttribute("value", rights.read?.access||"")
-    this.shadowRoot.getElementById("accessWrite").setAttribute("value", rights.write?.access||"")
-    this.shadowRoot.getElementById("accessExecute").setAttribute("value", rights.execute?.access||"")
+    this.shadowRoot.getElementById("accessRead").setAttribute("value", acl.read?.access||"")
+    this.shadowRoot.getElementById("accessWrite").setAttribute("value", acl.write?.access||"")
+    this.shadowRoot.getElementById("accessExecute").setAttribute("value", acl.execute?.access||"")
 
-    this.shadowRoot.getElementById("roleRead").setAttribute("value", rights.read?.role||"")
-    this.shadowRoot.getElementById("roleWrite").setAttribute("value", rights.write?.role||"")
-    this.shadowRoot.getElementById("roleExecute").setAttribute("value", rights.execute?.role||"")
+    this.shadowRoot.getElementById("roleRead").setAttribute("value", acl.read?.role||"")
+    this.shadowRoot.getElementById("roleWrite").setAttribute("value", acl.write?.role||"")
+    this.shadowRoot.getElementById("roleExecute").setAttribute("value", acl.execute?.role||"")
 
-    this.shadowRoot.getElementById("usersRead").setAttribute("value", rights.read?.users||"")
-    this.shadowRoot.getElementById("usersWrite").setAttribute("value", rights.write?.users||"")
-    this.shadowRoot.getElementById("usersExecute").setAttribute("value", rights.execute?.users||"")
+    this.shadowRoot.getElementById("usersRead").setAttribute("value", acl.read?.users||"")
+    this.shadowRoot.getElementById("usersWrite").setAttribute("value", acl.write?.users||"")
+    this.shadowRoot.getElementById("usersExecute").setAttribute("value", acl.execute?.users||"")
 
     this.shadowRoot.getElementById("button").className = "";
-    this.shadowRoot.getElementById("button").classList.add(rights.read?.access||"private");
-    this.shadowRoot.getElementById("button").innerText = rights.read?.access == "role" ? `role:${rights.read?.role||"N/A"}` 
-                                                      : rights.read?.access == "users" ? `users:${(rights.read?.users||[]).join(",")}` 
-                                                      : (rights.read?.access||"private")
+    this.shadowRoot.getElementById("button").classList.add(acl.read?.access||"private");
+    this.shadowRoot.getElementById("button").innerText = acl.read?.access == "role" ? `role:${acl.read?.role||"N/A"}` 
+                                                      : acl.read?.access == "users" ? `users:${(acl.read?.users||[]).join(",")}` 
+                                                      : (acl.read?.access||"private")
 
-    this.shadowRoot.getElementById("accessRead").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !rights.supportInheritance)
-    this.shadowRoot.getElementById("accessWrite").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !rights.supportInheritance)
-    this.shadowRoot.getElementById("accessExecute").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !rights.supportInheritance)
+    this.shadowRoot.getElementById("accessRead").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !acl.supportInheritance)
+    this.shadowRoot.getElementById("accessWrite").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !acl.supportInheritance)
+    this.shadowRoot.getElementById("accessExecute").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !acl.supportInheritance)
+
+    this.shadowRoot.getElementById("shares").innerHTML = acl.shares.map(s => `
+      <div class="share">
+          <field-edit type="text" field="name" value="${s.name}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
+          <field-edit class="read" type="checkbox" field="read" title="Read access" value="${s.rights.read}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
+          <field-edit class="write" type="checkbox" field="write" title="Write access" value="${s.rights.write}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
+          <field-edit class="execute" type="checkbox" field="execute" title="Execute access" value="${s.rights.execute}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
+          <button class="copy" data-url="${s.url}">Copy</button>
+          <button class="delete" data-id="${s.id}">Delete</button>
+      </div>`).join("")
+
+    if(!acl.canEdit){
+      this.shadowRoot.querySelectorAll("field-edit").forEach(e => e.toggleAttribute("disabled", true))
+      this.shadowRoot.querySelectorAll("button").forEach(e => e.classList.toggle("hidden", true))
+    }
 
     this.refreshView()
 
@@ -279,6 +318,16 @@ class Element extends HTMLElement {
 
   async setDefault(){
     await api.patch(`acl/${this.typeId}/default`, {acl: this.getAcl()})
+  }
+
+  shareClick(e){
+    if(e.target.classList.contains("delete")){
+      let id = e.target.getAttribute("data-id")
+      if(!id) return;
+      api.del(`acl/${this.typeId}/${this.entityId}/share/${id}`).then(this.refreshData)
+    } else if(e.target.classList.contains("copy")){
+      navigator.clipboard.writeText(e.target.getAttribute("data-url"))
+    }
   }
 
   static get observedAttributes() {

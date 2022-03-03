@@ -2,13 +2,15 @@ import Entity from "entitystorage"
 import Permission from "./permission.mjs";
 
 class DataType extends Entity {
+  static typeModelMap = new Map();
+
   initNew(id, options) {
     this.id = id;
     this.initFromOptions(options)
     this.tag("datatype")
   }
 
-  initFromOptions({title, permission = null, api, idField = "id", nameField = "id", uiPath, showId, apiExhaustiveList, query, acl, aclInheritance, aclInheritFrom}){
+  initFromOptions({title, permission = null, api, idField = "id", nameField = "id", uiPath, showId, apiExhaustiveList, acl, aclInheritance, aclInheritFrom}){
     this.title = title;
     this.api = api || this.id;
     this.idField = idField;
@@ -16,7 +18,6 @@ class DataType extends Entity {
     this.uiPath = uiPath || null
     this.showId = showId || false
     this.apiExhaustiveList = typeof apiExhaustiveList === "boolean" ? apiExhaustiveList : true
-    this.query = query || null
     this.acl = acl || null
     this.aclInheritance = !!aclInheritance
     this.rel(aclInheritFrom, "aclinheritfrom")
@@ -30,6 +31,14 @@ class DataType extends Entity {
     return DataType.find(`tag:datatype prop:"id=${id}"`)
   }
   
+  init({typeModel}){
+    if(typeModel) {
+      DataType.typeModelMap.set(this.id, typeModel);
+      if(typeof typeModel.lookup !== "function") throw `DataType ${this.id} doesn't have a 'lookup' function`
+    }
+    return this;
+  }
+  
   static lookupOrCreate(id, options){
     return DataType.lookup(id)?.initFromOptions(options) || new DataType(id, options)
   }
@@ -40,6 +49,12 @@ class DataType extends Entity {
 
   get aclParent(){
     return DataType.from(this.related.aclinheritfrom)||this
+  }
+
+  lookupEntity(id){
+    let TypeModel = DataType.typeModelMap.has(this.id) ? DataType.typeModelMap.get(this.id) : null;
+    if(!TypeModel) throw `DataType ${this.id} didn't call init with a 'typeModel', which is necessary when using ACL/shares`
+    return TypeModel.lookup(id);
   }
 
   toObj() {

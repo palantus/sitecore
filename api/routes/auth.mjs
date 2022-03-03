@@ -11,7 +11,7 @@ import Setup from "../../models/setup.mjs";
 
 export default (app) => {
 
-  const guest = User.lookup("guest")
+  let guest = null;
 
   if (process.env.ADMIN_MODE === "true")
     console.log("Warning: Is in ADMIN mode, which means that user requests aren't authorized")
@@ -123,12 +123,13 @@ export default (app) => {
     }
 
     if(!user){
-      user = guest
+      user = guest = guest || User.lookup("guest")
     }
 
     res.locals.user = user
     res.locals.roles = lookupUserRoles(user)
     res.locals.permissions = lookupUserPermissions(user)
+    res.locals.shareKey = req.query.shareKey || req.headers['share-key']
     next();
   });
 

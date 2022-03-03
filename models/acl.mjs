@@ -1,5 +1,7 @@
 import Entity from "entitystorage"
 import Role from "./role.mjs"
+import Share from "./share.mjs"
+import User from "./user.mjs"
 
 export default class ACL{
 
@@ -86,7 +88,7 @@ export default class ACL{
          : (this.acl.read?.users || null)
   }
 
-  hasAccess(user, accessTypeCode){
+  hasAccess(user, accessTypeCode, shareKey){
     let access = this.accessFromCode(accessTypeCode)
 
     let result;
@@ -114,25 +116,31 @@ export default class ACL{
         break;
       case "inherit":
         let parent = this.entity.related.parent
-        result = parent ? new ACL(parent, this.type.aclParent).hasAccess(user, accessTypeCode) : false 
+        result = parent ? new ACL(parent, this.type.aclParent).hasAccess(user, accessTypeCode, shareKey) : false 
         break;
       default:
         result = !!user
     }
-    return !!(result || (user && this.entity.related.owner?.id == user?.id))
+    return !!(result || (user && this.entity.related.owner?.id == user?.id) || Share.hasAccess(this.entity, shareKey, accessTypeCode, this))
   }
 
-  validateAccess(res, accessType, respondIfFalse = true){
-    if(!this.hasAccess(res.locals.user, accessType) && !res.locals.permissions?.includes("admin")){
+  validateAccess(res, right, respondIfFalse = true){
+    if(!this.hasAccess(res.locals.user, right, res.locals.shareKey) && !res.locals.permissions?.includes("admin")){
       if(respondIfFalse) res.status(403).json({ error: `You do not have the required access to do this` })
       return false;
     }
     return true;
   }
 
-  toObj(){
+  get owner(){
+    return User.from(this.entity.related.owner)
+  }
+
+  toObj(user, isAdmin){
+    let owner = this.owner
     return {
-      owner: this.entity.related.owner?.id||null,
+      owner: owner?.id||null,
+      canEdit: owner?._id == user?._id || isAdmin,
       ...this.acl
     }
   }

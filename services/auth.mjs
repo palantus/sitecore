@@ -197,5 +197,5 @@ export function ifPermissionThrow(...args){return service.ifPermissionThrow(...a
 
 export function noGuest(req, res, next){
   if(res.locals.user && res.locals.user.id != "guest") return next();
-  return res.status(401).json({ error: "This endpoint requires that you are signed in", redirectTo: global.sitecore.loginURL })
+  return res.status(403).json({ error: "You must be signed in to use this endpoint", redirectTo: global.sitecore.loginURL })
 }
