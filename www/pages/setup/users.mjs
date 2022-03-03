@@ -124,7 +124,7 @@ class Element extends HTMLElement {
             <tr>
                 <td><field-ref ref="/setup/users/${user.id}"/>${user.id}</field-ref></td>
                 <td>${user.name}</td>
-                <td>${user.roles.map(r => `<field-ref ref="/setup/role/${r}">${r}</field-ref>`).join("- ")}</td>
+                <td>${user.roles.sort((a, b) => a < b ? -1 : 1).map(r => `<field-ref ref="/setup/role/${r}">${r}</field-ref>`).join("- ")}</td>
                 <td>${user.msUsers.map(u => u.email).join(", ")}</td>
             </tr>
         `
@@ -133,7 +133,6 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
-    on("changed-project", "users", this.refreshData)
     on("changed-page", "users", this.refreshData)
   }
 
@@ -141,7 +140,6 @@ class Element extends HTMLElement {
   }
 
   disconnectedCallback() {
-    off("changed-project", "users")
     off("changed-page", "users")
   }
 }

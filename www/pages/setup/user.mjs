@@ -77,6 +77,8 @@ class Element extends HTMLElement {
     this.refreshData();
     this.shadowRoot.querySelector("#msuser-btn").addEventListener("click", this.assignToMSUser)
     this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)
+
+    this.elementId = `${elementName}-${this.userId}`
   }
 
   async assignToMSUser(){
@@ -128,7 +130,8 @@ class Element extends HTMLElement {
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `user/${user.id}`));
 
     let roles = await api.get("role")
-    this.shadowRoot.getElementById("roles").innerHTML = roles.map(r => `<tr data-roleid="${r.id}"><td><field-ref ref="/setup/role/${r.id}">${r.id}</field-ref></td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
+    this.shadowRoot.getElementById("roles").innerHTML = roles.sort((a, b) => a.id < b.id ? -1 : 1)
+                                                             .map(r => `<tr data-roleid="${r.id}"><td><field-ref ref="/setup/role/${r.id}">${r.id}</field-ref></td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
   }
 
   roleClick(e){
@@ -144,9 +147,11 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
+    on("changed-page", this.elementI, this.refreshData)
   }
 
   disconnectedCallback() {
+    off("changed-page", this.elementI)
   }
 }
 
