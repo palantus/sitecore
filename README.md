@@ -69,3 +69,7 @@ Create a component in a file called `login-XXXX.mjs` in your mod and it will be 
 ### Add components to user profile page
 
 Create a component in a file called `user-profile-XXXX.mjs` in your mod and it will be shown on the user profile page. Note that it must export a property called `name` which contains the custom element name that should be used.
+
+### Add icon to the top-right of the page
+
+Create a component in a file called `topbar-XXXX.mjs` in your mod and it will be shown to the left of notifications. Set the attribute `page` to a component to show in the rightbar (similar to user and notifications). The value should exist as a component at path `/pages/rightbar/<page>.mjs`. Note that it must export a property called `name` which contains the custom element name that should be used.

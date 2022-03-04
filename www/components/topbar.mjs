@@ -1,60 +1,16 @@
 let elementName = "topbar-component"
 
-import { ready, state } from "../system/core.mjs"
-import { on, off, fire } from "../system/events.mjs"
-import "/components/notification.mjs";
-import { onMessage } from "/system/message.mjs";
-import api from "/system/api.mjs";
-import { isSignedIn } from "../system/user.mjs";
+import { on, off } from "/system/events.mjs"
+import {getApiConfig} from "/system/core.mjs"
+import { ready } from "../system/core.mjs"
+import "/components/topbar-user.mjs"
+import "/components/topbar-notifications.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <style>
-    img{
-        position: fixed;
-        cursor: pointer;
-    }
-
-    img.profile{
-        width: 26px;
-        filter: grayscale(100%);
-        right: 10px;
-        top: 4px;
-    }
-    img.profile:hover{
-        filter: grayscale(80%);
-    }
-
-    img.noti{
-        filter: invert(1);
-        right: 48px;
-        width: 22px;
-        top: 4px;
-    }
-    img.noti:hover{
-        filter: invert(80%);
-    }
-    #noti-counter{
-      right: 48px;
-      width: 22px;
-    }
-    .counter{
-      top: 9px;
-      position: fixed;
-      cursor: pointer;
-      background: rgba(255, 0, 0, 0.7);
-      border-radius: 10px;
-      text-align: center;
-      font-weight: bold;
-      font-size: 110%;
-      pointer-events: none;
-      display: none;
-    }
-        
+  <style>        
     #log{
-      position: fixed;
-      right: 82px;
-      top: 6px;
+      margin-top: 2px;
       text-align: right;
       font-size: 120%;
       width: 100%;
@@ -72,19 +28,18 @@ template.innerHTML = `
       opacity: 0;
     }
     #container{
-      position: relative;
-      z-index: 10;
-    }
-    notification-component:not(:last-child){
-      margin-bottom: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      padding-right: 5px;
+      padding-top: 4px;
     }
   </style>
 
   <div id="container">
     <span id="log" class="hidden"></span>
-    <img class="noti" id="notifications-toggle" src="/img/bell.png" alt="Notifications" title="Notifications"/>
-    <span class="counter" id="noti-counter"></span>
-    <img class="profile" id="user-toggle" src="/img/profile.png" alt="Profile" title="Profile"/>
+    <topbar-notifications-component class="beforetarget"></topbar-notifications-component>
+    <topbar-user-component></topbar-user-component>
   </div>
 `;
 
@@ -96,24 +51,28 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.clearCurLogItem = this.clearCurLogItem.bind(this);
-    this.refreshCounters = this.refreshCounters.bind(this);
 
-    /*
-    this.shadowRoot.getElementById("notifications-toggle").addEventListener("click", () => {
-      this.shadowRoot.getElementById("notifications").classList.toggle("shown")
-    })
-    */
-    this.shadowRoot.querySelectorAll("#user-toggle,#notifications-toggle").forEach(e => e.addEventListener("click", event => {
+    this.shadowRoot.getElementById("container").addEventListener("click", e => {
+      let pageId = e.target.getAttribute("page")
+      if(!pageId) return;
       let rightBar = document.querySelector("#grid-container .right rightbar-component");
-      let pageId = event.target.id.replace("-toggle", "")
       rightBar.setAttribute("page", rightBar.getAttribute("page") == pageId ? "" : pageId)
-    }))
+    })
 
-    this.refreshCounters();
+    ready.then(() => {
+      let components = getApiConfig().mods.map(m => m.files.filter(f => /\/topbar\-[a-zA-z0-9]+\.mjs/.test(f))).flat();
+      let beforeTarget = this.shadowRoot.querySelector(".beforetarget")
+      for(let path of components.sort((a, b) => a < b ? -1 : 1)){
+        import(path).then(i => {
+          let div = document.createElement("div")
+          div.innerHTML = `<${i.name}></${i.name}>`
+          this.shadowRoot.getElementById("container").insertBefore(div, beforeTarget)
+        })
+      }
+    })
   }
 
   connectedCallback() {
-
     on("log", "topbar", (message) => {
       clearTimeout(this.logTimeout)
       this.shadowRoot.getElementById("log").classList.remove("hidden")
@@ -123,26 +82,6 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById("log").innerText = msg.message
       this.logTimeout = setTimeout(this.clearCurLogItem, 5000)
     })
-    on("changed-page", "topbar", this.refreshCounters)
-    on("logged-in", "topbar", this.refreshCounters)
-    on("logged-out", "topbar", this.refreshCounters)
-    onMessage("action-state-changed", elementName, this.refreshCounters)
-    onMessage("notification-new", elementName, () => {
-      this.refreshCounters();
-      new Audio("/libs/notification-sound.mp3").play();
-    })
-    onMessage("notification-dismissed", elementName, this.refreshCounters)
-  }
-
-  async refreshCounters() {
-    await ready;
-    if(!isSignedIn()) return;
-    try{
-      let counters = await api.get(`user/counters?page=${state().path}`)
-      if (!counters) return;
-      this.shadowRoot.getElementById("noti-counter").style.display = counters.notifications < 1 ? "none" : "inline"
-      this.shadowRoot.getElementById("noti-counter").innerText = counters.notifications
-    } catch(err){}
   }
 
   clearCurLogItem() {
