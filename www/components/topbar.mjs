@@ -30,7 +30,7 @@ template.innerHTML = `
     #container{
       display: flex;
       justify-content: flex-end;
-      gap: 9px;
+      gap: 7px;
       padding-right: 5px;
       padding-top: 4px;
     }
