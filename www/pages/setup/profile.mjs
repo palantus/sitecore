@@ -7,9 +7,9 @@ import "/components/field.mjs"
 import "/components/field-edit.mjs"
 import "/components/field-list.mjs"
 import {on, off, fire} from "/system/events.mjs"
-import {state} from "/system/core.mjs"
 import {showDialog} from "/components/dialog.mjs"
-import { alertDialog } from "../../components/dialog.mjs"
+import { alertDialog } from "/components/dialog.mjs"
+import {getApiConfig} from "/system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -22,6 +22,10 @@ template.innerHTML = `
     field-list{
       width: 500px;
     }
+
+    #custom-mod-container > *{
+      margin-top: 15px;
+    }
   </style>  
 
   <action-bar>
@@ -29,12 +33,14 @@ template.innerHTML = `
   </action-bar>
 
   <div id="container">
-    <h3>My profile</h3>
+    <h1>My profile</h1>
 
     <field-list labels-pct="20">
       <field-edit type="text" label="Name" id="name" disabled></field-edit>
       <field-edit type="text" label="Home path" id="home"></field-edit>
     </field-list>
+
+    <div id="custom-mod-container"></div>
   </div>
 
   <dialog-component title="Change password" id="pass-dialog">
@@ -55,6 +61,16 @@ class Element extends HTMLElement {
 
     this.refreshData();
     this.shadowRoot.getElementById("changepass").addEventListener("click", this.changePass)
+
+    let profileComponents = getApiConfig().mods.map(m => m.files.filter(f => /\/user\-profile\-[a-zA-z0-9]+\.mjs/.test(f))).flat();
+
+    for(let path of profileComponents){
+      import(path).then(i => {
+        let div = document.createElement("div")
+        div.innerHTML = `<${i.name}></${i.name}>`
+        this.shadowRoot.getElementById("custom-mod-container").appendChild(div)
+      })
+    }
   }
 
   async changePass(){
@@ -97,9 +113,11 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
+    on("changed-page", elementName, this.refreshData)
   }
 
   disconnectedCallback() {
+    off("changed-page", elementName)
   }
 }
 

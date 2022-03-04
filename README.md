@@ -65,3 +65,7 @@ Add a route for `/<modid>/setup` (eg. `/sample/setup`) in `routes.mjs`. If this 
 ### Add custom sign in method
 
 Create a component in a file called `login-XXXX.mjs` in your mod and it will be shown on the login page. Note that it must export a property called `name` which contains the custom element name that should be used.
+
+### Add components to user profile page
+
+Create a component in a file called `user-profile-XXXX.mjs` in your mod and it will be shown on the user profile page. Note that it must export a property called `name` which contains the custom element name that should be used.
