@@ -94,6 +94,10 @@ class User extends Entity{
       return this;
     }
 
+    all(){
+      return User.search("tag:user")
+    }
+
     toObj(){
         return {
             id: this.id,

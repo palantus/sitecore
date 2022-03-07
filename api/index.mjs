@@ -10,29 +10,29 @@ import acl from "./routes/acl.mjs"
 const { Router, Request, Response } = express;
 const route = Router();
 
-export default async () => {
-	const app = Router();
+export default async (app) => {
+	const router = Router();
 
   for(let {id : mod} of global.mods){
-    if(!!(await fs.promises.stat(`./mods/${mod}/api/auth.mjs`).catch(e => false))){
-      let handler = (await import(`../mods/${mod}/api/auth.mjs`)).default;
-      handler(app)
+    if(!!(await fs.promises.stat(`./mods/${mod}/api/pre-auth.mjs`).catch(e => false))){
+      let handler = (await import(`../mods/${mod}/api/pre-auth.mjs`)).default;
+      handler(router, app)
     }
   }
 
-  auth(app);
-  acl(app)
-  user(app);
-  notifications(app);
-  jobs(app);
-  system(app)
+  auth(router);
+  acl(router)
+  user(router);
+  notifications(router);
+  jobs(router);
+  system(router)
 
   for(let {id : mod} of global.mods){
     let handler = (await import(`../mods/${mod}/api/index.mjs`)).default;
-    handler(app, fields)
+    handler(router, fields, app)
   }
   
-  graphql(app);
+  graphql(router);
   
-	return app
+	return router
 }

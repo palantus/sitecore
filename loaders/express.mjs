@@ -20,20 +20,16 @@ export default async ({ app, mode, config }) => {
     // The magic package that prevents frontend developers going nuts
     // Alternate description:
     // Enable Cross Origin Resource Sharing to all origins by default
-    app.use(cors({
+    const corsOptions = {
       credentials: true,
       origin: function (origin, callback) {
         callback(null, true)
       },
       maxAge: 86400 //Enable OPTIONS caching
-    }));
-    
-    // Middleware that transforms the raw string of req.body into json
-    
-    //app.use(bodyParser.urlencoded());
-    //app.use(bodyParser.text());
-    //app.use(bodyParser.json());
-    
+    }
+    //Don't enable cors here, because it can conflict with certain mods (eg. files using webdav-server)
+    //app.use(cors());
+   
     app.use(fileUpload());
     app.use(express.json());
     app.use(express.text());
@@ -42,7 +38,7 @@ export default async ({ app, mode, config }) => {
     
     let setup = Setup.lookup()
     let apiPrefixWithSlash = global.sitecore.apiPrefix ? `/${global.sitecore.apiPrefix}` : "";
-    app.get(`${apiPrefixWithSlash}/clientconfig.mjs`, (req, res) => {
+    app.get(`${apiPrefixWithSlash}/clientconfig.mjs`, cors(corsOptions), (req, res) => {
       res.type('.js')
          .send(`export default {
             api: "${global.sitecore.apiURL}",
@@ -59,10 +55,11 @@ export default async ({ app, mode, config }) => {
          .end()
     })
     
-    app.get(`${apiPrefixWithSlash}/modroutes.mjs`, (req, res) => res.type('.js').send(global.modRoutes).end())
+    app.get(`${apiPrefixWithSlash}/modroutes.mjs`, cors(corsOptions), (req, res) => res.type('.js').send(global.modRoutes).end())
     
     // Load API routes
-    app.use(`/${global.sitecore.apiPrefix}`, await routes());
+    app.use(`/${global.sitecore.apiPrefix}`, cors(corsOptions), await routes(app));
+    app.use(cors(corsOptions))
     app.use(`/${global.sitecore.apiPrefix}`, (req, res) => {
       res.sendStatus(404);
     })
