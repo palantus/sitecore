@@ -6,7 +6,7 @@ export let user = null;
 export async function refreshStatus(){
   let newUser
   try{
-    newUser = api.hasToken() ? await getUser() : null
+    newUser = await getUser()
   } catch(err){
     newUser = null;
   }
@@ -60,7 +60,7 @@ export async function userPermissions() {
         })
         meRequested = true;
       }
-      return JSON.parse(storedPermissions)
+      return JSON.parse(storedPermissions) || []
     }
 
     me = await api.get("me")
