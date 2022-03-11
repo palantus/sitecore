@@ -38,21 +38,19 @@ class Element extends HTMLElement {
         this.shadowRoot.querySelectorAll("#container .item").forEach(e => e.style.display = "none")
         if(!newValue){
           document.getElementById("grid-container").classList.remove("rightvisible");
+          this.shadowRoot.getElementById("container").innerHTML = "";
           return;
         }
         document.getElementById("grid-container").classList.add("rightvisible");
         if(isMobile()){
           document.getElementById("grid-container").classList.add("collapsed")
         }
+        this.shadowRoot.getElementById("container").innerHTML = "";
         import(`/pages/rightbar/${newValue}.mjs`).then(() => {
           let componentName = `rightbar-${newValue}-component`;
-
-          let element = this.shadowRoot.querySelector(componentName);
-          if(!element){
-            element = document.createElement(componentName)
-            this.shadowRoot.getElementById("container").appendChild(element)
-            element.classList.add("item")
-          }
+          let element = document.createElement(componentName)
+          this.shadowRoot.getElementById("container").appendChild(element)
+          element.classList.add("item")
           element.style.display = "block"
           element.dispatchEvent(new CustomEvent("opened", {bubbles: true, cancelable: false}));
         })
