@@ -1,10 +1,10 @@
 let elementName = "topbar-component"
 
 import { on, off } from "/system/events.mjs"
-import {getApiConfig} from "/system/core.mjs"
-import { ready } from "../system/core.mjs"
+import {getApiConfig, ready} from "/system/core.mjs"
 import "/components/topbar-user.mjs"
 import "/components/topbar-notifications.mjs"
+import { toggleInRightbar } from "/pages/rightbar/rightbar.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -53,10 +53,7 @@ class Element extends HTMLElement {
     this.clearCurLogItem = this.clearCurLogItem.bind(this);
 
     this.shadowRoot.getElementById("container").addEventListener("click", e => {
-      let pageId = e.target.getAttribute("page")
-      if(!pageId) return;
-      let rightBar = document.querySelector("#grid-container .right rightbar-component");
-      rightBar.setAttribute("page", rightBar.getAttribute("page") == pageId ? "" : pageId)
+      toggleInRightbar(e.target.getAttribute("page"))
     })
 
     ready.then(() => {

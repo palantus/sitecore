@@ -63,3 +63,9 @@ class Element extends HTMLElement {
 
 window.customElements.define(elementName, Element);
 export {Element, elementName as name}
+
+export let toggleInRightbar = (pageId, force) => {
+  if(!pageId) return;
+  let rightBar = document.querySelector("#grid-container .right rightbar-component");
+  rightBar.setAttribute("page", (rightBar.getAttribute("page") == pageId || force === false) ? "" : pageId)
+}
