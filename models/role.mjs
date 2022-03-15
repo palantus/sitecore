@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, {query}  from "entitystorage"
 import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs"
 import Permission from "./permission.mjs"
 
@@ -25,7 +25,7 @@ class Role extends Entity {
   }
 
   static lookup(id){
-    return Role.find(`tag:role prop:"id=${id}"`)
+    return query.type(Role).tag("role").prop("id", id).first
   }
 
   static lookupOrCreate(id){
@@ -33,7 +33,7 @@ class Role extends Entity {
   }
 
   static all(){
-    return Role.search("tag:role")
+    return query.type(Role).tag("role").all
   }
 }
 

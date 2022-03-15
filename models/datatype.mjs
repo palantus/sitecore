@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, {query} from "entitystorage"
 import Permission from "./permission.mjs";
 
 class DataType extends Entity {
@@ -28,7 +28,7 @@ class DataType extends Entity {
   }
   
   static lookup(id){
-    return DataType.find(`tag:datatype prop:"id=${id}"`)
+    return query.type(DataType).tag("datatype").prop("id", id).first
   }
   
   init({typeModel}){

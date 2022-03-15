@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, {query} from "entitystorage"
 import { uuidv4 } from "../www/libs/uuid.mjs"
 
 export default class Share extends Entity{
@@ -36,7 +36,7 @@ export default class Share extends Entity{
   }
 
   static lookup(id){
-    return Share.find(`id:${id} tag:share`)
+    return query.type(Share).id(id).tag("share").first
   }
 
   isForEntity(entity){

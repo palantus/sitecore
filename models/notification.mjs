@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, {query} from "entitystorage"
 import {getTimestamp} from "../tools/date.mjs"
 import {sendEvent} from "../services/clientevents.mjs"
 
@@ -25,6 +25,6 @@ export default class Notification extends Entity{
   }
 
   static lookup(id){
-    return Notification.find(`tag:notification id:"${id}"`)
+    return query.type(Notification).id(id).tag("notification").first
   }
 }

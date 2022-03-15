@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, {query} from "entitystorage"
 
 export default class Setup extends Entity {
   initNew() {
@@ -6,7 +6,7 @@ export default class Setup extends Entity {
   }
 
   static lookup() {
-    return Setup.findOrCreate(`tag:setupcore`)
+    return query.type(Setup).tag("setupcore").first || new Setup()
   }
 
   toObj(){

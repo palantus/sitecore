@@ -106,7 +106,7 @@ export default {
         description: "Gets all users",
         resolve: (parent, args, context) => {
           if(!validateAccess(null, context, {permission: "user.read"})) return;
-          return User.search("tag:user")
+          return User.all()
         }
       }
       fields.usersActive = {
@@ -114,7 +114,7 @@ export default {
         description: "Gets all users",
         resolve: (parent, args, context) => {
           if(!validateAccess(null, context, {permission: "user.read"})) return;
-          return User.search("tag:user !tag:obsolete")
+          return User.active()
         }
       }
       fields.user = {
@@ -125,7 +125,7 @@ export default {
         description: "Get user",
         resolve: (parent, args, context) => {
           if(!validateAccess(null, context, {permission: "user.read"})) return;
-          return User.lookup(sanitize(args.id))
+          return User.lookup(args.id)
         }
       }
       fields.msUsers = {
@@ -133,7 +133,7 @@ export default {
         description: "Get ms users",
         resolve: (parent, args, context) => {
           if(!validateAccess(null, context, {permission: "user.read"})) return;
-          return MSUser.search("tag:msuser")
+          return MSUser.all()
         }
       }
     }

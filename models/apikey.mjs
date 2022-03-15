@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, {query}  from "entitystorage"
 import {getTimestamp} from "../tools/date.mjs"
 import {createHash} from 'crypto'
 
@@ -22,9 +22,10 @@ class APIKey extends Entity {
     if(cacheDate != new Date().toISOString().substring(0, 10)) {
       dailyTokensToKeyMap.clear()
       cacheDate = new Date().toISOString().substring(0, 10);
-      for(let key of APIKey.search("tag:apikey prop:daily=true")){
+      for(let key of query.type(APIKey).tag("apikey").prop("daily", true).all){
         dailyTokensToKeyMap.set(key.generateDailyToken(cacheDate), key)
       }
+      console.log(dailyTokensToKeyMap)
     }
     return dailyTokensToKeyMap.get(token) || APIKey.find(`tag:apikey prop:"key=${token}" !prop:daily=true`) 
   }

@@ -1,6 +1,6 @@
 "use strict"
 
-import Entity from "entitystorage"
+import Entity, {query} from "entitystorage"
 import MSUser from "./msuser.mjs"
 import Notification from "./notification.mjs"
 import {pbkdf2Sync} from 'crypto'; 
@@ -16,7 +16,7 @@ class User extends Entity{
 
     static lookup(id){
       if(!id) return null;
-      return User.find(`tag:user prop:"id=${id}"`)
+      return query.tag("user").prop("id", id).type(User).first
     }
 
     static lookupAdmin(){
@@ -94,8 +94,12 @@ class User extends Entity{
       return this;
     }
 
-    all(){
-      return User.search("tag:user")
+    static all(){
+      return query.tag("user").type(User).all
+    }
+
+    static active(){
+      return query.tag("user").not(query.tag("obsolete")).type(User).all
     }
 
     toObj(){

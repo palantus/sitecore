@@ -1,9 +1,9 @@
-import Entity from "entitystorage"
+import Entity, {query} from "entitystorage"
 import {getTimestamp} from "../tools/date.mjs"
 
 class LogEntry extends Entity {
   initNew(text, areaName = null) {
-    let area = areaName ? Entity.find(`tag:logarea prop:"id=${areaName}"`) : null
+    let area = areaName ? query.tag("logarea").prop("id", areaName).first : null
     if (!area && areaName) {
       area = new Entity().tag("logarea").prop("id", areaName)
     }

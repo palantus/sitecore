@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, {query} from "entitystorage"
 
 class Permission extends Entity {
 
@@ -10,7 +10,7 @@ class Permission extends Entity {
 
   static lookup(id){
     if(!id) return null;
-    return Permission.find(`tag:permission prop:"id=${id}"`)
+    return query.type(Permission).tag("permission").prop("id", id).first
   }
 
   static lookupOrCreate(id){
@@ -18,7 +18,7 @@ class Permission extends Entity {
   }
 
   static all(){
-    return Permission.search("tag:permission")
+    return query.type(Permission).tag("permission").all
   }
 }
 

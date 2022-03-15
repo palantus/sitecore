@@ -24,11 +24,11 @@ class Service {
   }
 
   all() {
-    return User.search("tag:user").map(u => u.toObj())
+    return User.all().map(u => u.toObj())
   }
 
   active() {
-    return User.search("tag:user !tag:obsolete").map(u => u.toObj())
+    return User.active().map(u => u.toObj())
   }
 
   del(id) {
