@@ -1,4 +1,4 @@
-import Entity, {sanitize} from "entitystorage";
+import Entity, {query, sanitize} from "entitystorage";
 import express from "express"
 const { Router, Request, Response } = express;
 import service from "../../services/user.mjs"
@@ -39,9 +39,9 @@ export default (app) => {
 
   userRoute.get("/counters", function (req, res, next) {
     res.json({
-      notifications: Entity.search(`tag:notification user.prop:id=${res.locals.user.id} !tag:dismissed`).length,
-      actions: Entity.search(`tag:action prop:state=running owner.prop:id=${res.locals.user.id}`).length,
-      note: !req.query.page ? false : Entity.find(`tag:wiki prop:"id=${createId(sanitize(req.query.page).slice(1))}"`) ? true : false
+      notifications: query.tag("notification").relatedTo(res.locals.user, "user").not(query.tag("dismissed")).count,
+      actions: query.tag("action").prop("state", "running").relatedTo(res.locals.user, "owner").count,
+      note: !req.query.page ? false : query.tag("wiki").prop("id", createId(sanitize(req.query.page).slice(1))).exists
     });
   });
 
