@@ -16,7 +16,7 @@ export default class Notification extends Entity{
     this.timestamp = getTimestamp()
     this.tag("notification")
 
-    sendEvent(this.related.user.id, "notification-new", {id: this._id})
+    sendEvent(this.related.user.id, "notification-new", {id: this._id, area, message, details})
   }
 
   dismiss(){

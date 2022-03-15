@@ -4,6 +4,8 @@ import { on, off, fire } from "../system/events.mjs"
 import { isSignedIn } from "../system/user.mjs";
 import { ready, state } from "../system/core.mjs"
 import api from "/system/api.mjs";
+import Toast from "/components/toast.mjs"
+import { toggleInRightbar } from "/pages/rightbar/rightbar.mjs";
 
 let elementName = "topbar-notifications-component"
 const template = document.createElement('template');
@@ -60,9 +62,14 @@ class Element extends HTMLElement {
     on("changed-page", elementName, this.refreshCounters)
     on("logged-in", elementName, this.refreshCounters)
     on("logged-out", elementName, this.refreshCounters)
-    onMessage("notification-new", elementName, () => {
+    onMessage("notification-new", elementName, ({id, message, details}) => {
       this.refreshCounters();
       new Audio("/libs/notification-sound.mp3").play();
+
+      new Toast({
+        text: details?.title ? `${details.title}: ${message}` : message,
+        onClick: () => toggleInRightbar("notifications", true)
+      })
     })
     onMessage("notification-dismissed", elementName, this.refreshCounters)
   }

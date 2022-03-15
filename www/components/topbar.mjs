@@ -5,6 +5,7 @@ import {getApiConfig, ready} from "/system/core.mjs"
 import "/components/topbar-user.mjs"
 import "/components/topbar-notifications.mjs"
 import { toggleInRightbar } from "/pages/rightbar/rightbar.mjs"
+import Toast from "/components/toast.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -71,6 +72,7 @@ class Element extends HTMLElement {
 
   connectedCallback() {
     on("log", "topbar", (message) => {
+      /*
       clearTimeout(this.logTimeout)
       this.shadowRoot.getElementById("log").classList.remove("hidden")
       let msg = typeof message === "object" ? message : { level: "info", message }
@@ -78,6 +80,10 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById("log").setAttribute("level", msg.level == "error" ? "error" : "info")
       this.shadowRoot.getElementById("log").innerText = msg.message
       this.logTimeout = setTimeout(this.clearCurLogItem, 5000)
+      */
+      new Toast({
+        text: typeof message === "object" ? message.message : message
+      })
     })
   }
 
