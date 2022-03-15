@@ -1,3 +1,5 @@
+// Credits to Web Dev Simplified on YouTube for the initial code :)
+
 const DEFAULT_OPTIONS = {
   autoClose: 5000,
   position: "top-right",
