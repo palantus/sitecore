@@ -7,6 +7,7 @@ import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
 import Setup from "../../models/setup.mjs";
 import DataType from "../../models/datatype.mjs";
+import LogArea from "../../models/logarea.mjs";
 
 export default (app) => {
 
@@ -14,17 +15,21 @@ export default (app) => {
 
   route.get('/log/:area', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(LogEntry.search(`tag:logentry area.prop:"id=${sanitize(req.params.area)}"`).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => e.toObj()));
+    let area = LogArea.lookup(req.params.area)
+    if(!area) return res.json([]);
+    res.json(area.entries
+                 .sort((a, b) => a.timestamp > b.timestamp ? -1 : 1)
+                 .slice(0, 200).map(e => e.toObj()))
   });
 
   route.get('/log', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(Entity.search("tag:logentry").sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => ({ timestamp: e.timestamp, text: e.text })));
+    res.json(LogEntry.all().sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => ({ timestamp: e.timestamp, text: e.text })));
   });
 
   route.get('/logareas', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(Entity.search("tag:logarea").map(e => ({ id: e.id })));
+    res.json(LogArea.all().map(e => ({ id: e.id })));
   });
 
   route.get("/db/query", (req, res, next) => {

@@ -1,12 +1,10 @@
 import Entity, {query} from "entitystorage"
 import {getTimestamp} from "../tools/date.mjs"
+import LogArea from "./logarea.mjs";
 
 class LogEntry extends Entity {
   initNew(text, areaName = null) {
-    let area = areaName ? query.tag("logarea").prop("id", areaName).first : null
-    if (!area && areaName) {
-      area = new Entity().tag("logarea").prop("id", areaName)
-    }
+    let area = LogArea.lookupOrCreate(areaName)
     
     this.text = text;
     this.timestamp = getTimestamp()
@@ -18,8 +16,16 @@ class LogEntry extends Entity {
     return {
       text: this.text,
       timestamp: this.timestamp,
-      area: this.rels.area?.map(a => ({id: a.id}))?.[0]||null
+      area: this.area?.toObj()||null
     }
+  }
+
+  get area(){
+    return LogArea.from(this.related.area)
+  }
+
+  static all(){
+    return query.type(LogEntry).tag("logentry").all
   }
 }
 
