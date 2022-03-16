@@ -102,11 +102,15 @@ class User extends Entity{
       return query.tag("user").not(query.tag("obsolete")).type(User).all
     }
 
+    get msUsers(){
+      return query.type(MSUser).tag("msuser").relatedTo(this, "user").all
+    }
+
     toObj(){
         return {
             id: this.id,
             name: this.name,
-            msUsers: MSUser.search(`tag:msuser rel:${this}=user`).map(msu => msu.toObj()),
+            msUsers: this.msUsers.map(msu => msu.toObj()),
             active: !this.tags.includes("obsolete"),
             virtual: this.tags.includes("virtual"),
             roles: this.roles
