@@ -65,7 +65,6 @@ class Element extends HTMLElement {
     
 
     this.shadowRoot.getElementById("search").value = state().query.filter || ""
-    this.refreshData();
 
     this.shadowRoot.getElementById('search').addEventListener("change", () => {
       this.queryChanged()
