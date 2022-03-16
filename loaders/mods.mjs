@@ -1,6 +1,6 @@
 import fs from 'fs'
 import glob from 'glob-promise';
-import Entity from "entitystorage"
+import Entity, { query } from "entitystorage"
 
 export default async ({mode}) => {
   let mods = (await new Promise(r => fs.readdir('mods', (err, files) => {if(err) return r([]); r(files)})))
@@ -13,7 +13,7 @@ export default async ({mode}) => {
   global.mods = []
   global.modRoutes = "let routes = [];\n"
   for(let id of mods){
-    let mod = Entity.find(`tag:sitemod prop:id=${id}`) || new Entity().tag("sitemod").prop("id", id).prop("enabled", true)
+    let mod = query.tag("sitemod").prop("id", id).first || new Entity().tag("sitemod").prop("id", id).prop("enabled", true)
     if(mod.enabled === false) continue;
     let content = await new Promise(r => fs.readFile(`mods/${id}/routes.mjs`, 'utf8', (err, data) => r(err ? "" : data)))
     global.modRoutes += `${content}\n\n`
@@ -24,6 +24,6 @@ export default async ({mode}) => {
       hasSetup: mod.hasSetup
     })
   }
-  Entity.search("tag:sitemod").filter(m => !mods.includes(m.id)).forEach(m => m.delete())
+  query.tag("sitemod").all.filter(m => !mods.includes(m.id)).forEach(m => m.delete())
   global.modRoutes += "export default routes;"
 }

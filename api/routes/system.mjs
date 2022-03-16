@@ -1,7 +1,7 @@
 import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
-import Entity, {sanitize, uiAPI} from "entitystorage"
+import Entity, {query, sanitize, uiAPI} from "entitystorage"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
@@ -52,11 +52,11 @@ export default (app) => {
   // Mods
   route.get("/mods", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(Entity.search(`tag:sitemod`).map(m => ({id: m.id, enabled: m.enabled || false, hasSetup: !!m.hasSetup})))
+    res.json(query.tag("sitemod").all.map(m => ({id: m.id, enabled: m.enabled || false, hasSetup: !!m.hasSetup})))
   })
   route.patch("/mod/:id", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    let mod = Entity.find(`tag:sitemod prop:"id=${sanitize(req.params.id)}"`)
+    let mod = query.tag("sitemod").prop("id", req.params.id).first
     if(!mod) throw "Unknown mod"
     if(req.body.enabled !== undefined) mod.enabled = !!req.body.enabled
     res.json({success: true})
