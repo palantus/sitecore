@@ -20,8 +20,8 @@ export default class Notification extends Entity{
   }
 
   dismiss(){
-    this.tag("dismissed")
     sendEvent(this.related.user.id, "notification-dismissed", {id: this._id})
+    this.delete()
   }
 
   static lookup(id){

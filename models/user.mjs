@@ -106,6 +106,10 @@ class User extends Entity{
       return query.type(MSUser).tag("msuser").relatedTo(this, "user").all
     }
 
+    get notifications(){
+      return query.type(Notification).tag("notification").relatedTo(this, "user").all
+    }
+
     toObj(){
         return {
             id: this.id,

@@ -11,7 +11,7 @@ export default (app) => {
   app.use("/notifications", route)
 
   route.get('/', function (req, res, next) {
-    res.json(Notification.search(`tag:notification !tag:dismissed user.id:${res.locals.user}`).map(n => ({
+    res.json(res.locals.user.notifications.map(n => ({
       id: n._id,
       area: n.area,
       message: n.message,
@@ -29,7 +29,7 @@ export default (app) => {
   });
 
   route.post('/dismissall', function (req, res, next) {
-    Notification.search(`tag:notification !tag:dismissed user.id:${res.locals.user}`).forEach(n => n.dismiss())
+    res.locals.user.notifications.forEach(n => n.dismiss())
     res.json({ success: true })
   });
 
