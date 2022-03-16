@@ -41,6 +41,9 @@ export default class Toast {
     this.#clickedBinded = this.clicked.bind(this)
     this.#unpause = () => (this.#isPaused = false)
     this.#pause = () => (this.#isPaused = true)
+    if(document.visibilityState !== "visible")
+      this.#pause()
+      
     this.#visibilityChange = () => {
       this.#shouldUnPause = document.visibilityState === "visible"
       if(document.visibilityState !== "visible"){
