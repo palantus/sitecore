@@ -44,7 +44,7 @@ class DataType extends Entity {
   }
 
   static all(){
-    return DataType.search(`tag:datatype`);
+    return query.type(DataType).tag("datatype").all;
   }
 
   get aclParent(){
