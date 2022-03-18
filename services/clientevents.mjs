@@ -50,7 +50,7 @@ async function handleClientRequest(messageText, ws){
         break;
       }
       handleMessage(msg.content, ws, ws.userId)
-      console.log(`Message from ${ws.userId}: ${JSON.stringify(msg.content)}`)
+      //console.log(`Message from ${ws.userId}: ${JSON.stringify(msg.content)}`)
       break;
   }
 }
