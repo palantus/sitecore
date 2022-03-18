@@ -5,7 +5,6 @@ import { isSignedIn } from "../system/user.mjs";
 import { ready, state } from "../system/core.mjs"
 import api from "/system/api.mjs";
 import Toast from "/components/toast.mjs"
-import { toggleInRightbar } from "/pages/rightbar/rightbar.mjs";
 
 let elementName = "topbar-notifications-component"
 const template = document.createElement('template');
@@ -67,8 +66,7 @@ class Element extends HTMLElement {
       new Audio("/libs/notification-sound.mp3").play();
 
       new Toast({
-        text: details?.title ? `${details.title}: ${message}` : message,
-        onClick: () => toggleInRightbar("notifications", true)
+        text: details?.title ? `${details.title}: ${message}` : message
       })
     })
     onMessage("notification-dismissed", elementName, this.refreshCounters)
