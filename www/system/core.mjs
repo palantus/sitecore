@@ -140,9 +140,11 @@ class SiteCore {
 
     let newPage = null;
     let path = this.state.path;
+    let showingCachedPage = false;
 
     if (this.pages[path] && !forceRefresh) {
       newPage = this.pages[path]
+      showingCachedPage = true
     } else {
       let route = lookupRoute(path)
       let elementName;
@@ -171,6 +173,9 @@ class SiteCore {
     this.renderPromise = null;
 
     fire("changed-page", this.state)
+    if(showingCachedPage){
+      fire("returned-to-page", this.state)
+    }
     this.setWindowTitle()
     resolve();
     return true;
