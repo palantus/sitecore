@@ -20,6 +20,8 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
+
+    this.setPage = this.setPage.bind(this)
   }
 
   connectedCallback() {
@@ -28,42 +30,63 @@ class Element extends HTMLElement {
   disconnectedCallback() {
   }
 
-  static get observedAttributes() {
-    return ['page'];
+  setAttributeOnComponent(name, value){
+    this.shadowRoot.getElementById("container").firstChild?.setAttribute(name, value)
   }
-  
-  attributeChangedCallback(name, oldValue, newValue) {
-    switch (name) {
-      case 'page':
-        this.shadowRoot.querySelectorAll("#container .item").forEach(e => e.style.display = "none")
-        if(!newValue){
-          document.getElementById("grid-container").classList.remove("rightvisible");
-          this.shadowRoot.getElementById("container").innerHTML = "";
-          return;
-        }
-        document.getElementById("grid-container").classList.add("rightvisible");
-        if(isMobile()){
-          document.getElementById("grid-container").classList.add("collapsed")
-        }
-        this.shadowRoot.getElementById("container").innerHTML = "";
-        import(`/pages/rightbar/${newValue}.mjs`).then(() => {
-          let componentName = `rightbar-${newValue}-component`;
-          let element = document.createElement(componentName)
-          this.shadowRoot.getElementById("container").appendChild(element)
-          element.classList.add("item")
-          element.style.display = "block"
-          element.dispatchEvent(new CustomEvent("opened", {bubbles: true, cancelable: false}));
-        })
-        break;
-    }
+
+  async setPage(pageId){
+    this.setAttribute("page", pageId)
+    return new Promise(resolve => {
+      this.shadowRoot.querySelectorAll("#container .item").forEach(e => e.style.display = "none")
+      document.getElementById("grid-container").classList.add("rightvisible");
+      if(isMobile()){
+        document.getElementById("grid-container").classList.add("collapsed")
+      }
+      this.shadowRoot.getElementById("container").innerHTML = "";
+      import(`/pages/rightbar/${pageId}.mjs`).then(() => {
+        let componentName = `rightbar-${pageId}-component`;
+        let element = document.createElement(componentName)
+        this.shadowRoot.getElementById("container").appendChild(element)
+        element.classList.add("item")
+        element.style.display = "block"
+        element.dispatchEvent(new CustomEvent("opened", {bubbles: true, cancelable: false}));
+        resolve();
+      })
+    })
+  }
+
+  hidePage(){
+    document.getElementById("grid-container").classList.remove("rightvisible");
+    this.shadowRoot.getElementById("container").innerHTML = "";
+    this.setAttribute("page", "")
   }
 }
 
 window.customElements.define(elementName, Element);
 export {Element, elementName as name}
 
-export let toggleInRightbar = (pageId, force) => {
+export let toggleInRightbar = (pageId, force, args) => {
   if(!pageId) return;
   let rightBar = document.querySelector("#grid-container .right rightbar-component");
-  rightBar.setAttribute("page", (rightBar.getAttribute("page") == pageId || force === false) ? "" : pageId)
+  let doShow = typeof force === "boolean" ? force : rightBar.getAttribute("page") != pageId
+  if(doShow) showInRightbar(pageId, args)
+  else rightBar.hidePage()
+}
+
+export let showInRightbar = async (pageId, args, useExistingIfAvailable = false) => {
+  if(!pageId) return;
+  let rightBar = document.querySelector("#grid-container .right rightbar-component");
+  if(!useExistingIfAvailable || rightBar.getAttribute("page") != pageId){
+    await rightBar.setPage(pageId)
+  }
+  if(args){
+    for(let [name, value] of Object.entries(args)){
+      rightBar.setAttributeOnComponent(name, value)
+    }
+  }
+}
+
+export let closeRightbar = (pageId, args) => {
+  let rightBar = document.querySelector("#grid-container .right rightbar-component");
+  rightBar.hidePage()
 }
