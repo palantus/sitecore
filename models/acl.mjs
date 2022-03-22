@@ -24,9 +24,9 @@ export default class ACL{
            : a == "users" ? `${a}:${u}` 
            : a 
     }
-    this.entity.acl = `r:${conv(newAcl.read?.access, newAcl.read.role, newAcl.read.users)};`
-                    + `w:${conv(newAcl.write?.access, newAcl.write.role, newAcl.write.users)};`
-                    + `x:${conv(newAcl.execute?.access, newAcl.execute.role, newAcl.execute.users)}`
+    this.entity.acl = (newAcl.read ? `r:${conv(newAcl.read.access, newAcl.read.role, newAcl.read.users)};` : '')
+                    + (newAcl.write ? `w:${conv(newAcl.write.access, newAcl.write.role, newAcl.write.users)};` : '')
+                    + (newAcl.execute ? `x:${conv(newAcl.execute.access, newAcl.execute.role, newAcl.execute.users)}` : '')
     this.acl = newAcl
   }
 
