@@ -38,10 +38,12 @@ class Element extends HTMLElement {
     for(let [name, value] of args){
       this.setAttributeOnComponent(name, value)
     }
+    this._args = args
   }
 
   async setPage(pageId, args = []){
     this.setAttribute("page", pageId)
+    this._args = args
     return new Promise(resolve => {
       this.shadowRoot.querySelectorAll("#container .item").forEach(e => e.style.display = "none")
       document.getElementById("grid-container").classList.add("rightvisible");
@@ -77,8 +79,10 @@ export {Element, elementName as name}
 export let toggleInRightbar = (pageId, force, args) => {
   if(!pageId) return;
   let rightBar = document.querySelector("#grid-container .right rightbar-component");
-  let doShow = typeof force === "boolean" ? force : rightBar.getAttribute("page") != pageId
-  if(doShow) showInRightbar(pageId, args)
+  let differentPage = rightBar.getAttribute("page") != pageId
+  let differentArgs = args && JSON.stringify(args) != JSON.stringify(rightBar._args)
+  if(!differentPage && differentArgs) showInRightbar(pageId, args, true)
+  else if(differentPage) showInRightbar(pageId, args)
   else rightBar.hidePage()
 }
 
