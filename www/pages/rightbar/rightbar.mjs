@@ -35,12 +35,12 @@ class Element extends HTMLElement {
   }
 
   setArgs(args){
-    for(let [name, value] of Object.entries(args)){
+    for(let [name, value] of args){
       this.setAttributeOnComponent(name, value)
     }
   }
 
-  async setPage(pageId, args = {}){
+  async setPage(pageId, args = []){
     this.setAttribute("page", pageId)
     return new Promise(resolve => {
       this.shadowRoot.querySelectorAll("#container .item").forEach(e => e.style.display = "none")
@@ -52,7 +52,7 @@ class Element extends HTMLElement {
       import(`/pages/rightbar/${pageId}.mjs`).then(() => {
         let componentName = `rightbar-${pageId}-component`;
         let element = document.createElement(componentName)
-        for(let [name, value] of Object.entries(args)){
+        for(let [name, value] of args){
           element.setAttribute(name, value)
         }
         this.shadowRoot.getElementById("container").appendChild(element)
