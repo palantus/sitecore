@@ -350,7 +350,6 @@ class Element extends HTMLElement {
         break;
       case "type":
         this.typeId = newValue
-        this.refreshData()
         break;
       case "entity-id":
         this.entityId = newValue

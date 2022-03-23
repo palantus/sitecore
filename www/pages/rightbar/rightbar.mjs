@@ -34,7 +34,13 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("container").firstChild?.setAttribute(name, value)
   }
 
-  async setPage(pageId){
+  setArgs(args){
+    for(let [name, value] of Object.entries(args)){
+      this.setAttributeOnComponent(name, value)
+    }
+  }
+
+  async setPage(pageId, args = {}){
     this.setAttribute("page", pageId)
     return new Promise(resolve => {
       this.shadowRoot.querySelectorAll("#container .item").forEach(e => e.style.display = "none")
@@ -46,6 +52,9 @@ class Element extends HTMLElement {
       import(`/pages/rightbar/${pageId}.mjs`).then(() => {
         let componentName = `rightbar-${pageId}-component`;
         let element = document.createElement(componentName)
+        for(let [name, value] of Object.entries(args)){
+          element.setAttribute(name, value)
+        }
         this.shadowRoot.getElementById("container").appendChild(element)
         element.classList.add("item")
         element.style.display = "block"
@@ -77,12 +86,9 @@ export let showInRightbar = async (pageId, args, useExistingIfAvailable = false)
   if(!pageId) return;
   let rightBar = document.querySelector("#grid-container .right rightbar-component");
   if(!useExistingIfAvailable || rightBar.getAttribute("page") != pageId){
-    await rightBar.setPage(pageId)
-  }
-  if(args){
-    for(let [name, value] of Object.entries(args)){
-      rightBar.setAttributeOnComponent(name, value)
-    }
+    await rightBar.setPage(pageId, args)
+  } else {
+    rightBar.setArgs(args)
   }
 }
 
