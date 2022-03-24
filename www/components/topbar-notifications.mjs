@@ -75,10 +75,12 @@ class Element extends HTMLElement {
   async refreshCounters() {
     await ready;
     if(!isSignedIn()) return;
-    let counters = await api.get(`user/counters?page=${state().path}`, {cache: true, maxAge: 100})
-    if (!counters) return;
-    this.shadowRoot.getElementById("noti-counter").style.display = counters.notifications < 1 ? "none" : "inline"
-    this.shadowRoot.getElementById("noti-counter").innerText = counters.notifications
+    setTimeout(async () => {
+      let counters = await api.get(`user/counters?page=${state().path}`, {cache: true, maxAge: 100})
+      if (!counters) return;
+      this.shadowRoot.getElementById("noti-counter").style.display = counters.notifications < 1 ? "none" : "inline"
+      this.shadowRoot.getElementById("noti-counter").innerText = counters.notifications
+    }, 100)
   }
 }
 
