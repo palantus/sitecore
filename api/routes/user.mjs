@@ -109,9 +109,9 @@ export default (app) => {
     let u = service(res.locals).me()
     if (!u) throw "No user"
 
-    if(!req.body.newPass || !req.body.existingPass) throw "missing newPass or existingPass"
+    if(!req.body.newPass || req.body.existingPass === undefined) throw "missing newPass or existingPass"
     
-    if(u.validatePassword(req.body.existingPass)){
+    if(!u.hasPassword() || u.validatePassword(req.body.existingPass)){
       u.setPassword(req.body.newPass)
     } else {
       res.status(501).json({success: false, error: "Wrong password"})

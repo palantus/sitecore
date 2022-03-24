@@ -87,8 +87,7 @@ class Element extends HTMLElement {
         this.refreshData()
       },
       validate: (val) => 
-          !val.existingPass ? "Please fill out existing password"
-        : !val.newPass ? "Please fill out new password"
+          !val.newPass ? "Please fill out new password"
         : true,
       values: () => {return {
         existingPass: this.shadowRoot.getElementById("pass-existing").value,
