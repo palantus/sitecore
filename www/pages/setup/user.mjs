@@ -130,7 +130,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("password").setAttribute("value", user.passwordSet ? "12345678" : "");
     this.shadowRoot.getElementById("active").setAttribute("value", user.active);
     
-    this.shadowRoot.getElementById("msusers").innerHTML = user.msUsers.map(u => u.vsts ? `${u.email} (vsts)` : u.email).join("<br/>")
+    this.shadowRoot.getElementById("msusers").innerHTML = user.msUsers.map(u => u.vsts ? `${u.email} (vsts)` : u.email).join("<br/>") || "- None -"
     
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `user/${user.id}`));
 
