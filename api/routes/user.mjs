@@ -18,8 +18,10 @@ export default (app) => {
 
   userRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
-    if(!req.body.id || !req.body.name) throw "id and name are mandatory for users"
-    res.json(service(res.locals).add(sanitize(req.body.id), req.body.name, req.body.roles));
+    if(!req.body.id || !req.body.name || typeof req.body.name !== "string") throw "id and name are mandatory for users"
+    let id = req.body.id.replace(/[^a-zA-Z0-9\-_@&.]/g, '')
+    if(typeof req.body.id !== "string" || req.body.id !== id) throw "Invalid user id";
+    res.json(service(res.locals).add(id, req.body.name, req.body.roles));
   });
 
   userRoute.get('/', function (req, res, next) {
@@ -32,10 +34,12 @@ export default (app) => {
     res.json(User.search("tag:user !tag:obsolete").map(u => ({id: u.id, name: u.name})));
   });
 
+  /*
   userRoute.delete('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     res.json(service(res.locals).del(sanitize(req.params.id)));
   });
+  */
 
   userRoute.get("/counters", function (req, res, next) {
     res.json({
