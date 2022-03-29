@@ -38,7 +38,6 @@ template.innerHTML = `
     </field-list>
     
     <br/>
-    <br/>
 
     <h3>Roles</h3>
     <table>
@@ -46,9 +45,7 @@ template.innerHTML = `
     </table>
 
     <br/>
-    <br/>
 
-    <br/>
     <h3>Microsoft users:</h3>
     <div id="msusers"></div>
 
