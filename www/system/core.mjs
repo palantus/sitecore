@@ -65,7 +65,7 @@ class SiteCore {
     let importedMods = await Promise.all(modPromises)
     for(let imported of importedMods){
       if(typeof imported.load !== "function") return;
-      imported.load(mod)
+      imported.load()
     }
   }
 
