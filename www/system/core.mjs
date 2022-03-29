@@ -26,8 +26,7 @@ class SiteCore {
     
     window.localStorage.setItem("SiteTitle", apiConfig.title)
 
-    await Promise.all([refreshStatus(), initRouter()])
-
+    await Promise.all([refreshStatus(), initRouter(), this.loadMods()])
     readyResolve();
 
     window.history.replaceState(this.state, null, this.state.path + window.location.search);
@@ -53,6 +52,20 @@ class SiteCore {
         document.getElementById("grid-container").classList.add("collapsed")
         document.getElementById("grid-container").classList.remove("rightvisible")
       })
+    }
+  }
+
+  async loadMods(){
+    let modPromises = []
+    for(let mod of getApiConfig().mods){
+      let path = `/load-mod-${mod.id}.mjs`
+      if(!mod.files.includes(path)) continue;
+      modPromises.push(import(path))
+    }
+    let importedMods = await Promise.all(modPromises)
+    for(let imported of importedMods){
+      if(typeof imported.load !== "function") return;
+      imported.load(mod)
     }
   }
 

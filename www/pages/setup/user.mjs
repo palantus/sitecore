@@ -55,11 +55,10 @@ template.innerHTML = `
     <dialog-component title="Assign user to MS user" id="msuser-dialog">
       <field-component label="MS email or id"><input list="emails" id="msuser-email"></input></field-component>
     </dialog-component>
-
+  </div>
     
   <datalist id="emails">
   </datalist>
-  </div>
 `;
 
 class Element extends HTMLElement {
@@ -79,6 +78,12 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)
 
     this.elementId = `${elementName}-${this.userId}`
+
+    fire("user-page-created", {
+      page: this, 
+      container: this.shadowRoot.getElementById("container"), 
+      userId: this.userId
+    })
   }
 
   async assignToMSUser(){
