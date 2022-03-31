@@ -7,9 +7,10 @@ import "/components/field.mjs"
 import "/components/field-edit.mjs"
 import "/components/field-list.mjs"
 import {on, off, fire} from "/system/events.mjs"
-import {state} from "/system/core.mjs"
+import {state, goto} from "/system/core.mjs"
 import {showDialog} from "/components/dialog.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
+import { getApiConfig } from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -26,6 +27,7 @@ template.innerHTML = `
 
   <action-bar>
       <action-bar-item id="msuser-btn">Assign to MS user</action-bar-item>
+      <action-bar-item id="change-username-btn">Change user id</action-bar-item>
   </action-bar>
 
   <div id="container">
@@ -46,8 +48,10 @@ template.innerHTML = `
 
     <br/>
 
-    <h3>Microsoft users:</h3>
-    <div id="msusers"></div>
+    <div id="ms-container">
+      <h3>Microsoft users:</h3>
+      <div id="msusers"></div>
+    </div>
 
     <dialog-component title="Assign user to MS user" id="msuser-dialog">
       <field-component label="MS email or id"><input list="emails" id="msuser-email"></input></field-component>
@@ -56,6 +60,13 @@ template.innerHTML = `
     
   <datalist id="emails">
   </datalist>
+
+  <dialog-component title="Change user id" id="change-username-dialog">
+    <p>This can cause problems with eg. permission filters (ACLs) etc. Make sure that you know what you are doing.</p>
+
+    <field-component label="Existing"><input type="text" id="user-existing"></input></field-component>
+    <field-component label="New"><input type="text" id="user-new"></input></field-component>
+  </dialog-component>
 `;
 
 class Element extends HTMLElement {
@@ -66,12 +77,14 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.assignToMSUser = this.assignToMSUser.bind(this); //Make sure "this" in that method refers to this
+    this.changeUsername = this.changeUsername.bind(this)
     this.roleClick = this.roleClick.bind(this)
     this.refreshData = this.refreshData.bind(this)
     
     this.userId = /\/setup\/users\/([a-z0-9\_\-]+)/.exec(state().path)[1]
     this.refreshData();
-    this.shadowRoot.querySelector("#msuser-btn").addEventListener("click", this.assignToMSUser)
+    this.shadowRoot.getElementById("msuser-btn").addEventListener("click", this.assignToMSUser)
+    this.shadowRoot.getElementById("change-username-btn").addEventListener("click", this.changeUsername)
     this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)
 
     this.elementId = `${elementName}-${this.userId}`
@@ -116,6 +129,35 @@ class Element extends HTMLElement {
     })
   }
 
+  async changeUsername(){
+    let dialog = this.shadowRoot.querySelector("#change-username-dialog")
+
+    showDialog(dialog, {
+      show: () => this.shadowRoot.querySelector("#user-existing").focus(),
+      ok: async (val) => {
+        let res = await api.post(`user/${this.userId}/change-id`, val)
+        if(res?.error){
+          fire("log", {level: "error", message: res.error})
+          return;
+        }
+        goto(`/setup/users/${val.newId}`)
+      },
+      validate: (val) => 
+          !val.newId ? "Please fill out new id"
+        : !val.oldId ? "Please fill out old id"
+        : val.newId == val.oldId ? "Old and new are the same"
+        : val.oldId != this.userId ? "Incorrect existing user id"
+        : true,
+      values: () => {return {
+        oldId: this.shadowRoot.getElementById("user-existing").value,
+        newId: this.shadowRoot.getElementById("user-new").value
+      }},
+      close: () => {name
+        this.shadowRoot.querySelectorAll("field-component input").forEach(e => e.value = '')
+      }
+    })
+  }
+
   async refreshData(){
     let id = this.userId;
 
@@ -134,6 +176,8 @@ class Element extends HTMLElement {
     let roles = await api.get("role")
     this.shadowRoot.getElementById("roles").innerHTML = roles.sort((a, b) => a.id < b.id ? -1 : 1)
                                                              .map(r => `<tr data-roleid="${r.id}"><td><field-ref ref="/setup/role/${r.id}">${r.id}</field-ref></td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
+
+    this.shadowRoot.getElementById("ms-container").style.display = getApiConfig().msSigninEnabled ? "block" : "none"
   }
 
   roleClick(e){

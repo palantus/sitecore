@@ -27,6 +27,13 @@ class User extends Entity{
         return MSUser.find(`tag:msuser prop:"email=${email}"`)?.related?.user
     }
 
+    static validateUserId(newId){
+      if(typeof newId !== "string" || !newId) return false;
+      let id = newId.replace(/[^a-zA-Z0-9\-_@&.]/g, '')
+      if(newId !== id) return false;
+      return true;
+    }
+
     notify(area, message, details){
       new Notification(this, area, message, details)
     }

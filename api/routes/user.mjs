@@ -19,9 +19,8 @@ export default (app) => {
   userRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.body.id || !req.body.name || typeof req.body.name !== "string") throw "id and name are mandatory for users"
-    let id = req.body.id.replace(/[^a-zA-Z0-9\-_@&.]/g, '')
-    if(typeof req.body.id !== "string" || req.body.id !== id) throw "Invalid user id";
-    res.json(service(res.locals).add(id, req.body.name, req.body.roles));
+    if(!User.validateUserId(req.body.id)) throw "Invalid user id";
+    res.json(service(res.locals).add(req.body.id, req.body.name, req.body.roles));
   });
 
   userRoute.get('/', function (req, res, next) {
@@ -70,6 +69,17 @@ export default (app) => {
     if (req.body.password !== undefined) user.setPassword(req.body.password || null);
 
     res.json(true);
+  });
+
+  userRoute.post('/:id/change-id', noGuest, function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    if(!req.body.newId) throw "missing newId"
+    if(!User.validateUserId(req.body.newId)) throw "Invalid user id";
+    let user = User.lookup(req.params.id)
+    if (!user) throw "Unknown user"
+    if(User.lookup(req.body.newId)) throw "User id is already in use"
+    user.id = req.body.newId
+    res.json(true)
   });
   
   /* Me */
