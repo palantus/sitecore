@@ -50,25 +50,6 @@ class Service {
     return MSUser.search("tag:msuser").filter(u => u.related.user ? false : true)
   }
 
-  assignToMSAccount(id, msid) {
-    let msUser = MSUser.lookup(msid)
-    if (msUser) {
-      if (msUser.related.user && msUser.related.user.id != id) {
-        return "MS user is already assigned to another user"
-      } else {
-        let user = User.lookup(id)
-        if (user) {
-          msUser.rel(user, "user")
-          return true;
-        } else {
-          return "Local user doesn't exist"
-        }
-      }
-    } else {
-      return "MS user doesn't exist. Try logging in with it first."
-    }
-  }
-
   getTempAuthToken(user) {
     if (!Service.global.authTokens) Service.global.authTokens = new Map()
     let token = uuidv4()

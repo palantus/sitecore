@@ -110,7 +110,7 @@ class Element extends HTMLElement {
     showDialog(dialog, {
       show: () => this.shadowRoot.querySelector("#msuser-email").focus(),
       ok: async (val) => {
-        let res = await api.post(`user/${this.userId}/assignToMSAccount/${val.email}`, val)
+        let res = await api.post(`user/${this.userId}/assignToMSAccount`, val)
         if(res?.error){
           fire("log", {level: "error", message: res.error})
           return;
@@ -118,10 +118,11 @@ class Element extends HTMLElement {
         this.refreshData()
       },
       validate: (val) => 
-          !val.email ? "Please fill out email"
+          !val.msid ? "Please fill out email"
         : true,
       values: () => {return {
-        email: this.shadowRoot.getElementById("msuser-email").value
+        msid: this.shadowRoot.getElementById("msuser-email").value,
+        createIfMissing: true
       }},
       close: () => {name
         this.shadowRoot.querySelectorAll("field-component input").forEach(e => e.value = '')

@@ -53,10 +53,27 @@ export default (app) => {
     res.json(service(res.locals).get(sanitize(req.params.id)));
   });
 
-  userRoute.post('/:id/assignToMSAccount/:msid', function (req, res, next) {
+  userRoute.post('/:id/assignToMSAccount', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
-    let result = service(res.locals).assignToMSAccount(sanitize(req.params.id), sanitize(req.params.msid));
-    res.json(typeof result === "string" ? { error: result } : true);
+    let user = User.lookup(req.params.id)
+    if(!user) throw "User doesn't exist";
+    let msid = req.body.msid
+
+    let msUser = MSUser.lookup(msid)
+    if(!msUser && req.body.createIfMissing === true && /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(msid)){
+      msUser = new MSUser(null, {email: msid})
+    }
+
+    if (msUser) {
+      if (msUser.related.user && msUser.related.user.id != id) {
+        throw "MS user is already assigned to another user"
+      } else {
+        msUser.rel(user, "user")
+        res.json(true)
+      }
+    } else {
+      throw "MS user doesn't exist. Try logging in with it first."
+    }
   });
 
   userRoute.patch('/:id', function (req, res, next) {
