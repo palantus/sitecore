@@ -22,8 +22,6 @@ template.innerHTML = `
 
     .counter{
       width: 22px;
-      top: -11px;
-      right: 4px;
       position: absolute;
       cursor: pointer;
       background: rgba(255, 0, 0, 0.7);
@@ -33,6 +31,8 @@ template.innerHTML = `
       font-size: 110%;
       pointer-events: none;
       display: none;
+      z-index: 2;
+      margin-top: 4px;
     }
 
     #container{
@@ -40,8 +40,8 @@ template.innerHTML = `
     }
   </style>
   <span id="container">
-    <img class="noti" id="notifications-toggle" src="/img/bell.png" alt="Notifications" title="Notifications"/>
     <span class="counter" id="noti-counter"></span>
+    <img class="noti" id="notifications-toggle" src="/img/bell.png" alt="Notifications" title="Notifications"/>
   </span>
 `;
 
