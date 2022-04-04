@@ -33,7 +33,6 @@ template.innerHTML = `
         }
 
         span.content{
-            bottom: 2px;
             position: relative;
         }
         span.container{

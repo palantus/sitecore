@@ -28,6 +28,7 @@ template.innerHTML = `
       color: white;
       min-width: 200px; 
       backdrop-filter: blur(5px);
+      z-index: 10;
     }
 
     .dropdown:focus-within{
@@ -51,7 +52,7 @@ template.innerHTML = `
 
       position: absolute;
       left: calc(100% / 2 - 10px);
-      top: 100%;
+      top: calc(100% - 2px);
   }
   </style>
   <span class="dropdown" data-dropdown>
