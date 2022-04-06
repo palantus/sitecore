@@ -25,7 +25,6 @@ class APIKey extends Entity {
       for(let key of query.type(APIKey).tag("apikey").prop("daily", true).all){
         dailyTokensToKeyMap.set(key.generateDailyToken(cacheDate), key)
       }
-      console.log(dailyTokensToKeyMap)
     }
     return dailyTokensToKeyMap.get(token) || APIKey.find(`tag:apikey prop:"key=${token}" !prop:daily=true`) 
   }
