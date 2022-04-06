@@ -46,9 +46,8 @@ template.innerHTML = `
       <tbody id="roles"></tbody>
     </table>
 
-    <br/>
-
     <div id="ms-container">
+      <br/>
       <h3>Microsoft users:</h3>
       <div id="msusers"></div>
     </div>
