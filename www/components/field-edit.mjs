@@ -96,7 +96,7 @@ class Element extends HTMLElement {
       this.lookupRefreshPromise = new Promise(async resolve => {
         let dataTypes = await api.get("system/datatypes", {cache: true})
         let permissions = await userPermissions()
-        let type = dataTypes.find(t => t.id == lookup && (!t.permission || permissions.includes(t.permission)))
+        let type = dataTypes.find(t => t.id == lookup && (!t.permission || permissions.includes(t.permission) || permissions.includes("admin")))
         if(type){
           let options = (await api.get(type.api.path, {cache: true})).map(val => ({id: val[type.api.fields.id], name: val[type.api.fields.name]}))
                                                                     .sort((a, b) => a.name < b.name ? -1 : 1)
