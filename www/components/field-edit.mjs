@@ -100,7 +100,7 @@ class Element extends HTMLElement {
         if(type){
           let options = (await api.get(type.api.path, {cache: true})).map(val => ({id: val[type.api.fields.id], name: val[type.api.fields.name]}))
                                                                     .sort((a, b) => a.name < b.name ? -1 : 1)
-                                                                    .map(({id, name}) => `<option value="${id}">${(type.ui.showId || this.hasAttribute("show-id")) ? `${id}: ${name}` : name}</option>`)
+                                                                    .map(({id, name}) => `<option value="${id}">${this.hasAttribute("only-id") ? id : (type.ui.showId || this.hasAttribute("show-id")) ? `${id}: ${name}` : name}</option>`)
                                                                     .join("");
           if(this.getAttribute("type") == "select"){
             this.shadowRoot.querySelector("select").innerHTML = `<option value=""></option>${options}`
