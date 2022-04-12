@@ -64,7 +64,7 @@ class Element extends HTMLElement {
 
   async refreshData(){
     let mods = await api.get("system/mods")
-    this.shadowRoot.getElementById("mods").innerHTML = mods.map(m => `
+    this.shadowRoot.getElementById("mods").innerHTML = mods.sort((a, b) => a.id < b.id ? -1 : 1).map(m => `
       <tr>
         <td>${(m.hasSetup && m.enabled) ? `<field-ref ref="/${m.id}/setup">${m.id}</field-ref>` : `${m.id}`}</td>
         <td><field-edit field="enabled" type="checkbox" patch="system/mod/${m.id}" value="${m.enabled ? "true" : "false"}"></field-edit></td>
