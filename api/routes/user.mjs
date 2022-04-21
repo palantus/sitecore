@@ -113,7 +113,9 @@ export default (app) => {
   meRoute.patch('/setup', noGuest, function (req, res, next) {
     let u = service(res.locals).me()
     if (!u) throw "No user"
-    Object.assign(u.setup, req.body)
+    if(typeof req.body.home === "string") u.setup.home = req.body.home;
+    if(typeof req.body.name === "string") u.setup.name = req.body.name;
+    if(typeof req.body.email === "string") u.setup.email = req.body.email;
     res.json({success: true})
   });
 

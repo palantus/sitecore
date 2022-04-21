@@ -37,6 +37,7 @@ template.innerHTML = `
 
     <field-list labels-pct="20">
       <field-edit type="text" label="Name" id="name" disabled></field-edit>
+      <field-edit type="text" label="E-mail" id="email" disabled></field-edit>
       <field-edit type="text" label="Home path" id="home"></field-edit>
     </field-list>
 
@@ -105,10 +106,11 @@ class Element extends HTMLElement {
   }
 
   async refreshData(){
-    let user = (await api.query(`{me {id, name, passwordSet, msUsers{email, vsts}, roles, active, home}}`)).me
+    let user = (await api.query(`{me {id, name, email, passwordSet, msUsers{email, vsts}, roles, active, home}}`)).me
     if(!user){alertDialog("could not retrive user"); return;}
 
     this.shadowRoot.getElementById("name").setAttribute("value", user.name);
+    this.shadowRoot.getElementById("email").setAttribute("value", user.email);
     this.shadowRoot.getElementById("home").setAttribute("value", user.home||"");
     
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `me/setup`));
