@@ -71,6 +71,11 @@ class Element extends HTMLElement {
         this.shadowRoot.getElementById("custom-mod-container").appendChild(div)
       })
     }
+
+    fire("user-profile-page-created", {
+      page: this, 
+      container: this.shadowRoot.getElementById("container")
+    })
   }
 
   async changePass(){
@@ -100,8 +105,6 @@ class Element extends HTMLElement {
   }
 
   async refreshData(){
-    let id = this.userId;
-
     let user = (await api.query(`{me {id, name, passwordSet, msUsers{email, vsts}, roles, active, home}}`)).me
     if(!user){alertDialog("could not retrive user"); return;}
 

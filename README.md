@@ -73,3 +73,8 @@ Create a component in a file called `user-profile-XXXX.mjs` in your mod and it w
 ### Add icon to the top-right of the page
 
 Create a component in a file called `topbar-XXXX.mjs` in your mod and it will be shown to the left of notifications. Set the attribute `page` to a component to show in the rightbar (similar to user and notifications). The value should exist as a component at path `/pages/rightbar/<page>.mjs`. Note that it must export a property called `name` which contains the custom element name that should be used.
+
+### Add content to core pages
+
+- User page (page viewed by admins): subscribe to event `user-page-created`. When fired, you will get an object with `{page, container, userId}`
+- Profile page (page viewed by the current user): subscribe to event `user-profile-page-created`. When fired, you will get an object with `{page, container}`
