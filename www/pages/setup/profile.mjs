@@ -110,7 +110,7 @@ class Element extends HTMLElement {
     if(!user){alertDialog("could not retrive user"); return;}
 
     this.shadowRoot.getElementById("name").setAttribute("value", user.name);
-    this.shadowRoot.getElementById("email").setAttribute("value", user.email);
+    this.shadowRoot.getElementById("email").setAttribute("value", user.email||"");
     this.shadowRoot.getElementById("home").setAttribute("value", user.home||"");
     
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `me/setup`));
