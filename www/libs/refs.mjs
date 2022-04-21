@@ -4,6 +4,6 @@ export function refToPath(ref){
     // Override this file to include custom ref types
 
     default:
-      return "";
+      return ref.uiPath || "";
   }
 }
