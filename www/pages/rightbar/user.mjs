@@ -12,7 +12,21 @@ template.innerHTML = `
     #container{color: white; padding: 10px;}
     h2{margin: 0px; border-bottom: 1px solid lightgray; padding-bottom: 5px;}
     span{color: var(--accent-color-light);}
-    button{margin-bottom: 5px;}
+    button{
+      margin-bottom: 5px; 
+      width: 100%;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      box-shadow: 1px 1px 5px #666;
+      background: rgba(255, 255, 255, 1);
+      border-radius: 7px;
+      cursor: pointer;
+      border: 1px solid #aaaa;
+    }
+    button:hover{
+      box-shadow: 3px 3px 5px #333;
+      background: rgba(255, 255, 255, 0.66);
+    }
     #signedin{display: none;}
     #signedout{display: none;}
   </style>
