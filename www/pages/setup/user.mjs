@@ -35,6 +35,7 @@ template.innerHTML = `
 
     <field-list labels-pct="20">
       <field-edit type="text" label="Name" id="name"></field-edit>
+      <field-edit type="text" label="Email" id="email"></field-edit>
       <field-edit type="password" label="Password" id="password"></field-edit>
       <field-edit type="checkbox" label="Active" id="active"></field-edit>
     </field-list>
@@ -161,11 +162,12 @@ class Element extends HTMLElement {
   async refreshData(){
     let id = this.userId;
 
-    let user = (await api.query(`{user(id:"${id}") {id, name, passwordSet, msUsers{email, vsts}, roles, active}}`)).user
+    let user = (await api.query(`{user(id:"${id}") {id, name, email, passwordSet, msUsers{email, vsts}, roles, active}}`)).user
     if(!user){alertDialog("could not retrive user"); return;}
 
     this.shadowRoot.getElementById("user-id").innerText = user.id;
     this.shadowRoot.getElementById("name").setAttribute("value", user.name);
+    this.shadowRoot.getElementById("email").setAttribute("value", user.email);
     this.shadowRoot.getElementById("password").setAttribute("value", user.passwordSet ? "12345678" : "");
     this.shadowRoot.getElementById("active").setAttribute("value", user.active);
     

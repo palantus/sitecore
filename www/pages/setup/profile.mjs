@@ -37,7 +37,7 @@ template.innerHTML = `
 
     <field-list labels-pct="20">
       <field-edit type="text" label="Name" id="name" disabled></field-edit>
-      <field-edit type="text" label="E-mail" id="email" disabled></field-edit>
+      <field-edit type="text" label="E-mail" id="email"></field-edit>
       <field-edit type="text" label="Home path" id="home"></field-edit>
     </field-list>
 

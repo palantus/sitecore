@@ -60,7 +60,7 @@ export default (app) => {
     let msid = req.body.msid
 
     let msUser = MSUser.lookup(msid)
-    if(!msUser && req.body.createIfMissing === true && /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(msid)){
+    if(!msUser && req.body.createIfMissing === true && User.validateEmailAddress(msid)){
       msUser = new MSUser(null, {email: msid})
     }
 
@@ -84,6 +84,10 @@ export default (app) => {
     if (req.body.name !== undefined) user.name = req.body.name
     if (req.body.active !== undefined) {if(req.body.active) user.activate(); else user.deactivate();}
     if (req.body.password !== undefined) user.setPassword(req.body.password || null);
+    if(typeof req.body.email === "string") {
+      if(req.body.email && !User.validateEmailAddress(req.body.email)) throw "Invalid email"
+      user.email = req.body.email;
+    }
 
     res.json(true);
   });
@@ -114,8 +118,11 @@ export default (app) => {
     let u = service(res.locals).me()
     if (!u) throw "No user"
     if(typeof req.body.home === "string") u.setup.home = req.body.home;
-    if(typeof req.body.name === "string") u.setup.name = req.body.name;
-    if(typeof req.body.email === "string") u.setup.email = req.body.email;
+    if(typeof req.body.name === "string" && req.body.name) u.name = req.body.name;
+    if(typeof req.body.email === "string") {
+      if(req.body.email && !User.validateEmailAddress(req.body.email)) throw "Invalid email"
+      u.email = req.body.email;
+    }
     res.json({success: true})
   });
 

@@ -54,6 +54,12 @@ class User extends Entity{
       return this.password === hash
     }
 
+    static validateEmailAddress(email){
+      if(!email || typeof email !== "string") return false;
+      if(!/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(email)) return false;
+      return true;
+    }
+
     hasPassword(){
       return this.password ? true : false;
     }
