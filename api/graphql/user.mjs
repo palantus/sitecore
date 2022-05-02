@@ -32,7 +32,6 @@ export const UserType = new GraphQLObjectType({
       name: { type: GraphQLNonNull(GraphQLString) },
       passwordSet: { type: GraphQLNonNull(GraphQLBoolean), resolve: u => u.password ? true : false },
       msUsers: {type: GraphQLList(MSUserType)},
-      activeMSUser: {type: GraphQLString, resolve: (parent, args, context) => context.user.activeMSUser},
       isDeveloper: { type: GraphQLNonNull(GraphQLBoolean), resolve: u => u.tags.includes("developer") },
       isTester: { type: GraphQLNonNull(GraphQLBoolean), resolve: u => u.tags.includes("tester") },
       forumName: { type: GraphQLString },

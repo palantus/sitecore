@@ -129,12 +129,6 @@ export default (app) => {
   meRoute.get('/', function (req, res, next) {
     let u = service(res.locals).me()
     let userObject = u.toObj();
-    userObject.msUsers?.forEach(ms => {
-      if (ms.id == res.locals.user.activeMSUser) {
-        ms.isLoggedIn = true;
-      }
-    })
-    userObject.activeMSUser = res.locals.user.activeMSUser
     userObject.roles = u.roles
     userObject.permissions = u.permissions
     userObject.setup = u.setup?.props||{}

@@ -85,13 +85,12 @@ class Element extends HTMLElement {
         msUsers{
           id,
           email
-        },
-        activeMSUser
+        }
       }
     }`))?.me
 
     this.shadowRoot.getElementById("status").innerHTML = 
-            isSignedIn() ? `Signed in as <b>${me.id}</b> with email <b>${me.msUsers?.find(ms => ms.id == me.activeMSUser)?.email || "N/A"}</b>`
+            isSignedIn() ? `Signed in as <b>${me.id}</b></b>`
             : `You are not signed in`
     this.shadowRoot.getElementById("signedin").style.display = isSignedIn() ? "block" : "none"
     this.shadowRoot.getElementById("signedout").style.display = isSignedIn() ? "none" : "block"

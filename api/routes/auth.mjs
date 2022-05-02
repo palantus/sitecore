@@ -32,7 +32,6 @@ export default (app) => {
 
       if (user) {
         let data = user.toObj();
-        data.activeMSUser = msUser?.id
         let token = jwt.sign(data, global.sitecore.accessTokenSecret, { expiresIn: '7d' })
         //console.log(token)
         res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
