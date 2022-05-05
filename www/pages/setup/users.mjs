@@ -89,7 +89,8 @@ class Element extends HTMLElement {
       show: () => this.shadowRoot.querySelector("#newuser-id").focus(),
       ok: async (val) => {
         await api.post("user", val)
-        this.refreshData()
+        await this.refreshData()
+        goto(`/setup/users/${val.id}`)
       },
       validate: (val) => 
           !val.id ? "Please fill out user id"

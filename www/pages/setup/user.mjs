@@ -167,7 +167,7 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById("user-id").innerText = user.id;
     this.shadowRoot.getElementById("name").setAttribute("value", user.name);
-    this.shadowRoot.getElementById("email").setAttribute("value", user.email);
+    this.shadowRoot.getElementById("email").setAttribute("value", user.email||"");
     this.shadowRoot.getElementById("password").setAttribute("value", user.passwordSet ? "12345678" : "");
     this.shadowRoot.getElementById("active").setAttribute("value", user.active);
     

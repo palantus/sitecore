@@ -20,6 +20,7 @@ export default (app) => {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.body.id || !req.body.name || typeof req.body.name !== "string") throw "id and name are mandatory for users"
     if(!User.validateUserId(req.body.id)) throw "Invalid user id";
+    if(User.lookup(req.body.id)) throw "User already exists"
     res.json(service(res.locals).add(req.body.id, req.body.name, req.body.roles));
   });
 
