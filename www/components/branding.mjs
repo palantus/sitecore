@@ -8,7 +8,7 @@ template.innerHTML = `
         h2{
             padding-left: 5px;
             cursor: pointer;
-            margin: 4px 0 0.5em 3px;
+            margin: 3px 0 0.5em 3px;
             font-weight: 400;
             line-height: 1.2;
             user-select: none;
