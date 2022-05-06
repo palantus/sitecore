@@ -42,7 +42,7 @@ body {
 #main { grid-area: main; overflow: auto; /*background-color: rgba(238, 238, 238, 0.90);*/ position: relative;}
 .branding { grid-area: branding; background-color: var(--dark-back); color: white;}
 .footer { grid-area: footer; background-color: var(--dark-back); color: white; overflow: hidden;}
-.right { grid-area: right; background-color: var(--dark-back); display: none; overflow-y: auto; overflow-x: hidden;}
+.right { grid-area: right; background-color: var(--dark-back); display: none; overflow-y: auto; overflow-x: scroll;}
 
 #grid-container.rightvisible .right{
   display: block;

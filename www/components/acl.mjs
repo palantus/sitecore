@@ -199,6 +199,10 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("accessWrite").addEventListener("value-changed", this.refreshView)
     this.shadowRoot.getElementById("accessExecute").addEventListener("value-changed", this.refreshView)
 
+    if(this.hasAttribute("always-show")){
+      this.shadowRoot.querySelector(".information-grid").classList.remove("dropdown-menu")
+    }
+
     this.refreshData()
   }
 
