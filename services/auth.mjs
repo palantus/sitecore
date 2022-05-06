@@ -93,7 +93,7 @@ class Service {
     if(!user){
       let potentialUser = await new Promise(resolve => {
         jwt.verify(token, global.sitecore.accessTokenSecret, (err, user) => {
-          if (err) return resolve({user: null, responseCode: 401, response: { error: `Session expired`, redirectTo: global.sitecore.loginURL }})
+          if (err) return resolve({user: null, responseCode: 401, response: { error: `Session expired`, redirectTo: global.sitecore.loginURL, errorCode: "expired" }})
           if (!user.id) return resolve({user: null, responseCode: 401, response: { error: `No user in session`, redirectTo: global.sitecore.loginURL }})
           resolve({user: cacheJWT(token, this.lookupUser(user.id))})
         })

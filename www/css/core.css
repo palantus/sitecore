@@ -13,7 +13,7 @@ body {
 }
 */
 
-*{
+body,div{
   font-family: 'Roboto', sans-serif;
   font-size: 11pt;
 }

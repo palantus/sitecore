@@ -1,5 +1,5 @@
 import { alertDialog } from "../components/dialog.mjs"
-import { state, apiURL, isSinglePageMode, removeQueryVar } from "./core.mjs"
+import { state, apiURL, isSinglePageMode, removeQueryVar, goto } from "./core.mjs"
 import { on, fire } from "./events.mjs"
 import messageServer from "./message.mjs"
 
@@ -110,6 +110,13 @@ class API {
         this.cache.set(url, {result: jsonResult, ts: new Date().getTime()})
         resolve(jsonResult);
       } else if (res.status == 401) {
+        try{
+          let retObj = await res.json()
+          if(retObj?.errorCode == "expired" && !window.location.pathname.startsWith("/login")){
+            goto(`/login?redirect=${window.location.pathname}`)
+          }
+        } catch{
+        }
         //this.notLoggedIn()
         this.cache.delete(url)
         reject();
