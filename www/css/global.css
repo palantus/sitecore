@@ -12,6 +12,10 @@ a {
 	color: inherit;
 }
 
+*{
+  font-family: 'Roboto', sans-serif;
+}
+
 code {
 	font-family: menlo, inconsolata, monospace;
 	font-size: calc(1em - 2px);
@@ -21,10 +25,7 @@ code {
 	border-radius: 2px;
 }
 
-body{
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 15px;
-}
+
 /*
 <label class="checkbox">
   <input type="checkbox"/>

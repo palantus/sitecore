@@ -4,7 +4,7 @@ template.innerHTML = `
     <style>
         span.item{
             display: inline-block;
-            padding: 4px 5px 1px 5px;
+            padding: 2px 5px 1px 5px;
             background-color: rgba(255, 255, 255, 0.1);
             margin: 2px;
         }
