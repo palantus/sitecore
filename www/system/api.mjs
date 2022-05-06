@@ -37,6 +37,14 @@ class API {
       if (!isSinglePageMode()) {
         messageServer.connect();
       }
+
+      setTimeout(() => {
+        api.get("auth/refresh-token").then(token => {
+          if(token){
+            this.setToken(token)
+          }
+        })
+      }, 10000)
     } else {
       if (state().query.success == "false") {
         alertDialog("Could not sign in")

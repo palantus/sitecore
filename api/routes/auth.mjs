@@ -2,7 +2,7 @@ import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
 
-import service from "../../services/auth.mjs"
+import service, { noGuest } from "../../services/auth.mjs"
 import jwt from 'jsonwebtoken'
 import {sanitize} from "entitystorage"
 import User from "../../models/user.mjs"
@@ -111,6 +111,7 @@ export default (app) => {
           let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"])
           if(foundUser){
             user = foundUser;
+            res.locals.jwt = token
           } else {
             return res.status(responseCode||401).json(response || "Could not find user from token")
           }
@@ -132,4 +133,28 @@ export default (app) => {
     next();
   });
 
+  app.get('/auth/refresh-token', noGuest, (req, res, next) => {
+    if(!res.locals.jwt) return res.json(null)
+    let decoded
+    try{
+      decoded = jwt.decode(res.locals.jwt);
+    } catch {
+      return res.json(null)
+    }
+    if(!decoded.exp) return res.json(null)
+
+    let expires = new Date()
+    expires.setTime(decoded.exp * 1000)
+
+    let tomorrow = new Date()
+    tomorrow.setDate(new Date().getDate() + 1)
+
+    if(tomorrow.getTime() > expires.getTime()){
+      let token = jwt.sign(res.locals.user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
+      res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
+      return res.json(token)
+    }
+
+    return res.json(null)
+	})
 };
