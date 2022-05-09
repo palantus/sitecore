@@ -78,3 +78,7 @@ Create a component in a file called `topbar-XXXX.mjs` in your mod and it will be
 
 - User page (page viewed by admins): subscribe to event `user-page-created`. When fired, you will get an object with `{page, container, userId}`
 - Profile page (page viewed by the current user): subscribe to event `user-profile-page-created`. When fired, you will get an object with `{page, container}`
+
+### Data types
+
+Using datatypes, any custom types that a mod introduces, can be used to create things like custom lookups etc. that work across types. Take a look in services.mjs in eg. `sitemod-files` for a sample of how to define a new datatype.
