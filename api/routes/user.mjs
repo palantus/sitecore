@@ -43,9 +43,7 @@ export default (app) => {
 
   userRoute.get("/counters", function (req, res, next) {
     res.json({
-      notifications: query.tag("notification").relatedTo(res.locals.user, "user").count,
-      actions: query.tag("action").prop("state", "running").relatedTo(res.locals.user, "owner").count,
-      note: !req.query.page ? false : query.tag("wiki").prop("id", createId(sanitize(req.query.page).slice(1))).exists
+      notifications: query.tag("notification").relatedTo(res.locals.user, "user").count
     });
   });
 
