@@ -1,6 +1,6 @@
 const elementName = 'branding-component'
 
-import {goto, siteTitle} from "/system/core.mjs"
+import {goto, siteTitle, ready} from "/system/core.mjs"
 import {fire} from "/system/events.mjs"
 const template = document.createElement('template');
 template.innerHTML = `
@@ -33,6 +33,10 @@ class IndexPage extends HTMLElement {
     this.shadowRoot.getElementById("text").addEventListener("click", () => goto("/"))
     this.shadowRoot.getElementById("text").innerText = siteTitle()
     this.shadowRoot.getElementById("toggle").addEventListener("click", () => fire("toggle-menu", "branding"))
+
+    ready.then(() => {
+      this.shadowRoot.getElementById("text").innerText = siteTitle()
+    })
   }
 
   connectedCallback() {
