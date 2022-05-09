@@ -4,7 +4,6 @@ import {sendEvent} from "../services/clientevents.mjs"
 
 export default class Notification extends Entity{
   initNew(user, area, message, details){
-    new Entity().tag("test")
     if(!user || !user._id) throw "User is mandatory for notifications"
     this.rel(user, "user")
     this.area = area
