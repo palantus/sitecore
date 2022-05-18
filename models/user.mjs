@@ -27,6 +27,10 @@ class User extends Entity{
         return MSUser.find(`tag:msuser prop:"email=${email}"`)?.related?.user
     }
 
+    static lookupName(name){
+      return query.tag("user").prop("name", name).type(User).first
+    }
+
     static validateUserId(newId){
       if(typeof newId !== "string" || !newId) return false;
       let id = newId.replace(/[^a-zA-Z0-9\-_@&.]/g, '')
