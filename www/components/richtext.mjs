@@ -25,37 +25,42 @@ class Element extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    this.saveClicked = this.saveClicked.bind(this)
-    this.closeClicked = this.closeClicked.bind(this)
+    let toolbar = []
+
+    if(!this.hasAttribute("nosave")){
+      toolbar.push({
+        name: "save",
+        action: () => this.dispatchEvent(new CustomEvent("save", {detail: {text: this.simplemde.value()}, bubbles: true, cancelable: false})),
+        className: "fa fa-save",
+        title: "Save",
+      })
+    }
+    if(this.hasAttribute("submit")){
+      toolbar.push({
+        name: "submit",
+        action: () => this.dispatchEvent(new CustomEvent("submit", {detail: {text: this.simplemde.value()}, bubbles: true, cancelable: false})),
+        className: "fa fa-paper-plane",
+        title: "Submit",
+      })
+    }
+    if(!this.hasAttribute("noclose")){
+      toolbar.push({
+        name: "close",
+        action: () => this.dispatchEvent(new CustomEvent("close", {detail: {text: this.simplemde.value()}, bubbles: true, cancelable: false})),
+        className: "fa fa-close",
+        title: "Close",
+      })
+    }
 
     this.simplemde = new EasyMDE({
       element: this.shadowRoot.getElementById("editor"),
       spellChecker: false,
       //showIcons: ["code", "table"]
       toolbar: [
-        {
-          name: "save",
-          action: () => this.saveClicked(),
-          className: "fa fa-save",
-          title: "Save",
-        },
-        {
-          name: "close",
-          action: () => this.closeClicked(),
-          className: "fa fa-close",
-          title: "Close",
-        },
+        ...toolbar,
         "|", "bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen"
       ]
     });
-  }
-
-  saveClicked(){
-    this.dispatchEvent(new CustomEvent("save", {detail: {text: this.simplemde.value()}, bubbles: true, cancelable: false}));
-  }
-
-  closeClicked(){
-    this.dispatchEvent(new CustomEvent("close", {detail: {text: this.simplemde.value()}, bubbles: true, cancelable: false}));
   }
 
   value(newValue = null){
