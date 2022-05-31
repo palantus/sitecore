@@ -2,48 +2,11 @@ let elementName = "acl-component"
 
 import {userPermissions} from "/system/user.mjs"
 import api from "/system/api.mjs"
+import "/components/dropdown-menu.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    .dropdown:focus-within > .link,
-    .link:hover {
-      color: black;
-    }
-    
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      left: 0;
-      top: calc(100% + .25rem);
-      padding: .75rem;
-      border-radius: .25rem;
-      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
-      background: var(--dark-back);
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(-10px);
-      transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
-      color: white;
-      min-width: 200px; 
-      backdrop-filter: blur(5px);
-    }
-
-    .dropdown:focus-within{
-      z-index: 2;
-    }
-    
-    .dropdown:focus-within > span + .dropdown-menu {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-      cursor: initial;
-    }
-
     #button{
       padding: 3px 4px 1px 4px;
       text-shadow: 1px 1px #000;
@@ -75,10 +38,11 @@ template.innerHTML = `
       margin-right: 10px;
     }
   </style>
-  <span class="dropdown" data-dropdown>
-    <span tabindex=0 id="button"></span>
-    <span class="dropdown-menu information-grid">
-
+  <dropdown-menu-component width="200px">
+    <span slot="button">
+      <span tabindex=0 id="button"></span>
+    </span>
+    <span slot="content">
       <table>
         <tr class="owner">
           <td>Owner:</td>
@@ -173,7 +137,7 @@ template.innerHTML = `
         <button id="default">Set as default</button>
       </div>
     </span>
-  </span>
+  </dropdown-menu-component>
 `;
 
 class Element extends HTMLElement {
@@ -200,7 +164,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("accessExecute").addEventListener("value-changed", this.refreshView)
 
     if(this.hasAttribute("always-show")){
-      this.shadowRoot.querySelector(".information-grid").classList.remove("dropdown-menu")
+      this.shadowRoot.querySelector("dropdown-menu-component").setAttribute("always-show", '')
     }
 
     this.refreshData()

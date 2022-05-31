@@ -12,7 +12,7 @@ template.innerHTML = `
       display: inline-block;
     }
 
-    #dropdown-menu {
+    .dropdown-menu {
       position: absolute;
       left: 0;
       top: calc(100% + .25rem);
@@ -29,7 +29,7 @@ template.innerHTML = `
       z-index: 10;
     }
 
-    #dropdown-menu.left{
+    .dropdown-menu.left{
       right: 0;
       left: initial;
     }
@@ -38,7 +38,7 @@ template.innerHTML = `
       z-index: 2;
     }
     
-    #dropdown:focus-within > span + #dropdown-menu {
+    #dropdown:focus-within > span + .dropdown-menu {
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
@@ -46,8 +46,8 @@ template.innerHTML = `
     }
   </style>
   <span id="dropdown">
-    <span tabindex=0 id="button"><slot name="label"><slot></span>
-    <span id="dropdown-menu">
+    <span tabindex=0 id="button"><slot name="label"><slot name="button"><slot></span>
+    <span id="dropdown-menu" class="dropdown-menu">
       <slot name="content"></slot>
     </span>
   </span>
@@ -71,6 +71,22 @@ class Element extends HTMLElement {
     let rect = this.shadowRoot.getElementById("button").getBoundingClientRect()
     if(rect.x + (rect.width / 2) > window.innerWidth / 2){
       this.shadowRoot.getElementById("dropdown-menu").classList.add("left")
+    }
+  }
+
+  refreshUI(){
+    this.shadowRoot.getElementById("dropdown-menu").classList.toggle("dropdown-menu", !this.hasAttribute("always-show"))
+  }
+
+  static get observedAttributes() {
+    return ["always-show"];
+  }  
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch(name){
+      case "always-show":
+        this.refreshUI()
+        break;
     }
   }
 }
