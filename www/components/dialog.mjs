@@ -243,9 +243,9 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
   dialog.addEventListener("cancel-clicked", cancelClicked)
 }
 
-export async function confirmDialog(text){
+export async function confirmDialog(text, {title = null} = {}){
   let container = document.createElement("div")
-  container.innerHTML = `<dialog-component title="Confirm"><div>${text}</div></dialog-component>`
+  container.innerHTML = `<dialog-component title="${title || "Confirm"}"><div>${text}</div></dialog-component>`
   document.body.appendChild(container)
   let dialog = container.querySelector("dialog-component")
   return new Promise(resolve => {
@@ -262,10 +262,10 @@ export async function confirmDialog(text){
   })
 }
 
-export async function promptDialog(text, defValue, {selectValue = false} = {}){
+export async function promptDialog(text, defValue, {selectValue = false, title = null} = {}){
   let container = document.createElement("div")
   container.innerHTML = `
-    <dialog-component title="Prompt">
+    <dialog-component title="${title || "Prompt"}">
       <div>${text}: </div><input style="margin-top: 5px; width: 350px"></input></input>
     </dialog-component>`
   document.body.appendChild(container)
@@ -289,9 +289,9 @@ export async function promptDialog(text, defValue, {selectValue = false} = {}){
   })
 }
 
-export async function alertDialog(text){
+export async function alertDialog(text, {title = null} = {}){
   let container = document.createElement("div")
-  container.innerHTML = `<dialog-component title="Alert" no-cancel><div>${text}</div></dialog-component>`
+  container.innerHTML = `<dialog-component title="${title ||"Alert"}" no-cancel><div>${text}</div></dialog-component>`
   document.body.appendChild(container)
   let dialog = container.querySelector("dialog-component")
   return new Promise(resolve => {
