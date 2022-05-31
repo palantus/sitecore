@@ -63,6 +63,10 @@ class Element extends HTMLElement {
     });
   }
 
+  focus(){
+    this.simplemde.codemirror.focus()
+  }
+
   value(newValue = null){
     if(typeof newValue === "string"){
       this.simplemde.value(newValue)
