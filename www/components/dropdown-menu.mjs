@@ -90,6 +90,16 @@ class Element extends HTMLElement {
       let optimalY = buttonRect.y - boundingRect.y + buttonRect.height + 5
       let y = Math.max(mainRect.y - boundingRect.y, Math.min(mainRect.bottom - boundingRect.y - menuRect.height, optimalY))
       menu.style.top = `${y}px`
+      /*
+      console.log({
+        mainRect,
+        menuRect,
+        buttonRect,
+        boundingRect,
+        optimalX,
+        x
+      })
+      */
     }
   }
 
