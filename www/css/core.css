@@ -96,6 +96,7 @@ body,div{
 
 :root{
   --dark-back: rgba(20, 20, 20, 0.7);
+  --dark-back-op: rgba(20, 20, 20, 0.9);
   --accent-color: #550000;
   --accent-back: rgba(85, 0, 0, 0.8);
   --dark-hover-back: rgba(20, 20, 20, 0.8);

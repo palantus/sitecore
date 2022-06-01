@@ -17,14 +17,20 @@ template.innerHTML = `
       padding: .75rem;
       border-radius: .25rem;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
-      background: var(--dark-back);
+      background: var(--dark-back-op);
       opacity: 0;
       pointer-events: none;
       transform: translateY(-10px);
       transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
       color: white;
-      backdrop-filter: blur(5px);
       z-index: 10;
+    }
+
+    @supports (backdrop-filter: blur(0)) {
+      .dropdown-menu {
+          background: var(--dark-back);
+          backdrop-filter: blur(15px);
+      }
     }
 
     #dropdown:focus-within{
