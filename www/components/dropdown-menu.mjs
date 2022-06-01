@@ -8,14 +8,11 @@ template.innerHTML = `
     }
     
     #dropdown {
-      position: relative;
       display: inline-block;
     }
 
     .dropdown-menu {
       position: absolute;
-      left: 0;
-      top: calc(100% + .25rem);
       padding: .75rem;
       border-radius: .25rem;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
@@ -27,11 +24,6 @@ template.innerHTML = `
       color: white;
       backdrop-filter: blur(5px);
       z-index: 10;
-    }
-
-    .dropdown-menu.left{
-      right: 0;
-      left: initial;
     }
 
     #dropdown:focus-within{
@@ -60,6 +52,8 @@ class Element extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
+    this.refreshUI = this.refreshUI.bind(this)
+
     if(this.hasAttribute("label")){
       this.shadowRoot.getElementById("button").innerHtml = this.getAttribute("label")
     }
@@ -68,14 +62,34 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById("dropdown-menu").style.minWidth = this.getAttribute("width")
     }
 
-    let rect = this.shadowRoot.getElementById("button").getBoundingClientRect()
-    if(rect.x + (rect.width / 2) > window.innerWidth / 2){
-      this.shadowRoot.getElementById("dropdown-menu").classList.add("left")
-    }
+    this.shadowRoot.getElementById("dropdown").addEventListener("focusin", this.refreshUI)
   }
 
   refreshUI(){
-    this.shadowRoot.getElementById("dropdown-menu").classList.toggle("dropdown-menu", !this.hasAttribute("always-show"))
+    let alwaysShow = this.hasAttribute("always-show")
+
+    this.shadowRoot.getElementById("dropdown-menu").classList.toggle("dropdown-menu", !alwaysShow)
+
+    if(alwaysShow){
+      let menu = this.shadowRoot.getElementById("dropdown-menu");
+      menu.style.left = "initial"
+      menu.style.top = "initial"
+    } else {
+      let button = this.shadowRoot.getElementById("button")
+      let menu = this.shadowRoot.getElementById("dropdown-menu");
+      let mainRect = document.getElementById("main").getBoundingClientRect()
+      let menuRect = menu.getBoundingClientRect()
+      let buttonRect = button.getBoundingClientRect()
+      let boundingRect = menu.offsetParent.getBoundingClientRect()
+      
+      let optimalX = buttonRect.x - boundingRect.x - menuRect.width/2
+      let x = Math.max(mainRect.x - boundingRect.x, Math.min(mainRect.right - boundingRect.x - menuRect.width, optimalX))
+      menu.style.left = `${x}px`
+
+      let optimalY = buttonRect.y - boundingRect.y + buttonRect.height + 5
+      let y = Math.max(mainRect.y - boundingRect.y, Math.min(mainRect.bottom - boundingRect.y - menuRect.height, optimalY))
+      menu.style.top = `${y}px`
+    }
   }
 
   static get observedAttributes() {
