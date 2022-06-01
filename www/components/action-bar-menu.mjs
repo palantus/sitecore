@@ -1,50 +1,14 @@
 let elementName = "action-bar-menu"
 
+import "/components/dropdown-menu.mjs"
+
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    .dropdown:focus-within > .link,
-    .link:hover {
-      color: black;
-    }
-    
-    .dropdown {
-      position: relative;
-      display: inline-block;
-    }
-
-    .dropdown-menu {
-      position: absolute;
-      left: 0;
-      top: calc(100% + .25rem);
-      padding: .75rem;
-      border-radius: .25rem;
-      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
-      background: var(--dark-back);
-      opacity: 0;
-      pointer-events: none;
-      transform: translateY(-10px);
-      transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
-      color: white;
-      min-width: 200px; 
-      backdrop-filter: blur(5px);
-      z-index: 10;
-    }
-
-    .dropdown:focus-within{
-      z-index: 2;
-    }
-    
-    .dropdown:focus-within > span + .dropdown-menu {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-      cursor: initial;
-    }
-    #button:after{
+    #container:after{
       content: '';
       border: 5px solid transparent;
-      border-top: 6px solid #555;
+      border-top: 6px solid var(--contrast-color);
       margin-left: 4px;
       margin-bottom: 2px;
       display: inline-block;
@@ -53,13 +17,15 @@ template.innerHTML = `
       position: absolute;
       left: calc(100% / 2 - 10px);
       top: calc(100% - 2px);
-  }
+    }
   </style>
-  <span class="dropdown" data-dropdown>
-    <span tabindex=0 id="button"></span>
-    <span class="dropdown-menu information-grid">
-      <slot></slot>
-    </span>
+  <span id="container">
+    <dropdown-menu-component class="postoptions" title="Options" width="300px">
+      <span slot="label" id="label" tabindex="0"></span>
+      <div slot="content">
+        <slot></slot>
+      </div>
+    </dropdown-menu-component>
   </span>
 `;
 
@@ -70,7 +36,7 @@ class Element extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    this.shadowRoot.getElementById("button").innerText = this.getAttribute("label") || "Menu"
+    this.shadowRoot.getElementById("label").innerText = this.getAttribute("label") || "Menu"
   }
 }
 

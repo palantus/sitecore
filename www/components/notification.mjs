@@ -9,9 +9,9 @@ template.innerHTML = `
       padding: 5px;
       border: 1px solid gray;
       border-radius: 5px;
-      box-shadow: 2px 2px 5px #777;
-      background: rgba(255, 255, 255, 0.9);
-      color: black;
+      box-shadow: 2px 2px 5px var(--shadow-on-back);
+      /* background: rgba(255, 255, 255, 0.9); */
+      /* color: black; */
     }
 
     p{

@@ -9,40 +9,52 @@
   <link rel='manifest' href='/manifest.json'>
   <link rel='icon' type='image/png' href='/img/favicon.ico'>
 
+  <link rel='stylesheet' href='/css/core.css'>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
 
   <style>
-    body{
-      padding: 0px;
-      margin: 0px;
-    }
     #main{
       height: 100vh;
+      backdrop-filter: blur(15px);
+    }
+    body {
+      margin: 0;
+      padding: 0px;
+      color: white;
+      overflow: hidden;
     }
 
-    body::after {
-      content: "";
-      background: url('/img/threading.jpg');
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      position: fixed;
-      z-index: -2;   
+    body,div{
+      font-family: 'Roboto', sans-serif;
+      font-size: 11pt;
     }
 
     #main::after {
       content: "";
       opacity: 0.6;
-      background-color: white;
-      top: 0px;
+      top: 35px;
       left: 0px;
       bottom: 0;
       right: 0;
       position: fixed;
-      z-index: -1;   
+      z-index: -1;
+    }
+    #body-container::after {
+      content: "";
+      background: url('/img/back1.webp');
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      position: fixed;
+      z-index: -2;
+      background-size: cover;
+    }
+    #main-container {
+      backdrop-filter: blur(15px);
     }
   </style>
 
@@ -50,7 +62,11 @@
 </head>
 
 <body>
-  <div id="main"></div>
+  <div id="body-container">
+    <div id="main-container">
+      <div id="main"></div>
+    </div>
+  </div>
 </body>
 
 </html>

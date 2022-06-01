@@ -22,14 +22,14 @@ template.innerHTML = `
     }
 
     div.menu{
-        border-bottom: 1px solid #dddddd;
+        border-bottom: 1px solid var(--contrast-color-muted);
     }
     div.menu:first-child{
-        border-top: 1px solid #dddddd;
+        border-top: 1px solid var(--contrast-color-muted);
     }
 
     div.item[style*="display: block"] + div.menu{
-        border-top: 1px solid #dddddd;
+        border-top: 1px solid var(--contrast-color-muted);
     }
 
     div.menu:hover,div.item:hover{

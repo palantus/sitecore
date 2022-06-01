@@ -1,49 +1,32 @@
 let elementName = "action-bar-item"
 const template = document.createElement('template');
 template.innerHTML = `
+    <link rel='stylesheet' href='/css/global.css'>
     <style>
-        span.item{
-            display: inline-block;
-            padding: 2px 5px 1px 5px;
-            background-color: rgba(255, 255, 255, 0.1);
-            margin: 2px;
-        }
+      span.item{
+        display: inline-block;
+        margin: 0px;
+        padding: 3px 7px 2px 7px;
+        cursor: pointer;
+        position: relative;
+      }
+      span.item:hover{
+        background: var(--dark-back-hover)
+      }
 
-        span.item:last-child{
-            border-right: 0px;
-        }
-
-        span.item:hover{
-            background-color: rgba(150, 150, 150, 0.1);
-            cursor: pointer;
-            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1)
-        }
-
-        span.separator{
-            display: inline-block;
-            border-right: 1px solid rgba(0, 0, 0, 0.1);
-            margin-left: 10px;
-            margin-right: 10px;
-            min-height: 1.5em;
-            margin-bottom: -5px;
-        }
-
-        span.container:last-child .separator{
-            display: none;
-        }
-
-        span.content{
-            position: relative;
-        }
-        span.container{
-          user-select: none;
-        }
-        span.container.disabled{
-          pointer-events: none;
-          color: gray;
-        }
+      span.container{
+        user-select: none;
+      }
+      span.container.disabled{
+        pointer-events: none;
+        color: gray;
+      }
     </style>
-    <span class="container"><span class="item"><span class="content"><slot/></span></span><span class="separator"/></span>
+    <span class="container">
+      <span class="item">
+        <slot/>
+      </span>
+    </span>
 `;
 
 class Element extends HTMLElement {

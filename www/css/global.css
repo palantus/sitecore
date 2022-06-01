@@ -58,7 +58,7 @@ label.checkbox :checked + span:after {
   content: '\2714';
   font-size: 16px;
   position: absolute;
-  top: -5px;
+  top: -2px;
   left: 2px;
   color: #99a1a7;
 }
@@ -76,7 +76,7 @@ input[type="text"],input[type="number"],input[type="password"],input:not([type])
   border-radius: 5px;
   border: 1px solid gray;
   padding: 5px;
-  box-shadow: 0px 0px 5px #ccc;
+  box-shadow: 0px 0px 5px var(--shadow-on-back);
 }
 input[type="text"]:not([readonly]):focus,input:not([type]):not([readonly]):focus,input[type="password"]:not([readonly]):focus{
   box-shadow: 0px 0px 5px #550000;
@@ -99,14 +99,15 @@ button.styled{
   width: 120px;
   padding-top: 5px;
   padding-bottom: 5px;
-  box-shadow: 1px 1px 5px #ccc;
-  background: rgba(255, 255, 255, 1);
+  box-shadow: 1px 1px 5px var(--shadow-on-back);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 7px;
   cursor: pointer;
   border: 1px solid #aaaa;
+  color: white;
 }
 
 button.styled:hover{
-  box-shadow: 3px 3px 5px #aaa;
-  background: rgba(255, 255, 255, 0.66);
+  box-shadow: 3px 3px 5px #555;
+  background: rgba(255, 255, 255, 0.2);
 }

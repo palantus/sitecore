@@ -8,38 +8,25 @@ import { isSignedIn } from "/system/user.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
+  <link rel='stylesheet' href='/css/global.css'>
   <style>
     #container{color: white; padding: 10px;}
     h2{margin: 0px; border-bottom: 1px solid lightgray; padding-bottom: 5px;}
     span{color: var(--accent-color-light);}
-    button{
-      margin-bottom: 5px; 
-      width: 100%;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      box-shadow: 1px 1px 5px #666;
-      background: rgba(255, 255, 255, 1);
-      border-radius: 7px;
-      cursor: pointer;
-      border: 1px solid #aaaa;
-    }
-    button:hover{
-      box-shadow: 3px 3px 5px #333;
-      background: rgba(255, 255, 255, 0.66);
-    }
     #signedin{display: none;}
     #signedout{display: none;}
+    button{width: 200px !important; margin-bottom: 10px;}
   </style>
   <div id="container">
       <h2>Status</h2>
 
       <p id="status"></p>
       <div id="signedin">
-        <button id="logout">Sign out</button>
+        <button class="styled" id="logout">Sign out</button>
         <br>
-        <button id="profile">View my profile</button>
+        <button class="styled" id="profile">View my profile</button>
         <br>
-        <button id="sethome">Set this page as home</button>
+        <button class="styled" id="sethome">Set this page as home</button>
       </div>
       <div id="signedout">
         <button id="login">Sign in</button>

@@ -16,7 +16,7 @@ template.innerHTML = `
       position: absolute;
       padding: .75rem;
       border-radius: .25rem;
-      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .5);
+      box-shadow: 0px 0px 7px var(--dark-back);
       background: var(--dark-back-op);
       opacity: 0;
       pointer-events: none;
@@ -24,11 +24,14 @@ template.innerHTML = `
       transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
       color: white;
       z-index: 10;
+      border: 1px solid var(--contrast-color-muted);
+      border-radius: 5px;
     }
 
     @supports (backdrop-filter: blur(0)) {
       .dropdown-menu {
-          background: var(--dark-back);
+          /*background: var(--dark-back);*/
+          background: var(--dark-back-op);
           backdrop-filter: blur(15px);
       }
     }
@@ -87,7 +90,7 @@ class Element extends HTMLElement {
       let mainRect = document.getElementById("main").getBoundingClientRect()
       let menuRect = menu.getBoundingClientRect()
       let buttonRect = button.getBoundingClientRect()
-      let boundingRect = menu.offsetParent.getBoundingClientRect()
+      let boundingRect = menu.offsetParent?.getBoundingClientRect() || mainRect
       
       let optimalX = buttonRect.x - boundingRect.x - menuRect.width/2
       let x = Math.max(mainRect.x - boundingRect.x, Math.min(mainRect.right - boundingRect.x - menuRect.width, optimalX))
@@ -107,6 +110,9 @@ class Element extends HTMLElement {
       })
       */
     }
+  }
+  async connectedCallback() {
+    this.refreshUI()
   }
 
   static get observedAttributes() {

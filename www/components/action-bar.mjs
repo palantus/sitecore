@@ -4,14 +4,14 @@ template.innerHTML = `
     <style>
         .bar{
             padding: 5px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            /*border-bottom: 1px solid rgba(0, 0, 0, 0.2);*/
             content: " ";
             display: flex; 
             clear: both;
-            box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05);
+            /*box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.05);*/
             /*position: fixed;*/
             /*width: 100%;*/
-            background-color: rgba(255, 255, 255, 1)
+            background-color: var(--dark-back);
         }
     </style>
     <div class="bar">

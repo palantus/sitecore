@@ -14,14 +14,16 @@ template.innerHTML = `
       height: 100%;
       background: rgba(0, 0, 0, 0.55);
       z-index: 15;
+      overflow: hidden;
     }
     #dialog{
       position: absolute;
       right: 0px;
       width: min(400px, 100% - 20px);
       height: 100%;
-      background: white;
-      box-shadow: -5px 0px 50px black;
+      background: rgba(0, 0, 0, 0.8);
+      border-left: 1px solid var(--contrast-color-muted);
+      box-shadow: -5px 0px 25px #555;
       padding: 10px;
       overflow: auto;
       padding-bottom: 75px;
@@ -46,7 +48,7 @@ template.innerHTML = `
       right: 10px;
       font-size: 110%;
     }
-    :host, :host(dialog-component.hidden){
+    :host, :host(dialog-component:not(.open)){
       pointer-events: none;
     }
     :host(dialog-component.open){
@@ -59,24 +61,23 @@ template.innerHTML = `
       transition: opacity 200ms;
       opacity: 1;
     }
-    :host(dialog-component.hidden) #container{
+    :host(dialog-component:not(.open)) #container{
       opacity: 0;
       transition: opacity 200ms;
     }
+    
     :host(dialog-component.open) #dialog {
-      position: absolute;
-      right: -500px;
-      animation: slide 0.3s forwards;
+      /*animation: slide 0.3s forwards;*/
     }
-    :host(dialog-component.hidden) #dialog {
-      position: absolute;
-      right: 0px;
+    :host(dialog-component:not(.open)) #dialog {
       animation: slideback 0.3s forwards;
     }
     @keyframes slide {
+        0% { right: -500px; }
         100% { right: 0; }
     }
     @keyframes slideback {
+        0% { right: 0px; }
         100% { right: -500px; }
     }
     #slot-container{
@@ -186,7 +187,6 @@ class Element extends HTMLElement {
 
 export function showDialog(dialog, {ok, cancel, show, validate, values, close} = {}){
   dialog.classList.add("open");
-  dialog.classList.remove("hidden")
 
   if(typeof show === "function"){
     show();
@@ -194,7 +194,6 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
 
   let doClose = () => {
     dialog.classList.remove("open");
-    dialog.classList.add("hidden")
     dialog.removeEventListener("ok-clicked", okClicked)
     dialog.removeEventListener("cancel-clicked", okClicked)
     dialog.removeAttribute("validationerror")
@@ -246,19 +245,21 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
 export async function confirmDialog(text, {title = null} = {}){
   let container = document.createElement("div")
   container.innerHTML = `<dialog-component title="${title || "Confirm"}"><div>${text}</div></dialog-component>`
-  document.body.appendChild(container)
+  document.getElementById("body-container").appendChild(container)
   let dialog = container.querySelector("dialog-component")
   return new Promise(resolve => {
-    showDialog(dialog, {
-      ok: async (val) => {
-        resolve(true)
-        container.remove();
-      },
-      cancel: async (val) => {
-        resolve(false)
-        container.remove();
-      }
-    })
+    setTimeout(() => { //Animations needs the element to exist before it is changed again
+      showDialog(dialog, {
+        ok: async (val) => {
+          resolve(true)
+          setTimeout(() => container.remove(), 2000)
+        },
+        cancel: async (val) => {
+          resolve(false)
+          setTimeout(() => container.remove(), 2000)
+        }
+      })
+    }, 0)
   })
 }
 
@@ -268,43 +269,47 @@ export async function promptDialog(text, defValue, {selectValue = false, title =
     <dialog-component title="${title || "Prompt"}">
       <div>${text}: </div><input style="margin-top: 5px; width: 350px"></input></input>
     </dialog-component>`
-  document.body.appendChild(container)
+  document.getElementById("body-container").appendChild(container)
   let dialog = container.querySelector("dialog-component")
   dialog.querySelector("input").value = defValue || ""
   return new Promise(resolve => {
-    showDialog(dialog, {
-      show: () => {
-        dialog.querySelector("input").focus()
-        if(selectValue) dialog.querySelector("input").select()
-      },
-      ok: async (val) => {
-        resolve(dialog.querySelector("input").value)
-        container.remove();
-      },
-      cancel: async (val) => {
-        resolve(null)
-        container.remove();
-      }
-    })
+    setTimeout(() => { //Animations needs the element to exist before it is changed again
+      showDialog(dialog, {
+        show: () => {
+          dialog.querySelector("input").focus()
+          if(selectValue) dialog.querySelector("input").select()
+        },
+        ok: async (val) => {
+          resolve(dialog.querySelector("input").value)
+          setTimeout(() => container.remove(), 2000)
+        },
+        cancel: async (val) => {
+          resolve(null)
+          setTimeout(() => container.remove(), 2000)
+        }
+      })
+    }, 0)
   })
 }
 
 export async function alertDialog(text, {title = null} = {}){
   let container = document.createElement("div")
   container.innerHTML = `<dialog-component title="${title ||"Alert"}" no-cancel><div>${text}</div></dialog-component>`
-  document.body.appendChild(container)
+  document.getElementById("body-container").appendChild(container)
   let dialog = container.querySelector("dialog-component")
   return new Promise(resolve => {
-    showDialog(dialog, {
-      ok: async (val) => {
-        resolve(true)
-        container.remove();
-      },
-      cancel: async (val) => {
-        resolve(false)
-        container.remove();
-      }
-    })
+    setTimeout(() => { //Animations needs the element to exist before it is changed again
+      showDialog(dialog, {
+        ok: async (val) => {
+          resolve(true)
+          setTimeout(() => container.remove(), 2000)
+        },
+        cancel: async (val) => {
+          resolve(false)
+          setTimeout(() => container.remove(), 2000)
+        }
+      })
+    }, 0)
   })
 }
 

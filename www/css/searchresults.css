@@ -1,33 +1,39 @@
 #search{
-    width: 300px;
-    border-radius: 5px;
-    margin-bottom: 5px;
-    border: 1px solid black;
-    box-shadow: 1px 1px 1px #ccc;
-    padding: 3px;
-    display: inline-block;
-    margin-left: 5px;
-    margin-top: 10px;
+  width: 300px;
+  border-radius: 5px;
+  margin-bottom: 5px;
+  border: 1px solid #eee;
+  box-shadow: 1px 1px 1px #666;
+  padding: 3px;
+  display: inline-block;
+  margin-left: 5px;
+  margin-top: 10px;
+  background: none;
+  color: white;
 }
 
 table{
-    min-width: 300px;
-    border-collapse: collapse;
+  min-width: 300px;
+  border-collapse: collapse;
 }
 
 table thead th{
-    text-align: left;
+  text-align: left;
 }
 table tbody td, table thead th{
-    padding-left: 8px;
+  padding-left: 8px;
 }
 
 .result:nth-child(even){
-    background-color: #eee;
+  /*background-color: #eee;*/
 }
 .result:nth-child(odd){
-    background-color: #ddd;
+  /*background-color: #ddd;*/
+}
+
+.result:hover{
+  background: var(--dark-back);
 }
 tr.selected{
-    background: var(--accent-back-light) !important;
+  background: var(--accent-back) !important;
 }
