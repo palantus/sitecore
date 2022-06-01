@@ -101,7 +101,7 @@ class SiteCore {
   }
 
   setWindowTitle() {
-    window.document.title = !this.state.path.slice(1) ? siteTitle() : `${siteTitle()}: ${this.state.title || this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replace("/", " ")}`
+    window.document.title = !this.state.path.slice(1) ? siteTitle() : `${siteTitle()}: ${this.state.title || this.state.path.substr(1).charAt(0).toUpperCase() + this.state.path.substr(2).replaceAll("/", " ")}`
   }
 
   async pushStateQuery(query = {}, extendCurrent = false) {
