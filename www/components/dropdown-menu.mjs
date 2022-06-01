@@ -5,6 +5,7 @@ template.innerHTML = `
   <style>
     #button{
       cursor: pointer;
+      user-select: none;
     }
     
     #dropdown {
