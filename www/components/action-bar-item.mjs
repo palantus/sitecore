@@ -8,7 +8,6 @@ template.innerHTML = `
         margin: 0px;
         padding: 3px 7px 2px 7px;
         cursor: pointer;
-        position: relative;
       }
       span.item:hover{
         background: var(--dark-back-hover)

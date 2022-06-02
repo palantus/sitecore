@@ -26,6 +26,7 @@ template.innerHTML = `
       z-index: 10;
       border: 1px solid var(--contrast-color-muted);
       border-radius: 5px;
+      display: none;
     }
 
     @supports (backdrop-filter: blur(0)) {
@@ -40,7 +41,7 @@ template.innerHTML = `
       z-index: 2;
     }
     
-    #dropdown:focus-within > span + .dropdown-menu {
+    #dropdown:focus-within > span + .dropdown-menu:not(.hidden) {
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
@@ -49,7 +50,7 @@ template.innerHTML = `
   </style>
   <span id="dropdown">
     <span tabindex=0 id="button"><slot name="label"><slot name="button"><slot></span>
-    <span id="dropdown-menu" class="dropdown-menu">
+    <span id="dropdown-menu" class="dropdown-menu hidden">
       <slot name="content"></slot>
     </span>
   </span>
@@ -63,7 +64,13 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.refreshUI = this.refreshUI.bind(this)
+    this.show = this.show.bind(this)
 
+    this.shadowRoot.getElementById("button").addEventListener("click", this.show)
+  }
+
+  async show(){
+    this.shadowRoot.getElementById("dropdown-menu").style.display = "block"
     if(this.hasAttribute("label")){
       this.shadowRoot.getElementById("button").innerHtml = this.getAttribute("label")
     }
@@ -72,12 +79,21 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById("dropdown-menu").style.minWidth = this.getAttribute("width")
     }
 
-    this.shadowRoot.getElementById("dropdown").addEventListener("focusin", this.refreshUI)
+    await new Promise(r => setTimeout(r, 0)) // Causes new "width" calculation (for position) and adds element to DOM (for animation)
+    let menu = this.shadowRoot.getElementById("dropdown-menu");
+    let button = this.shadowRoot.getElementById("button")
+    this.mainRect = document.getElementById("main").getBoundingClientRect()
+    this.menuRect = menu.getBoundingClientRect()
+    this.buttonRect = button.getBoundingClientRect()
+    this.boundingRect = menu.offsetParent?.getBoundingClientRect() || this.buttonRect
+
+    this.refreshUI()
   }
 
   refreshUI(){
-    let alwaysShow = this.hasAttribute("always-show")
 
+    this.shadowRoot.getElementById("dropdown-menu").classList.remove("hidden")
+    let alwaysShow = this.hasAttribute("always-show")
     this.shadowRoot.getElementById("dropdown-menu").classList.toggle("dropdown-menu", !alwaysShow)
 
     if(alwaysShow){
@@ -85,34 +101,28 @@ class Element extends HTMLElement {
       menu.style.left = "initial"
       menu.style.top = "initial"
     } else {
-      let button = this.shadowRoot.getElementById("button")
       let menu = this.shadowRoot.getElementById("dropdown-menu");
-      let mainRect = document.getElementById("main").getBoundingClientRect()
-      let menuRect = menu.getBoundingClientRect()
-      let buttonRect = button.getBoundingClientRect()
-      let boundingRect = menu.offsetParent?.getBoundingClientRect() || mainRect
       
-      let optimalX = buttonRect.x - boundingRect.x - menuRect.width/2
-      let x = Math.max(mainRect.x - boundingRect.x, Math.min(mainRect.right - boundingRect.x - menuRect.width, optimalX))
+      let optimalX = this.buttonRect.x - this.boundingRect.x - this.menuRect.width/2
+      let x = Math.max(this.mainRect.x - this.boundingRect.x, Math.min(this.mainRect.right - this.boundingRect.x - this.menuRect.width, optimalX))
       menu.style.left = `${x}px`
 
-      let optimalY = buttonRect.y - boundingRect.y + buttonRect.height + 5
-      let y = Math.max(mainRect.y - boundingRect.y, Math.min(mainRect.bottom - boundingRect.y - menuRect.height, optimalY))
+      let optimalY = this.buttonRect.y - this.boundingRect.y + this.buttonRect.height + 5
+      let y = Math.max(this.mainRect.y - this.boundingRect.y, Math.min(this.mainRect.bottom - this.boundingRect.y - this.menuRect.height, optimalY))
       menu.style.top = `${y}px`
-      /*
+      
       console.log({
-        mainRect,
-        menuRect,
-        buttonRect,
-        boundingRect,
+        mainRect: this.mainRect,
+        menuRect: this.menuRect,
+        buttonRect: this.buttonRect,
+        boundingRect: this.boundingRect,
         optimalX,
         x
       })
-      */
+      
     }
   }
   async connectedCallback() {
-    this.refreshUI()
   }
 
   static get observedAttributes() {

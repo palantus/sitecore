@@ -5,7 +5,10 @@ import "/components/dropdown-menu.mjs"
 const template = document.createElement('template');
 template.innerHTML = `
   <style>
-    #container:after{
+    #label-container{
+      position: relative;
+    }
+    #label-container:after{
       content: '';
       border: 5px solid transparent;
       border-top: 6px solid var(--contrast-color);
@@ -19,9 +22,10 @@ template.innerHTML = `
       top: calc(100% - 2px);
     }
   </style>
+
   <span id="container">
     <dropdown-menu-component class="postoptions" title="Options" width="300px">
-      <span slot="label" id="label" tabindex="0"></span>
+      <span slot="label" id="label-container" tabindex="0"><span id="label"></span></span>
       <div slot="content">
         <slot></slot>
       </div>
@@ -37,6 +41,10 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.shadowRoot.getElementById("label").innerText = this.getAttribute("label") || "Menu"
+
+    if(this.hasAttribute("width")){
+      this.shadowRoot.querySelector("dropdown-menu-component").setAttribute("width", this.getAttribute("width"))
+    }
   }
 }
 
