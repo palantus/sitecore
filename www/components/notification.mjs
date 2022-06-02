@@ -48,7 +48,7 @@ template.innerHTML = `
     #close:hover{
       position: absolute;
       right: 3px;
-      background-color: #eee;
+      background-color: var(--contrast-color-muted);
     }
 
   </style>
