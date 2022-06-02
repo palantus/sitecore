@@ -193,6 +193,7 @@ template.innerHTML = `
       cursor: pointer;
       transition: transform 300ms ease-in-out;
       overflow: hidden;
+      color: black;
     }
     
     .toast-container[data-position$="-right"] .toast {
