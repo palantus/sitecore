@@ -36,7 +36,7 @@ body,div{
 }
 
 .top {grid-area: header;/* background-color: var(--dark-back); *//* backdrop-filter: blur(15px); */}
-.nav {grid-area: menu;/* background-color: rgba(20, 20, 20, 0.1); *//* backdrop-filter: blur(15px); */border-right: 1px solid var(--contrast-color-muted);}
+.nav {grid-area: menu;/* background-color: rgba(20, 20, 20, 0.1); *//* backdrop-filter: blur(15px); */border-right: 1px solid var(--contrast-color-muted);overflow-y: auto;}
 #main { grid-area: main; overflow: auto; /*background-color: rgba(238, 238, 238, 0.90);*/ position: relative;}
 .branding {grid-area: branding;/* background-color: var(--dark-back); */color: white;/* backdrop-filter: blur(15px); */}
 .footer { grid-area: footer; background-color: var(--dark-back); color: white; overflow: hidden;}
@@ -103,5 +103,7 @@ body,div{
   --accent-color-light: #bb6666;
   --contrast-color-muted: #aaa;
   --contrast-color: #FFF;
+  --contrast-background-transparent: rgba(255, 255, 255, 0.1);
   --shadow-on-back: #222;
+  --table-hover: rgba(255, 255, 255, 0.2);
 }

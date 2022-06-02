@@ -100,7 +100,7 @@ button.styled{
   padding-top: 5px;
   padding-bottom: 5px;
   box-shadow: 1px 1px 5px var(--shadow-on-back);
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--contrast-background-transparent);
   border-radius: 7px;
   cursor: pointer;
   border: 1px solid #aaaa;
@@ -109,5 +109,5 @@ button.styled{
 
 button.styled:hover{
   box-shadow: 3px 3px 5px #555;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--table-hover);
 }

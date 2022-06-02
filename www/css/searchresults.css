@@ -24,15 +24,17 @@ table tbody td, table thead th{
   padding-left: 8px;
 }
 
+/*
 .result:nth-child(even){
-  /*background-color: #eee;*/
+  background-color: rgba(50, 50, 50, 0.3);
 }
 .result:nth-child(odd){
-  /*background-color: #ddd;*/
+  background-color: rgba(0, 0, 0, 0.3);
 }
+*/
 
 .result:hover{
-  background: var(--dark-back);
+  background: var(--table-hover);
 }
 tr.selected{
   background: var(--accent-back) !important;
