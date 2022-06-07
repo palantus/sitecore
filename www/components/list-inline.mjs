@@ -116,9 +116,15 @@ class Element extends HTMLElement {
         if(!(await this._setup.validateRemove(item)))
           return;
       }
+      
+      if(typeof this._setup.remove === "function"){
+        try{
+          await this._setup.remove(item, this, this._setup)
+        } catch(err){
+          return;
+        }
+      }
       clickedE.closest(".item").remove()
-      if(typeof this._setup.remove === "function")
-        this._setup.remove(item, this, this._setup)
     } else if(typeof this._setup.click === "function" && clickedE.matches(".item .content *")){
       this._setup.click(item, this, this._setup)
     }
