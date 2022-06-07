@@ -61,6 +61,7 @@ template.innerHTML = `
               <option value="shared">All users</option>
               <option value="users">Specific users</option>
               <option value="role">Members of Role</option>
+              <option value="permission">User permission</option>
               <option value="private">Private (only owner)</option>
             </field-edit>
           </td>
@@ -68,6 +69,10 @@ template.innerHTML = `
         <tr class="read role">
           <td></td>
           <td><field-edit id="roleRead" type="select" lookup="role"></field-edit></td>
+        </tr>
+        <tr class="read permission">
+          <td></td>
+          <td><field-edit id="permissionRead" type="select" lookup="permission"></field-edit></td>
         </tr>
         <tr class="read users">
           <td></td>
@@ -83,6 +88,7 @@ template.innerHTML = `
               <option value="shared">All users</option>
               <option value="users">Specific users</option>
               <option value="role">Members of Role</option>
+              <option value="permission">User permission</option>
               <option value="private">Private (only owner)</option>
             </field-edit>
           </td>
@@ -90,6 +96,10 @@ template.innerHTML = `
         <tr class="write role">
           <td></td>
           <td><field-edit id="roleWrite" type="select" lookup="role"></field-edit></td>
+        </tr>
+        <tr class="write permission">
+          <td></td>
+          <td><field-edit id="permissionWrite" type="select" lookup="permission"></field-edit></td>
         </tr>
         <tr class="write users">
           <td></td>
@@ -105,6 +115,7 @@ template.innerHTML = `
               <option value="shared">All users</option>
               <option value="users">Specific users</option>
               <option value="role">Members of Role</option>
+              <option value="permission">User permission</option>
               <option value="private">Private (only owner)</option>
             </field-edit>
           </td>
@@ -112,6 +123,10 @@ template.innerHTML = `
         <tr class="execute role">
           <td></td>
           <td><field-edit id="roleExecute" type="select" lookup="role"></field-edit></td>
+        </tr>
+        <tr class="execute permission">
+          <td></td>
+          <td><field-edit id="permissionExecute" type="select" lookup="permission"></field-edit></td>
         </tr>
         <tr class="execute users">
           <td></td>
@@ -177,6 +192,7 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("tr.read.access").classList.toggle("hidden", false)
       this.shadowRoot.querySelectorAll("field-edit.read").forEach(e => e.classList.toggle("hidden", false))
       this.shadowRoot.querySelector("tr.read.role").classList.toggle("hidden", this.shadowRoot.getElementById("accessRead").getValue() != "role")
+      this.shadowRoot.querySelector("tr.read.permission").classList.toggle("hidden", this.shadowRoot.getElementById("accessRead").getValue() != "permission")
       this.shadowRoot.querySelector("tr.read.users").classList.toggle("hidden", this.shadowRoot.getElementById("accessRead").getValue() != "users")
     } else {
       this.shadowRoot.querySelectorAll("tr.read,field-edit.read").forEach(tr => tr.classList.toggle("hidden", true))
@@ -186,6 +202,7 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("tr.write.access").classList.toggle("hidden", false)
       this.shadowRoot.querySelectorAll("field-edit.write").forEach(e => e.classList.toggle("hidden", false))
       this.shadowRoot.querySelector("tr.write.role").classList.toggle("hidden", this.shadowRoot.getElementById("accessWrite").getValue() != "role")
+      this.shadowRoot.querySelector("tr.write.permission").classList.toggle("hidden", this.shadowRoot.getElementById("accessWrite").getValue() != "permission")
       this.shadowRoot.querySelector("tr.write.users").classList.toggle("hidden", this.shadowRoot.getElementById("accessWrite").getValue() != "users")
     } else {
       this.shadowRoot.querySelectorAll("tr.write,field-edit.write").forEach(tr => tr.classList.toggle("hidden", true))
@@ -195,6 +212,7 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("tr.execute.access").classList.toggle("hidden", false)
       this.shadowRoot.querySelectorAll("field-edit.execute").forEach(e => e.classList.toggle("hidden", false))
       this.shadowRoot.querySelector("tr.execute.role").classList.toggle("hidden", this.shadowRoot.getElementById("accessExecute").getValue() != "role")
+      this.shadowRoot.querySelector("tr.execute.permission").classList.toggle("hidden", this.shadowRoot.getElementById("accessExecute").getValue() != "permission")
       this.shadowRoot.querySelector("tr.execute.users").classList.toggle("hidden", this.shadowRoot.getElementById("accessExecute").getValue() != "users")
     } else {
       this.shadowRoot.querySelectorAll("tr.execute,field-edit.execute").forEach(tr => tr.classList.toggle("hidden", true))
@@ -224,6 +242,10 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("roleWrite").setAttribute("value", acl.write?.role||"")
     this.shadowRoot.getElementById("roleExecute").setAttribute("value", acl.execute?.role||"")
 
+    this.shadowRoot.getElementById("permissionRead").setAttribute("value", acl.read?.permission||"")
+    this.shadowRoot.getElementById("permissionWrite").setAttribute("value", acl.write?.permission||"")
+    this.shadowRoot.getElementById("permissionExecute").setAttribute("value", acl.execute?.permission||"")
+
     this.shadowRoot.getElementById("usersRead").setAttribute("value", acl.read?.users||"")
     this.shadowRoot.getElementById("usersWrite").setAttribute("value", acl.write?.users||"")
     this.shadowRoot.getElementById("usersExecute").setAttribute("value", acl.execute?.users||"")
@@ -231,7 +253,8 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("button").className = "";
     this.shadowRoot.getElementById("button").classList.add(acl.read?.access||"private");
     this.shadowRoot.getElementById("button").innerText = acl.read?.access == "role" ? `role:${acl.read?.role||"N/A"}` 
-                                                      : acl.read?.access == "users" ? `users:${(acl.read?.users||[]).join(",")}` 
+                                                       : acl.read?.access == "permission" ? `perm:${acl.read?.permission||"N/A"}` 
+                                                       : acl.read?.access == "users" ? `users:${(acl.read?.users||[]).join(",")}` 
                                                       : (acl.read?.access||"private")
 
     this.shadowRoot.getElementById("accessRead").shadowRoot.querySelector("option[value=inherit]").toggleAttribute("hidden", !acl.supportInheritance)
@@ -254,9 +277,9 @@ class Element extends HTMLElement {
     }
 
     let rights = this.getAttribute("rights") || "rw"
-    this.shadowRoot.getElementById("button").setAttribute("title", (acl.read && rights.includes("r") ? `Read: ${acl.read.access} ${(acl.read?.users?.join(",")||"")+(acl.read?.role||"")}\n` : '')
-                                                                   + (acl.write && rights.includes("w") ? `Write: ${acl.write.access} ${(acl.write?.users?.join(",")||"")+(acl.write?.role||"")}\n` : '')
-                                                                   + (acl.execute && rights.includes("x") ? `Execute: ${acl.execute.access} ${(acl.execute?.users?.join(",")||"")+(acl.execute?.role||"")}\n` : '')
+    this.shadowRoot.getElementById("button").setAttribute("title", (acl.read && rights.includes("r") ? `Read: ${acl.read.access} ${(acl.read?.users?.join(",")||"")+(acl.read?.role||"")+(acl.read?.permission||"")}\n` : '')
+                                                                   + (acl.write && rights.includes("w") ? `Write: ${acl.write.access} ${(acl.write?.users?.join(",")||"")+(acl.write?.role||"")+(acl.write?.permission||"")}\n` : '')
+                                                                   + (acl.execute && rights.includes("x") ? `Execute: ${acl.execute.access} ${(acl.execute?.users?.join(",")||"")+(acl.execute?.role||"")+(acl.execute?.permission||"")}\n` : '')
                                                                    + `Shares: ${acl.shares.length}`)
 
     this.refreshView()
@@ -266,9 +289,10 @@ class Element extends HTMLElement {
   }
 
   getAcl(){
-    let conv = (a, r, u) => a == "role" ? `${a}:${r}` 
-                       : a == "users" ? `${a}:${u.split(",").map(u => u.trim()).join(",")}` 
-                       : a 
+    let conv = (a, r, u, p) => a == "role" ? `${a}:${r}` 
+                             : a == "permission" ? `${a}:${p}` 
+                             : a == "users" ? `${a}:${u.split(",").map(u => u.trim()).join(",")}` 
+                             : a 
     let readAccess = this.shadowRoot.getElementById("accessRead").getValue()
     let writeAccess = this.shadowRoot.getElementById("accessWrite").getValue()
     let execAccess = this.shadowRoot.getElementById("accessExecute").getValue()
@@ -277,11 +301,15 @@ class Element extends HTMLElement {
     let writeRole = this.shadowRoot.getElementById("roleWrite").getValue()
     let execRole = this.shadowRoot.getElementById("roleExecute").getValue()
 
+    let readPermission = this.shadowRoot.getElementById("permissionRead").getValue()
+    let writePermission = this.shadowRoot.getElementById("permissionWrite").getValue()
+    let execPermission = this.shadowRoot.getElementById("permissionExecute").getValue()
+
     let readUsers = this.shadowRoot.getElementById("usersRead").getValue()
     let writeUsers = this.shadowRoot.getElementById("usersWrite").getValue()
     let execUsers = this.shadowRoot.getElementById("usersExecute").getValue()
 
-    return `r:${conv(readAccess, readRole, readUsers)};w:${conv(writeAccess, writeRole, writeUsers)};x:${conv(execAccess, execRole, execUsers)}`
+    return `r:${conv(readAccess, readRole, readUsers, readPermission)};w:${conv(writeAccess, writeRole, writeUsers, writePermission)};x:${conv(execAccess, execRole, execUsers, execPermission)}`
   }
 
   async save(){

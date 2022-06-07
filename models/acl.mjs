@@ -1,4 +1,5 @@
 import Entity from "entitystorage"
+import Permission from "./permission.mjs"
 import Role from "./role.mjs"
 import Share from "./share.mjs"
 import User from "./user.mjs"
@@ -17,16 +18,18 @@ export default class ACL{
   handlePatch(aclString){
     let newAcl = ACL.parse(aclString)
     
-    let conv = (a, r, u) => {
-      if(!["private", "shared", "role", "public", "users", "inherit"].includes(a)) return "private";
+    let conv = (a, r, u, p) => {
+      if(!["private", "shared", "role", "public", "users", "inherit", "permission"].includes(a)) return "private";
       if(a == "role" && !Role.lookup(r)) return "private";
+      if(a == "permission" && !Permission.lookup(p)) return "private";
       return a == "role" ? `${a}:${r}` 
+           : a == "permission" ? `${a}:${p}` 
            : a == "users" ? `${a}:${u}` 
            : a 
     }
-    this.entity.acl = (newAcl.read ? `r:${conv(newAcl.read.access, newAcl.read.role, newAcl.read.users)};` : '')
-                    + (newAcl.write ? `w:${conv(newAcl.write.access, newAcl.write.role, newAcl.write.users)};` : '')
-                    + (newAcl.execute ? `x:${conv(newAcl.execute.access, newAcl.execute.role, newAcl.execute.users)}` : '')
+    this.entity.acl = (newAcl.read ? `r:${conv(newAcl.read.access, newAcl.read.role, newAcl.read.users, newAcl.read.permission)};` : '')
+                    + (newAcl.write ? `w:${conv(newAcl.write.access, newAcl.write.role, newAcl.write.users, newAcl.write.permission)};` : '')
+                    + (newAcl.execute ? `x:${conv(newAcl.execute.access, newAcl.execute.role, newAcl.execute.users, newAcl.execute.permission)}` : '')
     this.acl = newAcl
   }
 
@@ -39,16 +42,19 @@ export default class ACL{
       read: read ? {
         access: read[0],
         role: read[0] == "role" ? (read[1]||null) : undefined,
+        permission: read[0] == "permission" ? (read[1]||null) : undefined,
         users: read[0] == "users" ? (read[1]||"").split(",") : undefined
       } : null,
       write: write ? {
         access: write[0],
         role: write[0] == "role" ? (write[1]||null) : undefined,
+        permission: write[0] == "permission" ? (write[1]||null) : undefined,
         users: write[0] == "users" ? (write[1]||"").split(",") : undefined
       } : null,
       execute: exec ? {
         access: exec[0],
         role: exec[0] == "role" ? (exec[1]||null) : undefined,
+        permission: exec[0] == "permission" ? (exec[1]||null) : undefined,
         users: exec[0] == "users" ? (exec[1]||"").split(",") : undefined
       } : null,
     }
@@ -82,6 +88,12 @@ export default class ACL{
          : (this.acl.read?.role || null)
   }
 
+  permissionFromCode(code){
+    return code == 'w' ? (this.acl.write?.permission || null)
+         : code == 'x' ? (this.acl.execute?.permission || null)
+         : (this.acl.read?.permission || null)
+  }
+
   usersFromCode(code){
     return code == 'w' ? (this.acl.write?.users || null)
          : code == 'x' ? (this.acl.execute?.users || null)
@@ -99,6 +111,10 @@ export default class ACL{
       case "role":
         let role = this.roleFromCode(accessTypeCode)
         result = !role || !!user?.roles.includes(role)
+        break;
+      case "permission":
+        let permission = this.permissionFromCode(accessTypeCode)
+        result = !permission || !!user?.permissions.includes(permission)
         break;
       case "private":
         let owner = this.entity.related.owner;
