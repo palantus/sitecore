@@ -188,6 +188,8 @@ class SiteCore {
     fire("changed-page", this.state)
     if(showingCachedPage){
       fire("returned-to-page", this.state)
+    } else {
+      fire("first-page-load", this.state)
     }
     this.setWindowTitle()
     resolve();

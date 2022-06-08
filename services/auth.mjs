@@ -175,13 +175,13 @@ class Service {
     return false;
   }
 
-  ifPermission(context, permissionId, returnValue){
+  ifPermission(context, permissionId, returnValue = null){
     if(this.hasPermission(context, permissionId))
       return returnValue;
     return null;
   }
 
-  ifPermissionThrow(context, permissionId, returnValue){
+  ifPermissionThrow(context, permissionId, returnValue = null){
     if(this.hasPermission(context, permissionId))
       return returnValue;
     console.log(context, permissionId)
