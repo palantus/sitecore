@@ -48,7 +48,7 @@ export default (app) => {
   });
 
   userRoute.get('/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "user.read"})) return;
+    if(res.locals.user.id != req.params.id && !validateAccess(req, res, {permission: "user.read"})) return;
     res.json(service(res.locals).get(sanitize(req.params.id)));
   });
 

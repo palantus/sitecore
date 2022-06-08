@@ -10,7 +10,8 @@ import {on, off, fire} from "/system/events.mjs"
 import {state, goto} from "/system/core.mjs"
 import {showDialog} from "/components/dialog.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
-import { getApiConfig } from "../../system/core.mjs"
+import { getApiConfig, isMobile } from "../../system/core.mjs"
+import {getUser} from "/system/user.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -23,6 +24,15 @@ template.innerHTML = `
     field-list{
       width: 500px;
     }
+    h1{position: relative; margin-bottom: 20px;}
+    #user-id-container{
+      font-size: 10pt; 
+      color: gray; 
+      position: absolute;
+      left: 0px;
+      top: calc(100% - 5px);
+    }
+    .hidden{display:none;}
   </style>  
 
   <action-bar>
@@ -31,7 +41,7 @@ template.innerHTML = `
   </action-bar>
 
   <div id="container">
-    <h3>User <span id="user-id"></span></h3>
+    <h1><span id="user-name"></span><span id="user-id-container"> (<span id="user-id"></span>)</span></h1>
 
     <field-list labels-pct="20">
       <field-edit type="text" label="Name" id="name"></field-edit>
@@ -40,12 +50,13 @@ template.innerHTML = `
       <field-edit type="checkbox" label="Active" id="active"></field-edit>
     </field-list>
     
-    <br/>
-
-    <h3>Roles</h3>
-    <table>
-      <tbody id="roles"></tbody>
-    </table>
+    <div id="roles-container">
+      <br/>
+      <h3>Roles</h3>
+      <table>
+        <tbody id="roles"></tbody>
+      </table>
+    </div>
 
     <div id="ms-container">
       <br/>
@@ -82,7 +93,6 @@ class Element extends HTMLElement {
     this.refreshData = this.refreshData.bind(this)
     
     this.userId = /\/setup\/users\/([a-zA-Z0-9\-_@&.]+)/.exec(state().path)[1]
-    this.refreshData();
     this.shadowRoot.getElementById("msuser-btn").addEventListener("click", this.assignToMSUser)
     this.shadowRoot.getElementById("change-username-btn").addEventListener("click", this.changeUsername)
     this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)
@@ -163,23 +173,35 @@ class Element extends HTMLElement {
     let id = this.userId;
 
     let user = (await api.query(`{user(id:"${id}") {id, name, email, passwordSet, msUsers{email, vsts}, roles, active}}`)).user
-    if(!user){alertDialog("could not retrive user"); return;}
+    if(!user){alertDialog(`Could not retrive user ${id}. Maybe you don't have permission to view this user.`); return;}
+
+    let me = await getUser()
+    let isShowingMe = me.id == user.id;
+    let isAdmin = me.permissions.includes("admin")
 
     this.shadowRoot.getElementById("user-id").innerText = user.id;
+    this.shadowRoot.getElementById("user-name").innerText = user.name;
     this.shadowRoot.getElementById("name").setAttribute("value", user.name);
     this.shadowRoot.getElementById("email").setAttribute("value", user.email||"");
     this.shadowRoot.getElementById("password").setAttribute("value", user.passwordSet ? "12345678" : "");
     this.shadowRoot.getElementById("active").setAttribute("value", user.active);
     
-    this.shadowRoot.getElementById("msusers").innerHTML = user.msUsers.map(u => u.vsts ? `${u.email} (vsts)` : u.email).join("<br/>") || "- None -"
-    
+    if(isAdmin || isShowingMe){
+      this.shadowRoot.getElementById("msusers").innerHTML = user.msUsers.map(u => u.vsts ? `${u.email} (vsts)` : u.email).join("<br/>") || "- None -"
+      this.shadowRoot.getElementById("ms-container").classList.toggle("hidden", false);
+    } else {
+      this.shadowRoot.getElementById("ms-container").classList.toggle("hidden", true);
+    }
+
+    if(isAdmin){
+      let roles = await api.get("role")
+      this.shadowRoot.getElementById("roles").innerHTML = roles.sort((a, b) => a.id < b.id ? -1 : 1)
+                                                              .map(r => `<tr data-roleid="${r.id}"><td><field-ref ref="/setup/role/${r.id}">${r.id}</field-ref></td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
+      this.shadowRoot.getElementById("roles-container").classList.toggle("hidden", false);
+    } else {
+      this.shadowRoot.getElementById("roles-container").classList.toggle("hidden", true);
+    }
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `user/${user.id}`));
-
-    let roles = await api.get("role")
-    this.shadowRoot.getElementById("roles").innerHTML = roles.sort((a, b) => a.id < b.id ? -1 : 1)
-                                                             .map(r => `<tr data-roleid="${r.id}"><td><field-ref ref="/setup/role/${r.id}">${r.id}</field-ref></td><td><input type="checkbox" class="enable-role" ${user.roles.includes(r.id) ? "checked" : ""}></input></td></tr>`).join("")
-
-    this.shadowRoot.getElementById("ms-container").style.display = getApiConfig().msSigninEnabled ? "block" : "none"
   }
 
   roleClick(e){

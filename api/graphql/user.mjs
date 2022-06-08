@@ -120,7 +120,7 @@ export default {
         },
         description: "Get user",
         resolve: (parent, args, context) => {
-          if(!validateAccess(null, context, {permission: "user.read"})) return;
+          if(args.id != context.user.id && !validateAccess(null, context, {permission: "user.read"})) return;
           return User.lookup(args.id)
         }
       }
