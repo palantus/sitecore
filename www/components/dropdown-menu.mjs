@@ -110,7 +110,7 @@ class Element extends HTMLElement {
       let optimalY = this.buttonRect.y - this.boundingRect.y + this.buttonRect.height + 5
       let y = Math.max(this.mainRect.y - this.boundingRect.y, Math.min(this.mainRect.bottom - this.boundingRect.y - this.menuRect.height, optimalY))
       menu.style.top = `${y}px`
-      
+      /*
       console.log({
         mainRect: this.mainRect,
         menuRect: this.menuRect,
@@ -119,7 +119,7 @@ class Element extends HTMLElement {
         optimalX,
         x
       })
-      
+      */
     }
   }
   async connectedCallback() {
