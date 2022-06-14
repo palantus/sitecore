@@ -107,7 +107,12 @@ button.styled{
   color: white;
 }
 
-button.styled:hover{
+button:not([disabled]).styled:hover{
   box-shadow: 3px 3px 5px #555;
   background: var(--table-hover);
+}
+
+button.styled[disabled]{
+  color: var(--contrast-color-muted);
+  cursor: initial;
 }
