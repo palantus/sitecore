@@ -28,6 +28,7 @@ class User extends Entity{
     }
 
     static lookupName(name){
+      if(!name) return null;
       return query.tag("user").prop("name", name).type(User).first
     }
 
