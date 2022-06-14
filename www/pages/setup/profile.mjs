@@ -73,10 +73,12 @@ class Element extends HTMLElement {
       })
     }
 
-    fire("user-profile-page-created", {
-      page: this, 
-      container: this.shadowRoot.getElementById("container")
-    })
+    setTimeout(() => {
+      fire("user-profile-page-created", {
+        page: this, 
+        container: this.shadowRoot.getElementById("container")
+      })
+    }, 0)
   }
 
   async changePass(){
