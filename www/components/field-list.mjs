@@ -43,6 +43,7 @@ class Element extends HTMLElement {
       div.style.minHeight = "25px"
       div.appendChild(lbl)
       div.appendChild(field)
+      div.classList.toggle("hidden", field.classList.contains("hidden"))
 
       this.appendChild(div)
 
