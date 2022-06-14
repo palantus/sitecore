@@ -42,11 +42,14 @@ template.innerHTML = `
     }
     #validateResult{
       color: red;
-      text-align: right;
-      position: fixed;
-      bottom: 50px;
-      right: 10px;
-      font-size: 110%;
+      /*text-align: right;*/
+      /*position: fixed;*/
+      /*bottom: 50px;*/
+      /*right: 10px;*/
+      /*font-size: 110%;*/
+      margin-top: 10px;
+      border-top: 1px solid var(--contrast-color-muted);
+      padding-top: 5px;
     }
     :host, :host(dialog-component:not(.open)){
       pointer-events: none;
@@ -84,6 +87,7 @@ template.innerHTML = `
       overflow-y: auto;
       max-height: calc(100% - 150px);
     }
+    .hidden{display: none;}
   </style>
   <div id="container">
     <div id="dialog">
@@ -91,7 +95,7 @@ template.innerHTML = `
       <div id="slot-container">
         <slot></slot>
       </div>
-      <div id="validateResult"></div>
+      <div id="validateResult" class="hidden"></div>
       <div id="buttons">
         <button class="styled" id="ok">Ok</button>
         <button class="styled" id="cancel">Cancel</button>
@@ -171,7 +175,8 @@ class Element extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     switch(name){
       case "validationerror":
-        this.shadowRoot.getElementById("validateResult").innerText = newValue
+        this.shadowRoot.getElementById("validateResult").innerHTML = newValue
+        this.shadowRoot.getElementById("validateResult").classList.toggle("hidden", !!!newValue)
         break;
 
       case "title":
@@ -209,9 +214,10 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
     if(typeof validate === "function"){
       dialog.removeAttribute("validationerror")
 
-      let validateResult = validate(val)
+      let validateResult = await validate(val)
 
       if(validateResult === false){
+        dialog.setAttribute("validationerror", "Invalid input")
         return;
       }
       if(typeof validateResult === "string"){
@@ -263,7 +269,7 @@ export async function confirmDialog(text, {title = null} = {}){
   })
 }
 
-export async function promptDialog(text, defValue, {selectValue = false, title = null} = {}){
+export async function promptDialog(text, defValue, {selectValue = false, title = null, validate = undefined} = {}){
   let container = document.createElement("div")
   container.innerHTML = `
     <dialog-component title="${title || "Prompt"}">
@@ -286,6 +292,9 @@ export async function promptDialog(text, defValue, {selectValue = false, title =
         cancel: async (val) => {
           resolve(null)
           setTimeout(() => container.remove(), 2000)
+        },
+        validate: () => {
+          return typeof validate === "function" ? validate(dialog.querySelector("input").value) : true
         }
       })
     }, 0)
