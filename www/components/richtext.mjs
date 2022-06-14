@@ -1,11 +1,11 @@
 let elementName = "richtext-component"
 
-import "https://unpkg.com/easymde/dist/easymde.min.js"
+import "/libs/easymde.min.js"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/libs/easymde.min.css">
+  <link rel="stylesheet" href="/libs/font-awesome.min.css">
   <style>
     .editor-toolbar{
       background: rgba(255, 255, 255, 0.4);
