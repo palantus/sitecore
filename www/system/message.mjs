@@ -84,7 +84,6 @@ class MessageServer{
   async send(message){
     await this.loginPromise
     this.socket.send(JSON.stringify({type: "message", content: message}))
-    console.log("message sent")
   }
 }
 
