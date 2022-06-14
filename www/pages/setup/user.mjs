@@ -99,11 +99,13 @@ class Element extends HTMLElement {
 
     this.elementId = `${elementName}-${this.userId}`
 
-    fire("user-page-created", {
-      page: this, 
-      container: this.shadowRoot.getElementById("container"), 
-      userId: this.userId
-    })
+    setTimeout(() => {
+      fire("user-page-created", {
+        page: this, 
+        container: this.shadowRoot.getElementById("container"), 
+        userId: this.userId
+      })
+    }, 0)
   }
 
   async assignToMSUser(){
