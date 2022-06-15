@@ -184,6 +184,10 @@ class Element extends HTMLElement {
     return null;
   }
 
+  focus(){
+    this.getValueElement()?.focus()
+  }
+
   disconnectedCallback() {
   }
 
