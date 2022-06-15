@@ -1,4 +1,4 @@
-import WebSocket from 'ws'
+import { WebSocketServer } from "ws"
 import service from "./auth.mjs"
 let activeConnections = []
 
@@ -67,7 +67,7 @@ function handleMessage(message, ws, userId){
 }
 
 export function createServer(){
-  const wss = new WebSocket.Server({ noServer: true, clientTracking: true});
+  const wss = new WebSocketServer({ noServer: true, clientTracking: true});
     
   wss.on('connection', (ws) => {
       ws.on('message', (message) => {handleClientRequest(message, ws); return false;})
