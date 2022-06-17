@@ -58,7 +58,7 @@ class Element extends HTMLElement {
   }
   async refreshData(){
     let data = await api.get(`system/log/${this.shadowRoot.getElementById("logselect").value||""}`)
-    this.shadowRoot.getElementById("log").innerHTML = data.map(e => `<tr><td>${e.timestamp.substr(0, 19).replace("T", " ")}</td><td>${e.text}</td></tr>`).join("")
+    this.shadowRoot.getElementById("log").innerHTML = data.map(e => `<tr><td>${e.timestamp?.substr(0, 19).replace("T", " ")||"N/A"}</td><td>${e.text || "N/A"}</td></tr>`).join("")
   }
 
   connectedCallback() {
