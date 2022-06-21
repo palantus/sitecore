@@ -23,6 +23,11 @@ export default class Notification extends Entity{
     this.delete()
   }
 
+  delete(){
+    this.related.details?.delete()
+    super.delete()
+  }
+
   static lookup(id){
     return query.type(Notification).id(id).tag("notification").first
   }

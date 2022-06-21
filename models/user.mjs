@@ -41,7 +41,7 @@ class User extends Entity{
 
     notify(area, message, details){
       if(this.id == "guest") return;
-      new Notification(this, area, message, details)
+      return new Notification(this, area, message, details)
     }
 
     setPassword(password){
