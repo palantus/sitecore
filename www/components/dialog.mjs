@@ -256,6 +256,9 @@ export async function confirmDialog(text, {title = null} = {}){
   return new Promise(resolve => {
     setTimeout(() => { //Animations needs the element to exist before it is changed again
       showDialog(dialog, {
+        show: () => {
+          dialog.shadowRoot.getElementById("ok").focus()
+        },
         ok: async (val) => {
           resolve(true)
           setTimeout(() => container.remove(), 2000)
@@ -309,6 +312,9 @@ export async function alertDialog(text, {title = null} = {}){
   return new Promise(resolve => {
     setTimeout(() => { //Animations needs the element to exist before it is changed again
       showDialog(dialog, {
+        show: () => {
+          dialog.shadowRoot.getElementById("ok").focus()
+        },
         ok: async (val) => {
           resolve(true)
           setTimeout(() => container.remove(), 2000)
