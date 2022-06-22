@@ -23,8 +23,6 @@ template.innerHTML = `
     table{
       width: 100%;
       margin-top: 5px;
-      box-shadow: 0px 0px 10px gray;
-      border: 1px solid gray;
     }
     table thead tr{
       border: 1px solid gray;
