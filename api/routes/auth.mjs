@@ -141,7 +141,7 @@ export default (app) => {
     } catch {
       return res.json(null)
     }
-    if(!decoded.exp) return res.json(null)
+    if(!decoded?.exp) return res.json(null)
 
     let expires = new Date()
     expires.setTime(decoded.exp * 1000)
