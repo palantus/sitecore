@@ -11,6 +11,7 @@ import DataType from "../../models/datatype.mjs";
 import LogArea from "../../models/logarea.mjs";
 import Archiver from 'archiver';
 import moment from "moment"
+import CoreSetup from "../../models/setup.mjs"
 
 export default (app) => {
 
@@ -56,9 +57,10 @@ export default (app) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     let zip = Archiver('zip');
     zip.glob("*.data", {cwd: global.sitecore.storagePath})
+    let filename = `${CoreSetup.lookup().siteTitle?.toLowerCase().replace(/[^a-z0-9 -]/g, '')||"sc"}_database_data_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
     res.writeHead(200, {
       'Content-Type': 'application/zip',
-      'Content-disposition': `attachment; filename=database_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
+      'Content-disposition': `attachment; filename=${filename}`
     });
     zip.pipe(res)
     zip.finalize()
@@ -68,9 +70,10 @@ export default (app) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     let zip = Archiver('zip');
     zip.directory(global.sitecore.storagePath, false)
+    let filename = `${CoreSetup.lookup().siteTitle?.toLowerCase().replace(/[^a-z0-9 -]/g, '')||"sc"}_database_full_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
     res.writeHead(200, {
       'Content-Type': 'application/zip',
-      'Content-disposition': `attachment; filename=database_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
+      'Content-disposition': `attachment; filename=${filename}`
     });
     zip.pipe(res)
     zip.finalize()
