@@ -1,6 +1,7 @@
 import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
+import fs from 'fs'
 import Entity, {query, sanitize, uiAPI} from "entitystorage"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
@@ -8,6 +9,8 @@ import APIKey from "../../models/apikey.mjs";
 import Setup from "../../models/setup.mjs";
 import DataType from "../../models/datatype.mjs";
 import LogArea from "../../models/logarea.mjs";
+import Archiver from 'archiver';
+import moment from "moment"
 
 export default (app) => {
 
@@ -47,6 +50,30 @@ export default (app) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     Object.assign(Setup.lookup(), req.body)
     res.json(true)
+  })
+
+  route.get("/database/download/data", (req, res, next) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let zip = Archiver('zip');
+    zip.glob("*.data", {cwd: global.sitecore.storagePath})
+    res.writeHead(200, {
+      'Content-Type': 'application/zip',
+      'Content-disposition': `attachment; filename=database_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
+    });
+    zip.pipe(res)
+    zip.finalize()
+  })
+
+  route.get("/database/download/full", (req, res, next) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let zip = Archiver('zip');
+    zip.directory(global.sitecore.storagePath, false)
+    res.writeHead(200, {
+      'Content-Type': 'application/zip',
+      'Content-disposition': `attachment; filename=database_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
+    });
+    zip.pipe(res)
+    zip.finalize()
   })
 
   // Mods
