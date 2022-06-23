@@ -7,6 +7,7 @@ let routes = [
     {path: "/setup/users",            page: "../pages/setup/users.mjs"},
     {path: "/setup/msusers",          page: "../pages/setup/msusers.mjs"},
     {path: "/setup/roles",            page: "../pages/setup/roles.mjs"},
+    {path: "/setup/federation",       page: "../pages/setup/federation.mjs"},
     {path: "/setup/mods",             page: "../pages/setup/mods.mjs"},
     {path: "/setup",                  page: "../pages/setup/setup.mjs"},
     {path: "/setup/jobs",             page: "../pages/setup/jobs.mjs"},
@@ -16,7 +17,8 @@ let routes = [
     {path: "/logs",                   page: "../pages/setup/logs.mjs"},
     {path: "/profile",                page: "../pages/setup/profile.mjs"},
     {regexp: /^\/setup\/users\/([a-zA-Z0-9\-_@.]+)/,    page: "../pages/setup/user.mjs"},
-    {regexp: /^\/setup\/role\/([a-z0-9\_\-]+)/,     page: "../pages/setup/role.mjs"},
+    {regexp: /^\/federation\/remote\/([\d]+)/,          page: "../pages/setup/remote.mjs"},
+    {regexp: /^\/setup\/role\/([a-z0-9\_\-]+)/,         page: "../pages/setup/role.mjs"},
 ]
 
 export async function init(){

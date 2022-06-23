@@ -30,4 +30,5 @@ export default async () => {
   DataType.lookupOrCreate("type", {title: "Type", nameField: "title", api: "system/datatypes"})
   DataType.lookupOrCreate("role", {title: "Role", nameField: "id", api: "role", uiPath: "setup/role"})
   DataType.lookupOrCreate("permission", {title: "Permission", nameField: "id", api: "permission"})
+  DataType.lookupOrCreate("federation-remote", {title: "Federation remote", nameField: "title", api: "federation/remote", permission: "admin"})
 }

@@ -12,6 +12,7 @@ export let menu = [
     permission: "admin",
     items: [
       {title: "API keys", path: "/system/apikeys"},
+      {title: "Federation", path: "/setup/federation"},
       {title: "Jobs", path: "/setup/jobs"},
       {title: "Logs", path: "/logs"},
       {title: "Mods", path: "/setup/mods"},
