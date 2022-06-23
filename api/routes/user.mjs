@@ -19,7 +19,7 @@ export default (app) => {
   userRoute.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     if(!req.body.id || !req.body.name || typeof req.body.name !== "string") throw "id and name are mandatory for users"
-    if(!User.validateUserId(req.body.id)) throw "Invalid user id";
+    if(!User.validateLocalUserId(req.body.id)) throw "Invalid user id";
     if(User.lookup(req.body.id)) throw "User already exists"
     res.json(service(res.locals).add(req.body.id, req.body.name, req.body.roles));
   });
@@ -94,7 +94,7 @@ export default (app) => {
   userRoute.post('/:id/change-id', noGuest, function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     if(!req.body.newId) throw "missing newId"
-    if(!User.validateUserId(req.body.newId)) throw "Invalid user id";
+    if(!User.validateLocalUserId(req.body.newId)) throw "Invalid user id";
     let user = User.lookup(req.params.id)
     if (!user) throw "Unknown user"
     if(User.lookup(req.body.newId)) throw "User id is already in use"

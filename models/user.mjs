@@ -32,9 +32,9 @@ class User extends Entity{
       return query.tag("user").prop("name", name).type(User).first
     }
 
-    static validateUserId(newId){
+    static validateLocalUserId(newId){
       if(typeof newId !== "string" || !newId) return false;
-      let id = newId.replace(/[^a-zA-Z0-9\-_@&.]/g, '')
+      let id = newId.replace(/[^a-zA-Z0-9\-_.]/g, '')
       if(newId !== id) return false;
       return true;
     }
