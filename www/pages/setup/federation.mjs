@@ -42,7 +42,7 @@ template.innerHTML = `
         <thead>
             <tr>
               <th>Title</th>
-              <th>URL</th>
+              <th>API URL</th>
               <th></th>
             </tr>
         </thead>
@@ -53,7 +53,7 @@ template.innerHTML = `
 
   <dialog-component title="New remote" id="new-dialog">
     <field-component label="Title"><input id="new-title"></input></field-component>
-    <field-component label="URL"><input id="new-url"></input></field-component>
+    <field-component label="API URL"><input id="new-url"></input></field-component>
     <field-component label="API Key"><input id="new-apiKey"></input></field-component>
   </dialog-component>
 `;
@@ -120,7 +120,7 @@ class Element extends HTMLElement {
           !val.title ? "Please fill out title"
         : !val.url ? "Please fill out URL"
         : !val.apiKey ? "Please fill out API Key"
-        : true,
+        : (await api.post(`federation/remote/test`, val)).error || true,
       values: () => {return {
         title: this.shadowRoot.getElementById("new-title").value,
         url: this.shadowRoot.getElementById("new-url").value,

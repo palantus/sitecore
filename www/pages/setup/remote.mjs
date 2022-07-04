@@ -36,6 +36,7 @@ template.innerHTML = `
   </style>  
 
   <action-bar>
+    <action-bar-item id="test">Test connection</action-bar-item>
   </action-bar>
 
   <div id="container">
@@ -57,8 +58,11 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.refreshData = this.refreshData.bind(this)
+    this.testConn = this.testConn.bind(this)
     
     this.remoteId = /\/federation\/remote\/([\d]+)/.exec(state().path)[1]
+
+    this.shadowRoot.getElementById("test").addEventListener("click", this.testConn)
 
     this.elementId = `${elementName}-${this.userId}`
   }
@@ -73,6 +77,12 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("apiKey").setAttribute("value", remote.apiKey);
 
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `federation/remote/${remote.id}`));
+  }
+
+  async testConn(){
+    let result = await api.post(`federation/remote/${this.remoteId}/test`)
+    if(!result || !result.success) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result.error)}`)
+    else alertDialog(`Successfully logged in as user ${result.userId} (${result.name})`)
   }
 
   connectedCallback() {

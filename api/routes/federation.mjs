@@ -35,6 +35,20 @@ export default (app) => {
     res.json(remote.toObj());
   });
 
+  route.post('/remote/:id/test', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let remote = Remote.lookup(req.params.id)
+    if (!remote) throw "Unknown remote"
+    remote.get("me")
+          .catch(error => res.json({error, success: false}))
+          .then(user => res.json({userId: user?.id, name: user?.name, success: !!user?.id}))
+  });
+
+  route.post('/remote/test', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    Remote.testConfig(req.body).then(result => res.json(result))
+  });
+
   route.patch('/remote/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     let remote = Remote.lookup(req.params.id)
