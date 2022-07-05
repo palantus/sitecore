@@ -3,15 +3,12 @@ const elementName = 'federation-remote-page'
 import api from "/system/api.mjs"
 import "/components/action-bar.mjs"
 import "/components/action-bar-item.mjs"
-import "/components/field.mjs"
 import "/components/field-edit.mjs"
 import "/components/field-list.mjs"
-import {on, off, fire} from "/system/events.mjs"
-import {state, goto} from "/system/core.mjs"
-import {showDialog} from "/components/dialog.mjs"
+import {on, off} from "/system/events.mjs"
+import {state} from "/system/core.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
-import { getApiConfig, isMobile } from "../../system/core.mjs"
-import {getUser} from "/system/user.mjs"
+
 
 const template = document.createElement('template');
 template.innerHTML = `
