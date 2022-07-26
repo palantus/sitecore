@@ -20,18 +20,23 @@ export default class Remote extends Entity {
     return query.type(Remote).tag("remote").all
   }
 
-  async get(path){
+  async get(path, {returnRaw = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
-    let res = await fetch(`${this.url}/${path}`, {
-      headers: {
-        'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64')
-      }
-    })
+    let res;
+    try{
+      res = await fetch(`${this.url}/${path}`, {
+        headers: {
+          'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64')
+        }
+      })
+    } catch(err){
+      throw err
+    }
     if(res.status !== 200){
-      log(`Received status ${res.status} on request to portal for ${path}`)
-      throw `Received status ${res.status} on request to portal for ${path}`
+      this.log(`Received status ${res.status} on request to remote for ${path}`)
+      throw `Received status ${res.status} on request to remote for ${path}`
     } else
-      return res.json()
+      return returnRaw ? res : res.json()
   }
   
   async del(path){
