@@ -2,6 +2,7 @@ const elementName = 'logs-page'
 
 import api from "/system/api.mjs"
 import {on, off} from "/system/events.mjs"
+import {state, pushStateQuery} from "/system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -52,7 +53,13 @@ class Element extends HTMLElement {
 
     api.get("system/logareas").then(areas => {
       this.shadowRoot.getElementById("logselect").innerHTML = areas.map(e => `<option value="${e.id}">${e.id}</option>`).join("")
-      this.shadowRoot.getElementById("logselect").addEventListener("change", this.refreshData)
+
+      this.shadowRoot.getElementById("logselect").value = state().query.area || ""
+
+      this.shadowRoot.getElementById("logselect").addEventListener("change", () => {
+        pushStateQuery({area: this.shadowRoot.getElementById("logselect").value})
+        this.refreshData()
+      })
       this.refreshData()
     })
   }
