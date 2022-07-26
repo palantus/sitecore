@@ -55,7 +55,13 @@ export default (app) => {
 
   route.get("/database/download/data", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    let zip = Archiver('zip');
+    let zip;
+    if(req.query.encrypt && req.query.encrypt !== "false"){
+      zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: global.sitecore.accessTokenSecret});
+      console.log(global.sitecore.accessTokenSecret)
+    } else {
+      zip = Archiver('zip');
+    }
     zip.glob("*.data", {cwd: global.sitecore.storagePath})
     let filename = `${CoreSetup.lookup().siteTitle?.toLowerCase().replace(/[^a-z0-9_-]/g, '')||"sc"}_database_data_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
     res.writeHead(200, {
@@ -68,7 +74,12 @@ export default (app) => {
 
   route.get("/database/download/full", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    let zip = Archiver('zip');
+    let zip;
+    if(req.query.encrypt && req.query.encrypt !== "false"){
+      zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: global.sitecore.accessTokenSecret});
+    } else {
+      zip = Archiver('zip');
+    }
     zip.directory(global.sitecore.storagePath, false)
     let filename = `${CoreSetup.lookup().siteTitle?.toLowerCase().replace(/[^a-z0-9_-]/g, '')||"sc"}_database_full_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
     res.writeHead(200, {
