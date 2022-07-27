@@ -88,8 +88,8 @@ button:focus{
 
 table.datalist{border-collapse: collapse; border: 1px dotted gray;}
 table.datalist tr{border-bottom: 1px dotted gray;}
-table.datalist thead th{text-align: left; border-bottom: 1px solid gray; padding-right: 15px;}
-table.datalist tbody td{padding: 2px; padding-right: 15px;}
+table.datalist thead th{padding: 3px; text-align: left; border-bottom: 1px solid gray; padding-right: 15px;}
+table.datalist tbody td{padding: 3px; padding-right: 15px;}
 table.datalist.empty{display: none;}
 
 button.styled{
