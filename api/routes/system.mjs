@@ -53,11 +53,11 @@ export default (app) => {
     res.json(true)
   })
 
-  route.get("/database/download/data", (req, res, next) => {
+  route.post("/database/download/data", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     let zip;
-    if(req.query.encrypt && req.query.encrypt !== "false"){
-      zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: global.sitecore.accessTokenSecret});
+    if(req.body.encrypt === true){
+      zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: req.body.password || global.sitecore.accessTokenSecret});
       console.log(global.sitecore.accessTokenSecret)
     } else {
       zip = Archiver('zip');
@@ -72,11 +72,11 @@ export default (app) => {
     zip.finalize()
   })
 
-  route.get("/database/download/full", (req, res, next) => {
+  route.post("/database/download/full", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     let zip;
-    if(req.query.encrypt && req.query.encrypt !== "false"){
-      zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: global.sitecore.accessTokenSecret});
+    if(req.body.encrypt === true){
+      zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: req.body.password || global.sitecore.accessTokenSecret});
     } else {
       zip = Archiver('zip');
     }

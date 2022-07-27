@@ -49,16 +49,17 @@ export default class Remote extends Entity {
     })).json()
   }
   
-  async post(path, body){
+  async post(path, body, {returnRaw = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
-    return (await fetch(`${this.url}/${path}`, {
+    let res = await fetch(`${this.url}/${path}`, {
       method: "POST",
       headers: {
         'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64'),
         'Content-Type' : "application/json"
       },
       body: JSON.stringify(body)
-    })).json()
+    })
+    return returnRaw ? res : res.json()
   }
   
   async patch(path, body){
