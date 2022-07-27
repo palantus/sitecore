@@ -87,12 +87,9 @@ button:focus{
 }
 
 table.datalist{border-collapse: collapse; border: 1px dotted gray;}
-table.datalist th{text-align: left;}
 table.datalist tr{border-bottom: 1px dotted gray;}
-table.datalist td{padding: 2px;}
-table.datalist td:first-child{padding-right: 15px;}
-table.datalist thead th{border-bottom: 1px solid gray; padding-right: 5px;}
-table.datalist tbody td{padding-right: 5px;}
+table.datalist thead th{text-align: left; border-bottom: 1px solid gray; padding-right: 15px;}
+table.datalist tbody td{padding: 2px; padding-right: 15px;}
 table.datalist.empty{display: none;}
 
 button.styled{
