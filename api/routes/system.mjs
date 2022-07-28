@@ -54,7 +54,7 @@ export default (app) => {
   })
 
   route.post("/database/download/data", (req, res, next) => {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "system.database.download"})) return;
     let zip;
     if(req.body.encrypt === true){
       zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: req.body.password || global.sitecore.accessTokenSecret});
@@ -73,7 +73,7 @@ export default (app) => {
   })
 
   route.post("/database/download/full", (req, res, next) => {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+    if(!validateAccess(req, res, {permission: "system.database.download"})) return;
     let zip;
     if(req.body.encrypt === true){
       zip = Archiver.create('zip-encrypted', {zlib: {level: 8}, encryptionMethod: 'aes256', password: req.body.password || global.sitecore.accessTokenSecret});

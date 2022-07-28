@@ -3,7 +3,7 @@ import Role from "../models/role.mjs"
 import User from "../models/user.mjs"
 
 export default async () => {
-  Role.lookupOrCreate("admin").addPermission(["admin", "user.read", "user.edit", "user.impersonate"], true);
+  Role.lookupOrCreate("admin").addPermission(["admin", "user.read", "user.edit", "user.impersonate", "system.database.download"], true);
   
   let admin = User.lookup("admin");
   if(!admin){
