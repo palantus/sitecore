@@ -1,5 +1,5 @@
 import Entity, {query, nextNum} from "entitystorage"
-import fetch from "node-fetch"
+import fetch, {FormData, File as FetchFile} from "node-fetch"
 import LogEntry from './logentry.mjs'
 
 export default class Remote extends Entity {
@@ -49,15 +49,32 @@ export default class Remote extends Entity {
     })).json()
   }
   
-  async post(path, body, {returnRaw = false} = {}){
+  async post(path, body, {returnRaw = false, contentType = null, isRawBody = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res = await fetch(`${this.url}/${path}`, {
       method: "POST",
       headers: {
         'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64'),
-        'Content-Type' : "application/json"
+        'Content-Type' : contentType||"application/json"
       },
-      body: JSON.stringify(body)
+      body: isRawBody ? body : JSON.stringify(body)
+    })
+    return returnRaw ? res : res.json()
+  }
+  
+  async upload(path, buffer, filename, {returnRaw = false, contentType = null} = {}){
+    if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
+
+    const formData = new FormData()
+    const file = new FetchFile([buffer], filename, { type: contentType||'application/zip' })
+    formData.set('file-upload', file, filename)
+
+    let res = await fetch(`${this.url}/${path}`, {
+      method: "POST",
+      headers: {
+        'Authorization': 'Bearer ' + this.apiKey
+      },
+      body: formData
     })
     return returnRaw ? res : res.json()
   }
