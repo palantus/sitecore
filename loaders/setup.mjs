@@ -9,7 +9,7 @@ export default ({mode, storagePath}) => {
 
   setup.mode = mode
   setup.siteHost = process.env.SITE_HOST || (mode == "combined" ? process.env.API_HOST : null)
-  setup.apiHost = mode == "combined" ? setup.siteHost : process.env.API_HOST || setup.siteHost
+  setup.apiHost = process.env.API_HOST || setup.siteHost
   setup.isSecure = !!(process.env.SECURE == "TRUE" || process.env.SECURE == "true")
 
   if(!setup.apiHost) {
@@ -24,7 +24,7 @@ export default ({mode, storagePath}) => {
 
   setup.serverMode = mode
   setup.siteURL = `http${setup.isSecure?'s':''}://${setup.siteHost}`
-  setup.apiPrefix = mode == "combined" ? "api" : ""
+  setup.apiPrefix = (mode == "combined" && setup.apiHost == setup.siteHost) ? "api" : ""
   setup.apiURL = `http${setup.isSecure?'s':''}://${setup.apiHost}${setup.apiPrefix?`/${setup.apiPrefix}` : ''}`
   setup.wsURL = `ws${setup.isSecure?'s':''}://${setup.apiHost}`
   setup.cookieDomain = process.env.COOKIEDOMAIN || setup.apiHost

@@ -58,11 +58,24 @@ export default async ({ app, mode, config }) => {
     app.get(`${apiPrefixWithSlash}/modroutes.mjs`, cors(corsOptions), (req, res) => res.type('.js').send(global.modRoutes).end())
     
     // Load API routes
-    app.use(`/${global.sitecore.apiPrefix}`, cors(corsOptions), await routes(app));
-    app.use(cors(corsOptions))
-    app.use(`/${global.sitecore.apiPrefix}`, (req, res) => {
-      res.sendStatus(404);
-    })
+    let apiRouter = await routes(app)
+
+    if(global.sitecore.apiHost != global.sitecore.siteHost){
+      // Handle when api is hosted on a separate subdomain/port
+      app.use(cors(corsOptions), (req, res, next) => {
+        if(req.headers.host == global.sitecore.apiHost){
+          return apiRouter(req, res, next)
+        } else {
+          return next()
+        }
+      })
+    } else {
+      app.use(`/${global.sitecore.apiPrefix}`, cors(corsOptions), apiRouter);
+      app.use(cors(corsOptions))
+      app.use(`/${global.sitecore.apiPrefix}`, (req, res) => {
+        res.sendStatus(404);
+      })
+    }
   }
 
   if(mode != "api"){
