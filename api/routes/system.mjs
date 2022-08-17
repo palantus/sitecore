@@ -62,7 +62,11 @@ export default (app) => {
       zip = Archiver('zip');
     }
     zip.glob("*.data", {cwd: global.sitecore.storagePath})
-    if(req.body.includeDotEnv) zip.file(".env")
+    if(req.body.includeDotEnv) {
+      zip.file(".env")
+      zip.append(JSON.stringify(global.sitecore, null, 2), {name: "setup.txt"})
+    }
+    zip.append(JSON.stringify(global.mods.map(m => m.id), null, 2), {name: "mods.txt"})
     let filename = `${CoreSetup.lookup().siteTitle?.toLowerCase().replace(/[^a-z0-9_-]/g, '')||"sc"}_database_data_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
     res.writeHead(200, {
       'Content-Type': 'application/zip',
@@ -81,7 +85,11 @@ export default (app) => {
       zip = Archiver('zip');
     }
     zip.directory(global.sitecore.storagePath, false)
-    if(req.body.includeDotEnv) zip.file(".env")
+    if(req.body.includeDotEnv) {
+      zip.file(".env")
+      zip.append(JSON.stringify(global.sitecore, null, 2), {name: "setup.txt"})
+    }
+    zip.append(JSON.stringify(global.mods.map(m => m.id), null, 2), {name: "mods.txt"})
     let filename = `${CoreSetup.lookup().siteTitle?.toLowerCase().replace(/[^a-z0-9_-]/g, '')||"sc"}_database_full_${moment().format("YYYY-MM-DD HH:mm:ss")}.zip`
     res.writeHead(200, {
       'Content-Type': 'application/zip',
