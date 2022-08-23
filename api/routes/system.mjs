@@ -22,13 +22,14 @@ export default (app) => {
     let area = LogArea.lookup(req.params.area)
     if(!area) return res.json([]);
     res.json(area.entries
+                 .filter(a => !!a.timestamp)
                  .sort((a, b) => a.timestamp > b.timestamp ? -1 : 1)
                  .slice(0, 200).map(e => e.toObj()))
   });
 
   route.get('/log', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(LogEntry.all().sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => ({ timestamp: e.timestamp, text: e.text })));
+    res.json(LogEntry.all().filter(a => !!a.timestamp).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => ({ timestamp: e.timestamp, text: e.text })));
   });
 
   route.get('/logareas', function (req, res, next) {
