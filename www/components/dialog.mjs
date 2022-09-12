@@ -1,4 +1,7 @@
 let elementName = "dialog-component"
+
+import "/components/field-edit.mjs"
+
 const template = document.createElement('template');
 template.innerHTML = `
   <link rel='stylesheet' href='/css/global.css'>
@@ -272,24 +275,27 @@ export async function confirmDialog(text, {title = null} = {}){
   })
 }
 
-export async function promptDialog(text, defValue, {selectValue = false, title = null, validate = undefined} = {}){
+export async function promptDialog(text, defValue, {selectValue = false, title = null, validate = undefined, type = "text", lookup = null} = {}){
   let container = document.createElement("div")
   container.innerHTML = `
     <dialog-component title="${title || "Prompt"}">
-      <div>${text}: </div><input style="margin-top: 5px; width: 350px"></input></input>
+      <div>${text}: </div><field-edit style="margin-top: 5px; width: 350px"></field-edit></input>
     </dialog-component>`
   document.getElementById("body-container").appendChild(container)
   let dialog = container.querySelector("dialog-component")
-  dialog.querySelector("input").value = defValue || ""
+  let inputElement = dialog.querySelector("field-edit")
+  inputElement.value = defValue || ""
+  inputElement.setAttribute("type", type)
+  if(lookup) inputElement.setAttribute("lookup", lookup)
   return new Promise(resolve => {
     setTimeout(() => { //Animations needs the element to exist before it is changed again
       showDialog(dialog, {
         show: () => {
-          dialog.querySelector("input").focus()
-          if(selectValue) dialog.querySelector("input").select()
+          inputElement.focus()
+          if(selectValue) inputElement.select()
         },
         ok: async (val) => {
-          resolve(dialog.querySelector("input").value)
+          resolve(inputElement.getValue())
           setTimeout(() => container.remove(), 2000)
         },
         cancel: async (val) => {
@@ -297,7 +303,7 @@ export async function promptDialog(text, defValue, {selectValue = false, title =
           setTimeout(() => container.remove(), 2000)
         },
         validate: () => {
-          return typeof validate === "function" ? validate(dialog.querySelector("input").value) : true
+          return typeof validate === "function" ? validate(inputElement.getValue()) : true
         }
       })
     }, 0)
