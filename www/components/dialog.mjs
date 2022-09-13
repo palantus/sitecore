@@ -284,8 +284,8 @@ export async function promptDialog(text, defValue, {selectValue = false, title =
   document.getElementById("body-container").appendChild(container)
   let dialog = container.querySelector("dialog-component")
   let inputElement = dialog.querySelector("field-edit")
-  inputElement.value = defValue || ""
   inputElement.setAttribute("type", type)
+  inputElement.setValue(defValue || "")
   if(lookup) inputElement.setAttribute("lookup", lookup)
   return new Promise(resolve => {
     setTimeout(() => { //Animations needs the element to exist before it is changed again

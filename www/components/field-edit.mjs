@@ -229,6 +229,10 @@ class Element extends HTMLElement {
     this.preventSaving = false;
   }
 
+  select(){
+    this.getValueElement().select()
+  }
+
   static get observedAttributes() {
     return ["value", "type", "disabled", "lookup"];
   }  

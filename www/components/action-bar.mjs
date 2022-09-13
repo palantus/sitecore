@@ -34,6 +34,9 @@ class Element extends HTMLElement {
     this.style.top = "0"
     this.style.zIndex = 5;
     */
+
+    if(this.hasAttribute("less-transparency"))
+      this.shadowRoot.querySelector(".bar").style.backgroundColor = "var(--dark-back-op)"
   }
 
   connectedCallback() {
