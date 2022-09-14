@@ -32,6 +32,14 @@ export function makeRowsSelectable(tableElement, selectionChanged) {
       e.classList.toggle("selected")
       e.querySelector("td:first-child input").checked = true;
       selectionChanged(Array.from(tableElement.querySelectorAll("tbody tr.selected")))
-    })
+    }),
+    setSelection: selectedIndices => {
+      tableElement.querySelectorAll("tbody tr").forEach((e, idx) => {
+        let isSelected = selectedIndices.includes(idx)
+        e.classList.toggle("selected", isSelected)
+        e.querySelector("td:first-child input").checked = isSelected;
+        selectionChanged(Array.from(tableElement.querySelectorAll("tbody tr.selected")))
+      })
+    }
   }
 }
