@@ -100,3 +100,11 @@ export let closeRightbar = (pageId, args) => {
   let rightBar = document.querySelector("#grid-container .right rightbar-component");
   rightBar.hidePage()
 }
+export let updateRightbarArgs = (pageId, args) => {
+  if(!pageId) return;
+  let rightBar = document.querySelector("#grid-container .right rightbar-component");
+  if(rightBar.getAttribute("page") != pageId) return;
+  let differentArgs = args && JSON.stringify(args) != JSON.stringify(rightBar._args)
+  if(!differentArgs) return;
+  showInRightbar(pageId, args, true)
+}
