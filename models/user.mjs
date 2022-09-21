@@ -121,6 +121,12 @@ class User extends Entity{
       return query.tag("user").not(query.tag("obsolete")).type(User).all
     }
 
+    static activeByRole(roleName){
+      let role = Role.lookup(roleName)
+      if(!role) return []
+      return query.tag("user").not(query.tag("obsolete")).type(User).relatedTo(role, "role").all
+    }
+
     get msUsers(){
       return query.type(MSUser).tag("msuser").relatedTo(this, "user").all
     }

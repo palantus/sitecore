@@ -130,7 +130,6 @@ class Element extends HTMLElement {
     let patchObj = {}
     patchObj[field] = value;
 
-    this.setAttribute("value", value)
     this.getValueElement()?.classList.remove("savefailflash")
     try{
       if(patch && field){
@@ -138,11 +137,13 @@ class Element extends HTMLElement {
         this.getValueElement()?.classList.add("savesuccessflash")
         setTimeout(() => this.getValueElement()?.classList.remove("savesuccessflash"), 1000)
       }
+      this.setAttribute("value", value)
       this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
 
     } catch(err){
       console.log(err)
-      fire("log", {level: "error", message: err})
+      //fire("log", {level: "error", message: err})
+      this.dispatchEvent(new CustomEvent("failed-patch", {bubbles: false, cancelable: false}));
       this.getValueElement()?.classList.add("savefailflash")
     }
   }
@@ -211,7 +212,7 @@ class Element extends HTMLElement {
     this.preventSaving = true;
     switch(this.getAttribute("type")){
       case "checkbox":
-        this.shadowRoot.querySelector("input").toggleAttribute("checked", newValue !== "false" && newValue !== false);
+        this.shadowRoot.querySelector("input").checked = newValue !== "false" && newValue !== false;
         break;
       case "text":
       case "password":
