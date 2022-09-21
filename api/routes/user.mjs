@@ -64,7 +64,7 @@ export default (app) => {
     }
 
     if (msUser) {
-      if (msUser.related.user && msUser.related.user.id != id) {
+      if (msUser.related.user && msUser.related.user.id != user.id) {
         throw "MS user is already assigned to another user"
       } else {
         msUser.rel(user, "user")
