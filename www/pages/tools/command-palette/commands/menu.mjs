@@ -50,3 +50,39 @@ export class OpenMenuItem extends Command{
     goto(this.path)
   }
 }
+
+export class GotoMisc extends Command{
+  static menuItems = [];
+
+  static keywords = [
+    {words: ["goto", "menu", "go"], mandatory: false}
+  ]
+
+  static createInstances(context){
+    let query = removeKeywordsFromQuery(context.query, this.keywords)
+
+    if(this.menuItems.length < 1){
+      this.menuItems.push({title: "My Profile", path: "/profile"})
+    }
+
+    return this.menuItems.filter(mi => {
+      for(let word of query){
+        if(mi.title.toLowerCase().includes(word))
+          continue;
+        return false;
+      }
+      return true;
+    })
+    .map(mi => {
+      let cmd = new GotoMisc()
+      cmd.context = context;
+      cmd.path = mi.path
+      cmd.title = `Goto: ${mi.title}`
+      return cmd
+    })
+  }
+
+  async run(){
+    goto(this.path)
+  }
+}
