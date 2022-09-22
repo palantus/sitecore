@@ -157,7 +157,7 @@ class Element extends HTMLElement {
         break;
 
       case 13: //enter
-        if(evt.target.tagName != "TEXTAREA")
+        if((evt.originalTarget||evt.target)?.tagName != "TEXTAREA")
           this.shadowRoot.getElementById("ok").click();
         break;
     }
