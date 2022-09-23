@@ -157,7 +157,8 @@ class Element extends HTMLElement {
         break;
 
       case 13: //enter
-        if((evt.originalTarget||evt.target)?.tagName != "TEXTAREA")
+        let target = (evt.originalTarget||evt.target)
+        if(target?.tagName != "TEXTAREA" || target?.hasAttribute("dialog-no-enter"))
           this.shadowRoot.getElementById("ok").click();
         break;
     }
