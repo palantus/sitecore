@@ -1,4 +1,4 @@
-export function makeRowsSelectable(tableElement, selectionChanged) {
+export function makeRowsSelectable(tableElement, selectionChanged = () => null) {
   tableElement.querySelectorAll("tbody tr").forEach(row => {
     if (row.querySelector(".checkbox"))
       return;
