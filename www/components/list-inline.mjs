@@ -83,6 +83,9 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById("items").addEventListener("click", this.containerClicked)
     this.shadowRoot.getElementById("add").addEventListener("click", this.addClicked)
+
+    if(this.hasAttribute("wrap"))
+      this.shadowRoot.getElementById("container").style.whiteSpace = "initial"
   }
 
   setup(setup){

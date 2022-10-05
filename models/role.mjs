@@ -1,6 +1,7 @@
 import Entity, {query}  from "entitystorage"
 import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs"
 import Permission from "./permission.mjs"
+import User from "./user.mjs"
 
 class Role extends Entity {
 
@@ -22,6 +23,10 @@ class Role extends Entity {
     this.removeRel(Permission.lookup(id), "permission")
     clearUserRoleAndPermissionCache()
     return this
+  }
+
+  get members(){
+    return this.relsrev.role?.filter(u => u.tags.includes("user")).map(u => User.from(u)).filter(u => u.active)||[]
   }
 
   static lookup(id){
