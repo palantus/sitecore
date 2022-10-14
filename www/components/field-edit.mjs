@@ -6,12 +6,15 @@ import { fire } from "../system/events.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
+  <link rel='stylesheet' href='/css/global.css'>
   <style>
     :host{display: inline-block;}
     #options{display: none;}
-    input:not([type='checkbox']), select{
+    input:not([type='checkbox']){
+      width: calc(100% - 10px); /*Account for padding*/
+    }
+    select{
       width: 100%;
-      background-color: white;
     }
 
     @-webkit-keyframes savesuccess {

@@ -72,11 +72,13 @@ dialog-component label:not(.checkbox):after {
   content: ":"; 
 }
 
-input[type="text"],input[type="number"],input[type="password"],input:not([type]),select{
+input[type="text"],input[type="number"],input[type="password"],input[type="date"],input:not([type]),textarea,select{
   border-radius: 5px;
-  border: 1px solid gray;
+  border: 1px solid var(--contrast-color);
   padding: 5px;
   box-shadow: 0px 0px 5px var(--shadow-on-back);
+  color: white;
+  background: var(--dark-back);
 }
 input[type="text"]:not([readonly]):focus,input:not([type]):not([readonly]):focus,input[type="password"]:not([readonly]):focus{
   box-shadow: 0px 0px 5px #550000;
@@ -84,6 +86,10 @@ input[type="text"]:not([readonly]):focus,input:not([type]):not([readonly]):focus
 }
 button:focus{
   outline: none;
+}
+input[disabled]{
+  color: var(--contrast-color-muted);
+  border: 1px solid var(--contrast-color-muted);
 }
 
 table.datalist{border-collapse: collapse; border: 1px dotted gray;}
