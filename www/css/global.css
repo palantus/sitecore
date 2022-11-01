@@ -118,3 +118,8 @@ button.styled[disabled]{
   color: var(--contrast-color-muted);
   cursor: initial;
 }
+
+.section{
+  border-left: 4px solid var(--accent-back);
+  padding-left: 10px;
+}
