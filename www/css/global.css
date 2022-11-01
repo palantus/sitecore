@@ -105,6 +105,9 @@ button.styled{
   border: 1px solid #aaaa;
   color: white;
 }
+button.styled:focus{
+  background: var(--table-hover);
+}
 
 button:not([disabled]).styled:hover{
   box-shadow: 3px 3px 5px #555;
