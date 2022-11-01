@@ -77,6 +77,11 @@ class Element extends HTMLElement {
         this.shadowRoot.querySelector("select").appendChild(e)
       })
     }
+
+    if(this.hasAttribute("min"))
+      this.shadowRoot.querySelector("input").setAttribute("min", this.getAttribute("min"))
+    if(this.hasAttribute("max"))
+      this.shadowRoot.querySelector("input").setAttribute("max", this.getAttribute("max"))
   }
 
   async connectedCallback() {
