@@ -24,12 +24,12 @@ export default (app) => {
     res.json(area.entries
                  .filter(a => !!a.timestamp)
                  .sort((a, b) => a.timestamp > b.timestamp ? -1 : 1)
-                 .slice(0, 200).map(e => e.toObj()))
+                 .slice(0, 500).map(e => e.toObj()))
   });
 
   route.get('/log', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(LogEntry.all().filter(a => !!a.timestamp).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 200).map(e => ({ timestamp: e.timestamp, text: e.text })));
+    res.json(LogEntry.all().filter(a => !!a.timestamp).sort((a, b) => a.timestamp > b.timestamp ? -1 : 1).slice(0, 500).map(e => ({ timestamp: e.timestamp, text: e.text })));
   });
 
   route.get('/logareas', function (req, res, next) {
