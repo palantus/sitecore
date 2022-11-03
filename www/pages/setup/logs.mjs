@@ -20,7 +20,7 @@ template.innerHTML = `
       border-bottom: 1px solid gray;
     }
 
-    table thead th:nth-child(1){width: 150px}
+    table thead th:nth-child(1){min-width: 150px !important;}
   </style>  
 
   <div id="container">
