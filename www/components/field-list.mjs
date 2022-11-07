@@ -28,12 +28,13 @@ class Element extends HTMLElement {
 
     this.style.display = "block"
     let addedCount = 0;
-    this.querySelectorAll("field-edit,field-ref")?.forEach((e, i) => {
+    this.querySelectorAll("field-edit,field-ref,list-inline-component")?.forEach((e, i) => {
       let lbl = document.createElement("label")
       lbl.setAttribute("for", e.getAttribute("id"))
       lbl.innerText = e.getAttribute("label") + ": ";
       lbl.style.width = labelWidth
       lbl.style.display = "inline-block"
+      lbl.style.verticalAlign = "top"
 
       let field = this.querySelector(`:first-child`);
       field.style.width = fieldWidth
