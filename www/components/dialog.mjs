@@ -140,9 +140,9 @@ class Element extends HTMLElement {
       this.shadowRoot.getElementById('cancel').style.display = "none"
   }
 
-  ok(){
+  ok(e){
     //this.style.display = "none";
-    this.dispatchEvent(new CustomEvent("ok-clicked", {bubbles: false, cancelable: false}));
+    this.dispatchEvent(new CustomEvent("ok-clicked", {bubbles: false, cancelable: false, detail: e}));
   }
 
   cancel(){
@@ -212,7 +212,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
     }
   }
 
-  let okClicked = async () => {
+  let okClicked = async e => {
     let val = typeof values === "function" ? values() : {}
 
     if(typeof validate === "function"){
@@ -231,7 +231,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
     }
     if(typeof ok === "function"){
       try{
-        await ok(val)
+        await ok(val, e)
       } catch(err){
         dialog.setAttribute("validationerror", err||"Some error occured. Expect that it didn't work.")
         return;
@@ -276,7 +276,7 @@ export async function confirmDialog(text, {title = null} = {}){
   })
 }
 
-export async function promptDialog(text, defValue, {selectValue = false, title = null, validate = undefined, type = "text", lookup = null} = {}){
+export async function promptDialog(text, defValue, {selectValue = false, title = null, validate = undefined, type = "text", lookup = null, extendedResult = false} = {}){
   let container = document.createElement("div")
   container.innerHTML = `
     <dialog-component title="${title || "Prompt"}">
@@ -295,8 +295,11 @@ export async function promptDialog(text, defValue, {selectValue = false, title =
           inputElement.focus()
           if(selectValue) inputElement.select()
         },
-        ok: async (val) => {
-          resolve(inputElement.getValue())
+        ok: async (val, event) => {
+          resolve(extendedResult ? {
+              value: inputElement.getValue(),
+              event: event.detail
+            } : inputElement.getValue())
           setTimeout(() => container.remove(), 2000)
         },
         cancel: async (val) => {
