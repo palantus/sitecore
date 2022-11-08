@@ -196,6 +196,7 @@ class Element extends HTMLElement {
 
 export function showDialog(dialog, {ok, cancel, show, validate, values, close} = {}){
   dialog.classList.add("open");
+  dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
 
   if(typeof show === "function"){
     show();
@@ -213,6 +214,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
   }
 
   let okClicked = async e => {
+    dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", true)
     let val = typeof values === "function" ? values() : {}
 
     if(typeof validate === "function"){
