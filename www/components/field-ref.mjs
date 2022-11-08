@@ -26,9 +26,9 @@ class Element extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.shadowRoot.querySelector('span').addEventListener('click', () => {
+    this.shadowRoot.querySelector('span').addEventListener('click', e => {
       let ref = this.getAttribute('ref')
-      if(ref.startsWith("http")){
+      if(ref.startsWith("http") || e.ctrlKey){
         window.open(ref, "_blank")
       } else {
         goto(ref)
