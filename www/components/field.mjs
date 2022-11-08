@@ -27,6 +27,7 @@ template.innerHTML = `
       width: 100px;
       display: inline-block;
       vertical-align: top;
+      word-break: break-word;
     }
   </style>
   <div class="field">
