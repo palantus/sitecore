@@ -215,6 +215,7 @@ sc.init();
 export function goto(path, args) { sc.goto(path, args) }
 export function pushStateQuery(...args) { sc.pushStateQuery(...args) }
 export function removeQueryVar(...args) { sc.removeQueryVar(...args) }
+export function saveState(){sc.pushCurState({replace: true})}
 export function state() { return sc.state }
 export function isMobile() { return sc.isMobile() }
 export function isSecure() { return config.secure }
