@@ -71,6 +71,7 @@ class Element extends HTMLElement {
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.valueChanged = this.valueChanged.bind(this)
+    this.focus = this.focus.bind(this)
 
     if(this.getAttribute("type") == "select"){
       this.querySelectorAll("option")?.forEach(e => {
@@ -82,6 +83,8 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("input").setAttribute("min", this.getAttribute("min"))
     if(this.hasAttribute("max"))
       this.shadowRoot.querySelector("input").setAttribute("max", this.getAttribute("max"))
+
+    this.addEventListener("focus", this.focus)
   }
 
   async connectedCallback() {
