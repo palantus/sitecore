@@ -13,7 +13,6 @@ template.innerHTML = `
     }
     
     #progress-bar-container {
-      width: 80%;
       height: 2rem;
       border-radius: 2rem;
       position: relative;
@@ -36,8 +35,6 @@ template.innerHTML = `
       display: flex;
       justify-content: center;
       align-items:center;
-      color: white;
-      font-family: sans-serif;
     }
     #progress-bar-container.complete{
       /*box-shadow: 0 0 5px #4895ef;*/
@@ -47,7 +44,6 @@ template.innerHTML = `
     }
 
     #progress-bar-text{
-      left: 50%;
       position: fixed;
     }
   </style>
