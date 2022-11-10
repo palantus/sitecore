@@ -161,23 +161,46 @@ class API {
     }
   }
 
-  async upload(path, formData) {
+  async upload(path, formData, {onProgress = pct => null} = {}) {
     this.checkInit();
     if (this.failedLoginState === true) return;
-    let res = await fetch(`${apiURL()}/${path}`, {
-      method: "POST",
-      body: formData,
-      headers: this.getHeaders(false)
-    })
-    if (res.status < 300) {
-      return await res.json();
-    } else if (res.status == 401) {
-      //this.notLoggedIn()
-    } else if (res.status >= 400/* && res.status < 500*/) {
-      let retObj = await res.json()
-      console.log(`${res.status}: ${res.statusText}`, retObj)
-      fire("log", { level: "error", message: retObj.message || retObj.error })
-      throw retObj.message || retObj.error
+
+    try{
+      let res = await new Promise((resolve, reject) => {
+        let headers = this.getHeaders(false)
+        const xhr = new XMLHttpRequest();
+        xhr.upload.addEventListener('progress', e => onProgress((e.loaded / e.total)*100));
+        xhr.addEventListener('load', () => resolve({ status: xhr.status, statusText: xhr.statusText, body: xhr.responseText }));
+        xhr.addEventListener('error', () => reject(new Error('File upload failed')));
+        xhr.addEventListener('abort', () => reject(new Error('File upload aborted')));
+        xhr.open('POST', `${apiURL()}/${path}`, true);
+        for(let name in headers)
+          xhr.setRequestHeader(name, headers[name])
+        xhr.send(formData);
+      });
+
+      //Use fetch when streaming become available
+      /*
+      let res = await fetch(`${apiURL()}/${path}`, {
+        method: "POST",
+        body: formData,
+        headers: this.getHeaders(false)
+      })
+      */
+      if (res.status < 300) {
+        return JSON.parse(res.body);
+      } else if (res.status == 401) {
+        //this.notLoggedIn()
+      } else if (res.status >= 400/* && res.status < 500*/) {
+        let retObj = JSON.parse(res.body);
+        console.log(`${res.status}: ${res.statusText}`, retObj)
+        fire("log", { level: "error", message: retObj.message || retObj.error })
+        throw retObj.message || retObj.error
+      }
+    } catch(err){
+      fire("log", { level: "error", message: `Request returned an error. Information: ${err}`})
+      reject();
+      return;
     }
   }
 
