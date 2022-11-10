@@ -224,10 +224,12 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
 
       if(validateResult === false){
         dialog.setAttribute("validationerror", "Invalid input")
+        dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
         return;
       }
       if(typeof validateResult === "string"){
         dialog.setAttribute("validationerror", validateResult)
+        dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
         return;
       }
     }
@@ -236,6 +238,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
         await ok(val, e)
       } catch(err){
         dialog.setAttribute("validationerror", err||"Some error occured. Expect that it didn't work.")
+        dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
         return;
       }
     }
