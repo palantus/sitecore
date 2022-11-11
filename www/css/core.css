@@ -106,4 +106,6 @@ body,div{
   --contrast-background-transparent: rgba(255, 255, 255, 0.1);
   --shadow-on-back: #222;
   --table-hover: rgba(255, 255, 255, 0.2);
+  --link: #8fb9f9;
+  --link-hover: #76acff;
 }

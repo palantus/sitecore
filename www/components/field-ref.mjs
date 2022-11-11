@@ -7,13 +7,13 @@ template.innerHTML = `
   <style>
     span{
         cursor: pointer;
-        color: #8fb9f9;
+        color: var(--link);
         mix-blend-mode: difference;
         
     }
     span:hover{
         color: blue;
-        color: #76acff;
+        color: var(--link-hover);
         mix-blend-mode: difference;
     }
   </style>
