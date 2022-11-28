@@ -10,7 +10,7 @@ template.innerHTML = `
       z-index: 15;
     }
     #container{
-      position: fixed;
+      position: relative;
       left: 0px;
       right: 0px;
       width: 100%;
@@ -30,6 +30,17 @@ template.innerHTML = `
       padding: 10px;
       overflow: auto;
       padding-bottom: 75px;
+    }
+    #dialog::after{
+      content: "";
+      top: 0;
+      left: 0;
+      position: absolute;
+      z-index: -2;
+      backdrop-filter: blur(5px);
+      background-size: cover;
+      height: 100%;
+      width: 100%;
     }
     #buttons{
       text-align: right;
