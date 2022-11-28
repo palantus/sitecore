@@ -128,6 +128,7 @@ class Element extends HTMLElement {
         }
       }
       clickedE.closest(".item").remove()
+      this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
     } else if(typeof this._setup.click === "function" && clickedE.matches(".item .content *")){
       this._setup.click(item, this, this._setup)
     }
@@ -141,7 +142,10 @@ class Element extends HTMLElement {
         return;
     }
 
-    this._setup.add(this, this._setup).then(this.refreshUI)
+    this._setup.add(this, this._setup).then(() => {
+      this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
+      this.refreshUI()
+    })
   }
 }
 
