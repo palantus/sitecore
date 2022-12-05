@@ -147,6 +147,7 @@ class Element extends HTMLElement {
         await api.patch(patch, patchObj)
         this.getValueElement()?.classList.add("savesuccessflash")
         setTimeout(() => this.getValueElement()?.classList.remove("savesuccessflash"), 1000)
+        this.currentKnownStoredValue = value;
       }
       this.setAttribute("value", value)
       this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
@@ -156,6 +157,7 @@ class Element extends HTMLElement {
       //fire("log", {level: "error", message: err})
       this.dispatchEvent(new CustomEvent("failed-patch", {bubbles: false, cancelable: false}));
       this.getValueElement()?.classList.add("savefailflash")
+      this.setValue(this.currentKnownStoredValue)
     }
   }
 
@@ -238,6 +240,7 @@ class Element extends HTMLElement {
           this.shadowRoot.querySelector("select").value = newValue;
         break;
     }
+    this.currentKnownStoredValue = newValue;
     this.preventSaving = false;
   }
 
