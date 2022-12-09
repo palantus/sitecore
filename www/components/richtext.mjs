@@ -52,13 +52,17 @@ class Element extends HTMLElement {
       })
     }
 
+    if(toolbar.length > 0){
+      toolbar.push("|")
+    }
+
     this.simplemde = new EasyMDE({
       element: this.shadowRoot.getElementById("editor"),
       spellChecker: false,
       //showIcons: ["code", "table"]
       toolbar: [
         ...toolbar,
-        "|", "bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen"
+        "bold", "italic", "heading", "|", "code", "quote", "unordered-list", "ordered-list", "|", "link", "image", "table", "|", "preview", "side-by-side", "fullscreen"
       ]
     });
   }
