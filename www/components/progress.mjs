@@ -44,13 +44,20 @@ template.innerHTML = `
     }
 
     #progress-bar-text{
-      position: fixed;
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      top:0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      justify-content: center;
+      align-items:center;
     }
   </style>
   <div id="progress-bar-container">
-    <div id="progress-bar">
-      <span id="progress-bar-text">Uploaded Successfully!</span>
-    </div>
+    <div id="progress-bar"></div>
+    <span id="progress-bar-text">Uploaded Successfully!</span>
   </div>
 </div>
 `;
