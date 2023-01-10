@@ -32,6 +32,8 @@ template.innerHTML = `
     .hidden{display: none;}
     div.share{
       display: flex;
+    }
+    dropdown-menu-component:not([always-show]) div.share{
       min-width: 300px;
     }
     div.share field-edit[field=name]{
