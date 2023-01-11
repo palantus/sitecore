@@ -123,3 +123,7 @@ button.styled[disabled]{
   border-left: 4px solid var(--accent-back);
   padding-left: 10px;
 }
+
+.hidden{
+  display: none;
+}
