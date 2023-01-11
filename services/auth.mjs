@@ -199,3 +199,42 @@ export function noGuest(req, res, next){
   if(res.locals.user && res.locals.user.id != "guest") return next();
   return res.status(403).json({ error: "You must be signed in to use this endpoint", redirectTo: global.sitecore.loginURL })
 }
+
+export function throttle(maxRequests = 2, interval = "hour"){
+
+  return (req, res, next) => {
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+    let path = req.baseUrl + req.path
+    let key = `${ip}_${path}`;
+    if(!service.ipRequests.has(key)){
+      service.ipRequests.set(key, [])
+    }
+    let ipRequests = service.ipRequests.get(key)
+    
+    let startDate = new Date();
+
+    switch(interval){
+      case "hour":
+      case "hours":
+        startDate.setHours(startDate.getHours() - 1)
+        break;
+      case "minute":
+      case "minutes":
+        startDate.setMinutes(startDate.getMinutes() - 1)
+        break;
+      default: 
+        throw `Interval ${interval} not supported in throttle`
+    }
+
+    startDate = startDate.toISOString().substring(0, 19)
+    let reqCount = ipRequests.reduce((sum, cur) => sum + (cur.timestamp >= startDate ? 1 : 0), 0)
+
+    if(reqCount >= maxRequests){
+      return res.status(403).json({ error: "You have requested this too many times. Try again later."})
+    }
+
+    ipRequests.push({timestamp: new Date().toISOString().substring(0, 19), ip, path})
+
+    return next()
+  }
+}
