@@ -8,9 +8,10 @@ import Role from "./role.mjs";
 import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs";
 
 class User extends Entity{
-    initNew(userId, {name = ""} = {}){
+    initNew(userId, {name = "", email} = {}){
         this.id = userId
         this.name = typeof name === "string" && name.length > 0 ? name : "";
+        if(email && typeof email === "string") this.email = email;
         this.tag("user")
     }
 
