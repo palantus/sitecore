@@ -5,7 +5,7 @@ import User from "../models/user.mjs"
 import MSUser from "../models/msuser.mjs"
 import Role from "../models/role.mjs";
 import { lookupUserFromJWT, cacheJWT, lookupUserPermissions} from "../tools/usercache.mjs";
-import { query, sanitize } from "entitystorage";
+import { sanitize } from "entitystorage";
 import { service as userService } from "./user.mjs"
 import jwt from 'jsonwebtoken'
 import APIKey from "../models/apikey.mjs";
