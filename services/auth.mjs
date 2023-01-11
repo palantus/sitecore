@@ -5,7 +5,7 @@ import User from "../models/user.mjs"
 import MSUser from "../models/msuser.mjs"
 import Role from "../models/role.mjs";
 import { lookupUserFromJWT, cacheJWT, lookupUserPermissions} from "../tools/usercache.mjs";
-import { sanitize } from "entitystorage";
+import { query, sanitize } from "entitystorage";
 import { service as userService } from "./user.mjs"
 import jwt from 'jsonwebtoken'
 import APIKey from "../models/apikey.mjs";
@@ -19,6 +19,7 @@ class Service {
     this.scope = "https%3A%2F%2Fgraph.microsoft.com%2Fuser.read" //inkluder %20offline_access for refresh_token. %20 er fordi det er space separeret.
     this.redirect = `${global.sitecore.apiURL}/auth/redirect`
     this.secret = setup.msSigninSecret
+    this.ipRequests = new Map()
 
     if(!global.sitecore.accessTokenSecret)
       console.log("ACCESS_TOKEN_SECRET must be provided in .env to handle JWT")
