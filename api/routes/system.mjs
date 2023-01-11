@@ -175,6 +175,11 @@ export default (app) => {
     res.json(DataType.all().map(dt => dt.toObj()));
   });
 
+  route.get('/ip', function (req, res, next) {
+    let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+    res.json({ip})
+  });
+
   route.get('/datatypes/:id', function (req, res, next) {
     let type = DataType.lookup(sanitize(req.params.id))
     if(!type) return res.status(401).json("Datatype doesn't exist");
