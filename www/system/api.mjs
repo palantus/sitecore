@@ -161,6 +161,26 @@ class API {
     }
   }
 
+  async postRaw(path, body, contentType) {
+    this.checkInit();
+    if (this.failedLoginState === true) return;
+    let res = await fetch(`${apiURL()}/${path}`, {
+      method: "POST",
+      body,
+      headers: {...this.getHeaders(false), "Content-Type": contentType}
+    })
+    if (res.status < 300) {
+      return await res.json();
+    } else if (res.status == 401) {
+      //this.notLoggedIn()
+    } else if (res.status >= 400/* && res.status < 500*/) {
+      let retObj = await res.json()
+      console.log(`${res.status}: ${res.statusText}`, retObj)
+      fire("log", { level: "error", message: retObj.message || retObj.error })
+      throw retObj.message || retObj.error
+    }
+  }
+
   async upload(path, formData, {onProgress = pct => null} = {}) {
     this.checkInit();
     if (this.failedLoginState === true) return;

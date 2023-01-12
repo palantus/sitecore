@@ -208,6 +208,7 @@ export default (app) => {
   })
 
   roleRoute.get('/:id/members', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "user.read"})) return;
     let role = Role.lookup(sanitize(req.params.id))
     if(!role) throw "Unknown role"
     res.json(role.members.map(u => ({id: u.id, name: u.name})));
