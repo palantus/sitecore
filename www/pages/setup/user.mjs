@@ -9,7 +9,7 @@ import "/components/field-list.mjs"
 import {on, off, fire} from "/system/events.mjs"
 import {state, goto} from "/system/core.mjs"
 import {showDialog} from "/components/dialog.mjs"
-import { alertDialog } from "../../components/dialog.mjs"
+import { alertDialog, confirmDialog } from "../../components/dialog.mjs"
 import { getApiConfig, isMobile } from "../../system/core.mjs"
 import {getUser} from "/system/user.mjs"
 
@@ -38,6 +38,7 @@ template.innerHTML = `
   <action-bar>
       <action-bar-item id="msuser-btn">Assign to MS user</action-bar-item>
       <action-bar-item id="change-username-btn">Change user id</action-bar-item>
+      <action-bar-item id="delete-user-btn">Delete user</action-bar-item>
   </action-bar>
 
   <div id="container">
@@ -89,12 +90,14 @@ class Element extends HTMLElement {
 
     this.assignToMSUser = this.assignToMSUser.bind(this); //Make sure "this" in that method refers to this
     this.changeUsername = this.changeUsername.bind(this)
+    this.deleteUser = this.deleteUser.bind(this)
     this.roleClick = this.roleClick.bind(this)
     this.refreshData = this.refreshData.bind(this)
     
     this.userId = /\/setup\/users\/([a-zA-Z0-9\-_@.]+)/.exec(state().path)[1]
     this.shadowRoot.getElementById("msuser-btn").addEventListener("click", this.assignToMSUser)
     this.shadowRoot.getElementById("change-username-btn").addEventListener("click", this.changeUsername)
+    this.shadowRoot.getElementById("delete-user-btn").addEventListener("click", this.deleteUser)
     this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)
 
     this.elementId = `${elementName}-${this.userId}`
@@ -216,6 +219,12 @@ class Element extends HTMLElement {
       api.post(`user/${this.userId}/roles`, {id}).then(this.refreshData)
     else
       api.del(`user/${this.userId}/roles/${id}`).then(this.refreshData)
+  }
+
+  async deleteUser(){
+    if(!(await confirmDialog(`Are you sure that you want to delete user ${this.userId}? Deletion of users isn't fully supported yet, so some user data might not be correctly deleted with it.`))) return;
+    await api.del(`user/${this.userId}`)
+    window.history.back();
   }
 
   connectedCallback() {

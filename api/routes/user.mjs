@@ -34,12 +34,13 @@ export default (app) => {
     res.json(User.search("tag:user !tag:obsolete").map(u => ({id: u.id, name: u.name})));
   });
 
-  /*
   userRoute.delete('/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "user.edit"})) return;
-    res.json(service(res.locals).del(sanitize(req.params.id)));
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let user = User.lookup(req.params.id)
+    if(!user) return res.sendStatus(404);
+    user.delete()
+    res.json({success: true})
   });
-  */
 
   userRoute.get("/counters", function (req, res, next) {
     res.json({

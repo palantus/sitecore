@@ -141,6 +141,13 @@ class User extends Entity {
     return query.type(Notification).tag("notification").relatedTo(this, "user").all
   }
 
+  delete(){
+    this.msUsers.forEach(msUser => msUser.delete());
+    this.notifications.forEach(n => n.delete());
+    this.related.setup?.delete();
+    super.delete();
+  }
+
   toObj() {
     return {
       id: this.id,
