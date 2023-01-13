@@ -83,7 +83,7 @@ input[type="text"]:not([readonly]):focus,input:not([type]):not([readonly]):focus
 button:focus{
   outline: none;
 }
-input[disabled]{
+input[disabled],select[disabled]{
   color: var(--contrast-color-muted);
   border: 1px solid var(--contrast-color-muted);
 }
