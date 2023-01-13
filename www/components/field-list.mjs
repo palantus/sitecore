@@ -58,7 +58,7 @@ class Element extends HTMLElement {
 
   refreshHidden(){
     this.querySelectorAll(".list-element").forEach(e => {
-      e.classList.toggle("hidden", e.querySelector("field-edit").classList.contains("hidden"))
+      e.classList.toggle("hidden", e.querySelector("field-edit,field-ref,list-inline-component").classList.contains("hidden"))
     })
   }
 
