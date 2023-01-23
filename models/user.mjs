@@ -158,6 +158,13 @@ class User extends Entity {
       roles: this.roles
     }
   }
+
+  toObjSimple() {
+    return {
+      id: this.id,
+      name: this.name
+    }
+  }
 }
 
 export default User
