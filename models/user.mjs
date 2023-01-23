@@ -105,6 +105,10 @@ class User extends Entity {
     return [...new Set((this.rels.role?.map(r => r.rels.permission?.map(p => p.id) || []) || []).flat())]
   }
 
+  hasPermission(permission) {
+    return (this.rels.role?.map(r => r.rels.permission?.map(p => p.id) || []) || []).flat().includes(permission)
+  }
+
   get active() {
     return !this.tags.includes("obsolete")
   }
