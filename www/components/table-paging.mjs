@@ -1,39 +1,25 @@
 let elementName = "table-paging"
 const template = document.createElement('template');
 template.innerHTML = `
+  <link rel='stylesheet' href='/css/global.css'>
   <style>
     #container {
         text-align: right;
     }
-    button{
-      background-color: white;
-      border: 1px solid black;
-      border-radius: 2px;
-      padding: 5px;
-      width: 50px;
-      height: 30px;
-      cursor: pointer;
-    }
-    button:hover{
-      background-color: rgb(230, 230, 230);
-    }
-    button:active{
-      background-color: rgb(210, 210, 210);
-    }
     input{
       width: 40px;
-      height: 24px;
-      padding: 2px;
-      margin: 0px;
       text-align: center;
+    }
+    button{
+      width: 45px;
     }
   </style>
   <div id="container">
-    <button id="first">First</button>
-    <button id="prev">Prev</button>
+    <button id="first" class="styled">First</button>
+    <button id="prev" class="styled">Prev</button>
     <input type="number" id="page" value="1"/>
-    <button id="next">Next</button>
-    <button id="last">Last</button>
+    <button id="next" class="styled">Next</button>
+    <button id="last" class="styled">Last</button>
   </div>
 `;
 
