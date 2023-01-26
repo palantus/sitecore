@@ -10,7 +10,7 @@ template.innerHTML = `
   <style>
     :host{display: inline-block;}
     #options{display: none;}
-    input:not([type='checkbox']){
+    input:not([type='checkbox']), textarea{
       width: calc(100% - 10px); /*Account for padding*/
     }
     select{
@@ -59,6 +59,7 @@ template.innerHTML = `
       <span id="options">
         <slot></slot>
       </span>
+      <textarea></textarea>
       <datalist id="lookuplist"></datalist>
   </span>
 `;
@@ -83,6 +84,10 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("input").setAttribute("min", this.getAttribute("min"))
     if(this.hasAttribute("max"))
       this.shadowRoot.querySelector("input").setAttribute("max", this.getAttribute("max"))
+    if(this.hasAttribute("rows"))
+      this.shadowRoot.querySelector("textarea").setAttribute("rows", this.getAttribute("rows"))
+    if(this.hasAttribute("cols"))
+      this.shadowRoot.querySelector("textarea").setAttribute("cols", this.getAttribute("cols"))
 
     this.addEventListener("focus", this.focus)
   }
@@ -98,7 +103,7 @@ class Element extends HTMLElement {
       await this.refreshLookups()
     }
 
-    this.shadowRoot.querySelectorAll("select,input").forEach(e => e.addEventListener("change", this.valueChanged))
+    this.shadowRoot.querySelectorAll("select,input,textarea").forEach(e => e.addEventListener("change", this.valueChanged))
   }
 
   async refreshLookups(){
@@ -169,6 +174,7 @@ class Element extends HTMLElement {
         case "password":
         case "date":
         case "select":
+        case "textarea":
           return this.getValueElement().value;
         case "checkbox":
           return this.getValueElement().matches(":checked");
@@ -194,6 +200,8 @@ class Element extends HTMLElement {
           return this.shadowRoot.querySelector("select");
         case "checkbox":
           return this.shadowRoot.querySelector("input");
+        case "textarea":
+          return this.shadowRoot.querySelector("textarea");
     }
     return null;
   }
@@ -209,11 +217,19 @@ class Element extends HTMLElement {
     if(this.getAttribute("type") == "select"){
       this.shadowRoot.querySelector("input").style.display = "none"
       this.shadowRoot.querySelector("select").style.display = "block"
+      this.shadowRoot.querySelector("textarea").style.display = "none"
       
       this.shadowRoot.querySelector("select").toggleAttribute("disabled", this.hasAttribute("disabled"))
+    } else if(this.getAttribute("type") == "textarea"){
+      this.shadowRoot.querySelector("input").style.display = "none"
+      this.shadowRoot.querySelector("select").style.display = "none"
+      this.shadowRoot.querySelector("textarea").style.display = "block"
+      
+      this.shadowRoot.querySelector("textarea").toggleAttribute("disabled", this.hasAttribute("disabled"))
     } else {
       this.shadowRoot.querySelector("input").style.display = "block"
       this.shadowRoot.querySelector("select").style.display = "none"
+      this.shadowRoot.querySelector("textarea").style.display = "none"
       
       this.shadowRoot.querySelector("input").setAttribute("type", this.getAttribute("type"));
       this.shadowRoot.querySelector("input").setAttribute("placeholder", this.getAttribute("placeholder") || "");
@@ -232,6 +248,9 @@ class Element extends HTMLElement {
       case "date":
       case "number":
         this.shadowRoot.querySelector("input").value = newValue;
+        break;
+      case "textarea":
+        this.shadowRoot.querySelector("textarea").value = newValue;
         break;
       case "select":
         if(this.lookupRefreshPromise)

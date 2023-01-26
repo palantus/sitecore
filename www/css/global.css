@@ -127,3 +127,7 @@ button.styled[disabled]{
 .hidden{
   display: none;
 }
+
+span.highlight{
+  color: var(--accent-color-light);
+}
