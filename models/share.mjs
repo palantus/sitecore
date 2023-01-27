@@ -69,7 +69,7 @@ export default class Share extends Entity{
         write: rights.includes("w"),
         execute: rights.includes("x")
       },
-      url: `${global.sitecore.siteURL}/${type.uiPath}/${id}?shareKey=${this.key}`
+      url: type.uiPath ? `${global.sitecore.siteURL}/${type.uiPath}/${id}?shareKey=${this.key}` : null
     }
   }
 }

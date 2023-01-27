@@ -269,7 +269,7 @@ class Element extends HTMLElement {
           <field-edit class="read" type="checkbox" field="read" title="Read access" value="${s.rights.read}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
           <field-edit class="write" type="checkbox" field="write" title="Write access" value="${s.rights.write}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
           <field-edit class="execute" type="checkbox" field="execute" title="Execute access" value="${s.rights.execute}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
-          <button class="copy" data-url="${s.url}">Copy</button>
+          <button class="copy" data-url="${s.url||s.key}"}>Copy</button>
           <button class="delete" data-id="${s.id}">Delete</button>
       </div>`).join("")
 
