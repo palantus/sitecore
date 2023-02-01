@@ -73,6 +73,9 @@ class Element extends HTMLElement {
 
     this.valueChanged = this.valueChanged.bind(this)
     this.focus = this.focus.bind(this)
+    this.getValue = this.getValue.bind(this)
+    this.setValue = this.setValue.bind(this)
+    this.select = this.select.bind(this)
 
     if(this.getAttribute("type") == "select"){
       this.querySelectorAll("option")?.forEach(e => {
@@ -183,9 +186,13 @@ class Element extends HTMLElement {
   }
 
   getValueTitle(){
-    let value = this.getValue()
+    let value = this.getValue() || this.getAttribute("value")
     return this.shadowRoot.querySelector(`option[value="${value}"]`)?.text
                 || this.querySelector(`option[value="${value}"]`)?.text
+                || this.shadowRoot.querySelector(`option:first-child`)?.text
+                || this.querySelector(`option:first-child`)?.text
+                || value
+                
   }
 
   getValueElement(){
@@ -234,6 +241,12 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("input").setAttribute("type", this.getAttribute("type"));
       this.shadowRoot.querySelector("input").setAttribute("placeholder", this.getAttribute("placeholder") || "");
       this.shadowRoot.querySelector("input").toggleAttribute("disabled", this.hasAttribute("disabled"))
+    }
+
+    if(this.getAttribute("type") == "select" && !this.shadowRoot.querySelector("select option")){
+      this.querySelectorAll("option")?.forEach(e => {
+        this.shadowRoot.querySelector("select").appendChild(e)
+      })
     }
   }
   
