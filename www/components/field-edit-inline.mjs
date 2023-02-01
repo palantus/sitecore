@@ -1,9 +1,5 @@
 let elementName = "field-edit-inline"
 
-import api from "/system/api.mjs"
-import {userPermissions} from "/system/user.mjs"
-import { fire } from "../system/events.mjs";
-
 const template = document.createElement('template');
 template.innerHTML = `
   <link rel='stylesheet' href='/css/global.css'>
