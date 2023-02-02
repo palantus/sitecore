@@ -42,7 +42,6 @@ template.innerHTML = `
     }
     
     .content {
-      padding: 0 18px;
       max-height: 0;
       overflow: hidden;
       transition: max-height 0.2s ease-out;
