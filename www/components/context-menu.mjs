@@ -1,5 +1,29 @@
 let elementName = "context-menu"
 
+/*
+  Usage:
+  let container = document.createElement("collapsible-card")
+  container.innerHTML = `
+    <span slot="title">${spec.name}</span>
+    <context-menu width="150px">
+      <span data-button="remove">Remove data source</span>
+      <span data-button="toggle-edit">Toggle edit mode</span>
+    </context-menu>
+  `
+
+  Either listen directly on the element for "item-clicked" or on a parent element with class "container".
+
+  this.shadowRoot.getElementById("....").addEventListener("item-clicked", e => {
+    let menu = e.detail.menu
+    switch(e.detail.button){
+      case "remove":
+        //...
+        break;
+      //...
+    }
+  }
+*/
+
 import "/components/dropdown-menu.mjs"
 
 const template = document.createElement('template');
@@ -42,7 +66,16 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("items").innerHTML = [...this.querySelectorAll("span")].map(e => `<button data-button="${e.getAttribute("data-button")}">${e.innerText}</button>`).join("")
     this.shadowRoot.getElementById("items").addEventListener("click", e => {
       if(e.target.tagName !== "BUTTON") return;
-      this.dispatchEvent(new CustomEvent("item-clicked", {bubbles: true, cancelable: false, detail: e.target.getAttribute("data-button")}))
+      let data = {
+        bubbles: false, 
+        cancelable: true, 
+        detail: {
+          button: e.target.getAttribute("data-button"),
+          menu: this
+        }
+      }
+      this.dispatchEvent(new CustomEvent("item-clicked", data))
+      this.closest(".container")?.dispatchEvent(new CustomEvent("item-clicked", data))
     })
   }
 
