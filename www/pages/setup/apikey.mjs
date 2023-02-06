@@ -58,6 +58,16 @@ template.innerHTML = `
 
     <div id="federation-container" class="hidden">
       <collapsible-card>
+        <span slot="title">Federation setup</span>
+        <div>
+          <p>Enter domain name or other unique identifier used on the remote instance - eg. example.com for users named myuser@example.com</p>
+          <field-list labels-pct="20">
+            <field-edit type="text" label="Domain name" id="identifier"></field-edit>
+          </field-list>
+        </div>
+      </collapsible-card>
+
+      <collapsible-card>
         <span slot="title">Federation status</span>
         <div id="status"></div>
       </collapsible-card>
@@ -98,6 +108,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("federation").setAttribute("value", key.federation);
     this.shadowRoot.getElementById("user").setAttribute("ref", `/setup/users/${key.userId}`);
     this.shadowRoot.getElementById("user").innerText = key.userId;
+    this.shadowRoot.getElementById("identifier").setAttribute("value", key.identifier||"");
 
     if(key.federation){
       let roles = await api.get("role")

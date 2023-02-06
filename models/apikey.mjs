@@ -62,7 +62,8 @@ class APIKey extends Entity {
       issueDate: this.issueDate,
       daily: this.daily||false,
       roles: this.roles.map(r => r.toObj()),
-      federation: !!this.federation
+      federation: !!this.federation,
+      identifier: this.identifier||null
     }
   }
 }

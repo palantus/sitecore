@@ -2,10 +2,7 @@ import express from "express"
 const { Router, Request, Response } = express;
 import {noGuest, validateAccess} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
-import Role from "../../models/role.mjs";
-import APIKey from "../../models/apikey.mjs";
-import { query } from "entitystorage";
-import User from "../../models/user.mjs";
+import Setup from "../../models/setup.mjs";
 
 export default (app) => {
 
@@ -60,6 +57,21 @@ export default (app) => {
     if(typeof req.body.title === "string" && req.body.title) remote.title = req.body.title;
     if(typeof req.body.url === "string" && req.body.url) remote.url = req.body.url;
     if(typeof req.body.apiKey === "string" && req.body.apiKey) remote.apiKey = req.body.apiKey;
+    res.json(true);
+  });
+  
+  route.get('/setup', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let setup = Setup.lookup()
+    res.json({
+      identifier: setup.identifier||null
+    });
+  });
+  
+  route.patch('/setup', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let setup = Setup.lookup()
+    if(typeof req.body.identifier === "string" || !req.body.identifier) setup.identifier = req.body.identifier||null;
     res.json(true);
   });
 };

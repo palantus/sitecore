@@ -39,6 +39,16 @@ template.innerHTML = `
     <h1>Federation</h1>
     
     <collapsible-card>
+      <span slot="title">Setup</span>
+      <div>
+        <p>Enter domain name or other unique identifier for this instance. This is usually the domain name (eg. example.com):</p>
+        <field-list labels-pct="20">
+          <field-edit type="text" label="Domain name" id="identifier" patch="federation/setup" field="identifier"></field-edit>
+        </field-list>
+      </div>
+    </collapsible-card>
+
+    <collapsible-card>
       <span slot="title">External servers (remotes)</span>
       <div>
         <table id="remotes-tab">
@@ -110,6 +120,9 @@ class Element extends HTMLElement {
         </td>
       </tr>
     `).join("")
+
+    let setup = await api.get("federation/setup")
+    this.shadowRoot.getElementById("identifier").setAttribute("value", setup.identifier||"");
   }
 
   newRemote(){

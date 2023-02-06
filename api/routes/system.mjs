@@ -166,6 +166,7 @@ export default (app) => {
     if(!key) return res.sendStatus(404);
     if(typeof req.body.name === "string" && req.body.name) key.name = req.body.name;
     if(typeof req.body.federation === "boolean") key.federation = req.body.federation;
+    if(typeof req.body.identifier === "string" || !req.body.identifier) key.identifier = req.body.identifier||null;
     res.json(key.toObj())
   });
 
