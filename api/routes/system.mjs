@@ -1,12 +1,13 @@
 import express from "express"
 const { Router, Request, Response } = express;
 const route = Router();
-import Entity, {query, sanitize, uiAPI} from "entitystorage"
+import {query, uiAPI} from "entitystorage"
 import LogEntry from "../../models/logentry.mjs";
 import {validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
 import Setup from "../../models/setup.mjs";
 import DataType from "../../models/datatype.mjs";
+import User from "../../models/user.mjs";
 import LogArea from "../../models/logarea.mjs";
 import Archiver from 'archiver';
 import moment from "moment"
@@ -148,18 +149,18 @@ export default (app) => {
 
   routeAPIKeys.get('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(Entity.search("tag:apikey").map(k => { return { id: k._id, name: k.name, userId: k.related.user?.id||null, issueDate: k.issueDate, daily: k.daily||false } }))
+    res.json(APIKey.all().map(k => k.toObj()))
   });
 
   routeAPIKeys.get('/:id/daily', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json({key: APIKey.lookup(sanitize(req.params.id))?.generateDailyToken()})
+    res.json({key: APIKey.lookup(req.params.id)?.generateDailyToken()})
   });
 
   routeAPIKeys.post('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     if (!req.body.name || !req.body.key || !req.body.userId) throw "name, key and userId are mandatory"
-    let user = Entity.find(`tag:user prop:"id=${sanitize(req.body.userId)}"`)
+    let user = User.lookup(req.body.userId)
     if (!user) throw `User ${req.body.userId} doesn't exist`
     new APIKey(req.body.name, req.body.key, user, req.body.daily)
     res.json({ success: true })
@@ -167,7 +168,7 @@ export default (app) => {
 
   routeAPIKeys.delete('/:id', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    APIKey.lookup(sanitize(req.params.id))?.delete();
+    APIKey.lookup(req.params.id)?.delete();
     res.json({ success: true })
   })
 
@@ -181,7 +182,7 @@ export default (app) => {
   });
 
   route.get('/datatypes/:id', function (req, res, next) {
-    let type = DataType.lookup(sanitize(req.params.id))
+    let type = DataType.lookup(req.params.id)
     if(!type) return res.status(401).json("Datatype doesn't exist");
     res.json(type.toObj());
   });

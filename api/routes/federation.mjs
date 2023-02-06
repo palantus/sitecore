@@ -2,6 +2,10 @@ import express from "express"
 const { Router, Request, Response } = express;
 import {noGuest, validateAccess} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
+import Role from "../../models/role.mjs";
+import APIKey from "../../models/apikey.mjs";
+import { query } from "entitystorage";
+import User from "../../models/user.mjs";
 
 export default (app) => {
 
@@ -58,4 +62,37 @@ export default (app) => {
     if(typeof req.body.apiKey === "string" && req.body.apiKey) remote.apiKey = req.body.apiKey;
     res.json(true);
   });
+
+  // Roles
+  route.get("/setup/role", (req, res) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    res.json(Role.all().map(role => ({
+      id: role.id,
+      enabled: role.tags.includes("federation")
+    })));
+  })
+
+  route.patch("/setup/role/:id", (req, res) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let role = Role.lookup(req.params.id)
+    if(!role) return res.sendStatus(404);
+    if(typeof req.body.enabled === "boolean") req.body.enabled ? role.tag("federation") : role.removeTag("federation");
+    res.json({success: true});
+  })
+
+  // API keys
+  route.get('/setup/apikey', (req, res) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    res.json(query.type(APIKey).tag("apikey").tag("federation").all.map(k => k.toObj()))
+  });
+
+  route.post("/setup/apikey", (req, res) => {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    if (!req.body.name || !req.body.key || !req.body.userId) throw "name, key and userId are mandatory"
+    let user = User.lookup(req.body.userId)
+    if (!user) throw `User ${req.body.userId} doesn't exist`
+    let key = new APIKey(req.body.name, req.body.key, user, false)
+    key.tag("federation")
+    res.json({success: true});
+  })
 };

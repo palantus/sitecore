@@ -41,18 +41,21 @@ class APIKey extends Entity {
   }
 
   static all(){
-    return APIKey.search("tag:apikey")
+    return query.type(APIKey).tag("apikey").all
   }
 
   static lookup(id){
-    return APIKey.find(`tag:apikey id:"${id}"`)
+    if(!id) return null;
+    return query.type(APIKey).tag("apikey").id(id).first
   }
 
   toObj() {
     return {
-      text: this.text,
-      timestamp: this.timestamp,
-      area: this.rels.area?.map(a => ({id: a.id}))?.[0]||null
+      id: this._id,
+      name: this.name,
+      userId: this.related.user?.id||null,
+      issueDate: this.issueDate,
+      daily: this.daily||false
     }
   }
 }
