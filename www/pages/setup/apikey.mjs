@@ -60,7 +60,8 @@ template.innerHTML = `
       <collapsible-card>
         <span slot="title">Federation setup</span>
         <div>
-          <p>Enter domain name or other unique identifier used on the remote instance - eg. example.com for users named myuser@example.com</p>
+          <p>Enter domain name or other unique identifier used on the remote instance - eg. example.com for users named myuser@example.com.</p>
+          <p>Note that it must match what is entered in Federation setup on the remote instance, as it is used to limit the pool of available user id's.</p>
           <field-list labels-pct="20">
             <field-edit type="text" label="Domain name" id="identifier"></field-edit>
           </field-list>
