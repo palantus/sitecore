@@ -13,6 +13,7 @@ import Archiver from 'archiver';
 import moment from "moment"
 import CoreSetup from "../../models/setup.mjs"
 import contentDisposition from 'content-disposition'
+import Role from "../../models/role.mjs";
 
 export default (app) => {
 
@@ -150,6 +151,33 @@ export default (app) => {
   routeAPIKeys.get('/', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     res.json(APIKey.all().map(k => k.toObj()))
+  });
+
+  routeAPIKeys.get('/:id', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let key = APIKey.lookup(req.params.id)
+    if(!key) return res.sendStatus(404);
+    res.json(key.toObj())
+  });
+
+  routeAPIKeys.patch('/:id', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let key = APIKey.lookup(req.params.id)
+    if(!key) return res.sendStatus(404);
+    if(typeof req.body.name === "string" && req.body.name) key.name = req.body.name;
+    if(typeof req.body.federation === "boolean") key.federation = req.body.federation;
+    res.json(key.toObj())
+  });
+
+  routeAPIKeys.patch('/:id/role/:role', function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let key = APIKey.lookup(req.params.id)
+    if(!key) return res.sendStatus(404);
+    let role = Role.lookup(req.params.role)
+    if(!role) return res.sendStatus(404);
+    if(req.body.enabled) key.rel(role, "role");
+    else key.removeRel(role, "role")
+    res.json(key.toObj())
   });
 
   routeAPIKeys.get('/:id/daily', function (req, res, next) {

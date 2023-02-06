@@ -1,6 +1,7 @@
 import Entity, {query}  from "entitystorage"
 import {getTimestamp} from "../tools/date.mjs"
 import {createHash} from 'crypto'
+import Role from "./role.mjs";
 
 let dailyTokensToKeyMap = new Map()
 let cacheDate = null;
@@ -49,6 +50,10 @@ class APIKey extends Entity {
     return query.type(APIKey).tag("apikey").id(id).first
   }
 
+  get roles(){
+    return this.rels.role?.map(r => Role.from(r))||[]
+  }
+
   toObj() {
     return {
       id: this._id,
@@ -56,7 +61,8 @@ class APIKey extends Entity {
       userId: this.related.user?.id||null,
       issueDate: this.issueDate,
       daily: this.daily||false,
-      federation: this.tags.includes("federation")
+      roles: this.roles.map(r => r.toObj()),
+      federation: !!this.federation
     }
   }
 }

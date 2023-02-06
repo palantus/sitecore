@@ -19,6 +19,7 @@ let routes = [
     {regexp: /^\/setup\/users\/([a-zA-Z0-9\-_@.]+)/,    page: "../pages/setup/user.mjs"},
     {regexp: /^\/federation\/remote\/([\d]+)/,          page: "../pages/setup/remote.mjs"},
     {regexp: /^\/setup\/role\/([a-z0-9\_\-]+)/,         page: "../pages/setup/role.mjs"},
+    {regexp: /^\/setup\/apikey\/([\d]+)/,               page: "../pages/setup/apikey.mjs"},
 ]
 
 export async function init(){

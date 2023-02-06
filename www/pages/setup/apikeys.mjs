@@ -146,7 +146,7 @@ class Element extends HTMLElement {
         row.classList.add("result")
         row.innerHTML = `
             <tr>
-                <td>${key.name}</td>
+                <td><field-ref ref="/setup/apikey/${key.id}">${key.name}</field-ref></td>
                 <td>${key.userId}</td>
                 <td>${key.issueDate?.substring(0, 19).replace("T", " ") ||"N/A"}</td>
                 <td>${key.daily ? "Yes" : "No"}</td>

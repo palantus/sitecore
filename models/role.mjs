@@ -40,6 +40,12 @@ class Role extends Entity {
   static all(){
     return query.type(Role).tag("role").all
   }
+
+  toObj(){
+    return {
+      id: this.id
+    }
+  }
 }
 
 export default Role
