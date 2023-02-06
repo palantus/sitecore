@@ -55,7 +55,8 @@ class APIKey extends Entity {
       name: this.name,
       userId: this.related.user?.id||null,
       issueDate: this.issueDate,
-      daily: this.daily||false
+      daily: this.daily||false,
+      federation: this.tags.includes("federation")
     }
   }
 }

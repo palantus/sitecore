@@ -6,7 +6,7 @@ import "/components/action-bar.mjs"
 import "/components/action-bar-item.mjs"
 import "/components/field-ref.mjs"
 import "/components/field.mjs"
-import {showDialog, promptDialog} from "/components/dialog.mjs"
+import {showDialog, promptDialog, confirmDialog} from "/components/dialog.mjs"
 import {on, off, fire} from "/system/events.mjs"
 import {uuidv4} from "/libs/uuid.mjs"
 
@@ -28,11 +28,11 @@ template.innerHTML = `
       border: 1px solid gray;
     }
 
-    table thead th:nth-child(1){width: 100px}
-    table thead th:nth-child(2){width: 200px}
-    table thead th:nth-child(3){width: 200px}
-    table thead th:nth-child(4){width: 200px}
-    table thead th:nth-child(5){width: 100px}
+    table thead th:nth-child(1){width: 200px}
+    table thead th:nth-child(2){width: 100px}
+    table thead th:nth-child(3){width: 150px}
+    table thead th:nth-child(4){width: 70px}
+    table thead th:nth-child(5){width: 80px}
   </style>  
 
   <action-bar>
@@ -43,11 +43,11 @@ template.innerHTML = `
     <table>
         <thead>
             <tr>
-              <th>Id</th>
               <th>Name</th>
               <th>User</th>
               <th>Issued</th>
               <th>Daily</th>
+              <th>Federation</th>
               <th></th>
             </tr>
         </thead>
@@ -89,6 +89,7 @@ class Element extends HTMLElement {
   async buttonClicked(evt){
     if(evt.target.classList.contains("deletekey")){
       let id = evt.target.getAttribute("data-id");
+      if(!(await confirmDialog("Are you sure that you want to delete this key?"))) return;
       await api.del("system/apikeys/" + id)
       this.refreshData()
     } else if(evt.target.classList.contains("getDaily")){
@@ -145,11 +146,11 @@ class Element extends HTMLElement {
         row.classList.add("result")
         row.innerHTML = `
             <tr>
-                <td>${key.id}</td>
                 <td>${key.name}</td>
                 <td>${key.userId}</td>
                 <td>${key.issueDate?.substring(0, 19).replace("T", " ") ||"N/A"}</td>
                 <td>${key.daily ? "Yes" : "No"}</td>
+                <td>${key.federation ? "Yes" : "No"}</td>
                 <td>
                   <button data-id="${key.id}" class="deletekey">Delete</button>
                   ${key.daily ? `<button data-id="${key.id}" class="getDaily">Generate daily key</button>` : ""}
