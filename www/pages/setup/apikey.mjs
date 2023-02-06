@@ -58,7 +58,7 @@ template.innerHTML = `
 
     <div id="federation-container" class="hidden">
       <collapsible-card>
-        <span slot="title">Status</span>
+        <span slot="title">Federation status</span>
         <div id="status"></div>
       </collapsible-card>
 
