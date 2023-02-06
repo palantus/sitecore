@@ -53,6 +53,12 @@ export default (app) => {
     res.json(service(res.locals).get(sanitize(req.params.id)));
   });
 
+  userRoute.get('/:id/full', function (req, res, next) {
+    if(res.locals.user.id != req.params.id && !validateAccess(req, res, {permission: "user.read"})) return;
+    let user = User.lookup(req.params.id)
+    res.json({...user.toObj(), permissions: user.permissions});
+  });
+
   userRoute.post('/:id/assignToMSAccount', function (req, res, next) {
     if(!validateAccess(req, res, {permission: "user.edit"})) return;
     let user = User.lookup(req.params.id)

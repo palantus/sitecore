@@ -7,6 +7,7 @@ import "/components/field-edit.mjs"
 import "/components/field-list.mjs"
 import "/components/collapsible-card.mjs"
 import {state} from "/system/core.mjs"
+import { userPermissions } from "../../system/user.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -43,16 +44,24 @@ template.innerHTML = `
       width: 500px;
       margin-bottom: 10px;
     }
+    p.ok{color: green;}
+    p.fail{color: red;}
   </style>
 
   <div id="container">
     <h1>API key</h1>
     <field-list labels-pct="20">
       <field-edit type="text" label="Name" id="name"></field-edit>
+      <field-ref label="User" id="user"></field-ref>
       <field-edit type="checkbox" label="Federation" id="federation"></field-edit>
     </field-list>
-    
+
     <div id="federation-container" class="hidden">
+      <collapsible-card>
+        <span slot="title">Status</span>
+        <div id="status"></div>
+      </collapsible-card>
+
       <collapsible-card>
         <span slot="title">Roles for new users</span>
         <div>
@@ -87,6 +96,8 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById("name").setAttribute("value", key.name);
     this.shadowRoot.getElementById("federation").setAttribute("value", key.federation);
+    this.shadowRoot.getElementById("user").setAttribute("ref", `/setup/users/${key.userId}`);
+    this.shadowRoot.getElementById("user").innerText = key.userId;
 
     if(key.federation){
       let roles = await api.get("role")
@@ -98,6 +109,13 @@ class Element extends HTMLElement {
       `).join("")
     }
     this.shadowRoot.getElementById("federation-container").classList.toggle("hidden", !key.federation)
+
+    let user = await api.get(`user/${key.userId}/full`)
+    let permissions = user?.permissions||[]
+    this.shadowRoot.getElementById("status").innerHTML = `
+      <p class="${user ? "ok" : "fail"}">User must exist</p>
+      <p class="${permissions.includes("system.federation.client") ? "ok" : "fail"}">User must have permission system.federation.client.</p>
+    `
 
     this.shadowRoot.querySelectorAll("field-list field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `system/apikeys/${this.keyId}`));
   }
