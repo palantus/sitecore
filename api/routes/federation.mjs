@@ -44,6 +44,13 @@ export default (app) => {
     Remote.testConfig(req.body).then(result => res.json(result))
   });
 
+  route.post('/remote/:id/refresh', permission("admin"), (req, res, next) => {
+    let remote = Remote.lookup(req.params.id)
+    if (!remote) throw "Unknown remote"
+    remote.refresh().catch(err => res.json({success: false, err}))
+                    .then(() => res.json({success: true}))
+  });
+
   route.patch('/remote/:id', permission("admin"), (req, res, next) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
@@ -65,4 +72,8 @@ export default (app) => {
     if(typeof req.body.identifier === "string" || !req.body.identifier) setup.identifier = req.body.identifier||null;
     res.json(true);
   });
+
+  route.get('/:fed/token', noGuest, (req, res) => {
+
+  })
 };

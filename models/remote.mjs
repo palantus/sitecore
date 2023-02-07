@@ -114,6 +114,18 @@ export default class Remote extends Entity {
     }
   }
 
+  async refresh(){
+    try{
+      let identity = await this.get("system/identity")
+      this.identifier = identity.identifier||null;
+      this.identity = JSON.stringify(identity)
+      return true;
+    } catch(err){
+      console.log(err)
+    }
+    return false;
+  }
+
   log(text){
     return new LogEntry(text, "federation")
   }
@@ -123,7 +135,9 @@ export default class Remote extends Entity {
       id: this.id,
       title: this.title,
       url: this.url,
-      apiKey: this.apiKey
+      apiKey: this.apiKey,
+      identifier: this.identifier,
+      identity: this.identity
     }
   }
 

@@ -215,4 +215,20 @@ export default (app) => {
     if(!type) return res.status(401).json("Datatype doesn't exist");
     res.json(type.toObj());
   });
+
+  route.get("/identity", (req, res) => {
+    let setup = Setup.lookup()
+    res.json({
+      identifier: setup.identifier || null,
+      api: global.sitecore.apiURL,
+      site: global.sitecore.siteURL,
+      secure: global.sitecore.isSecure ? true : false,
+      ws: global.sitecore.wsURL,
+      title: setup.siteTitle || "SiteCore",
+      mods: global.mods.map(m => m.id),
+      msSigninEnabled: setup.msSigninClientId && setup.msSigninSecret ? true : false,
+      homePublic: setup.homePublic ? setup.homePublic : null,
+      homeInternal: setup.homeInternal ? setup.homeInternal : null
+    })
+  })
 };

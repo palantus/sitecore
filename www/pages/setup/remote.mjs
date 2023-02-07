@@ -5,6 +5,7 @@ import "/components/action-bar.mjs"
 import "/components/action-bar-item.mjs"
 import "/components/field-edit.mjs"
 import "/components/field-list.mjs"
+import "/components/collapsible-card.mjs"
 import {on, off} from "/system/events.mjs"
 import {state} from "/system/core.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
@@ -20,6 +21,7 @@ template.innerHTML = `
     }
     field-list{
       width: 500px;
+      margin-bottom: 15px;
     }
     h1{position: relative; margin-bottom: 20px;}
     #user-id-container{
@@ -30,6 +32,9 @@ template.innerHTML = `
       top: calc(100% - 5px);
     }
     .hidden{display:none;}
+    collapsible-card > div{
+      padding: 10px;
+    }
   </style>  
 
   <action-bar>
@@ -43,7 +48,17 @@ template.innerHTML = `
       <field-edit type="text" label="Title" id="title"></field-edit>
       <field-edit type="text" label="URL" id="url"></field-edit>
       <field-edit type="text" label="API Key" id="apiKey"></field-edit>
+      <field-edit type="text" label="Identifier" id="identifier" disabled></field-edit>
     </field-list>
+
+    <collapsible-card>
+      <span slot="title">Identity information</span>
+      <div>
+        <pre id="identity">
+        </pre>
+        <button id="refresh" class="styled">Refresh</button>
+      </div>
+    </collapsible-card>
   </div>
 `;
 
@@ -60,6 +75,7 @@ class Element extends HTMLElement {
     this.remoteId = /\/federation\/remote\/([\d]+)/.exec(state().path)[1]
 
     this.shadowRoot.getElementById("test").addEventListener("click", this.testConn)
+    this.shadowRoot.getElementById("refresh").addEventListener("click", () => api.post(`federation/remote/${this.remoteId}/refresh`).then(this.refreshData))
 
     this.elementId = `${elementName}-${this.userId}`
   }
@@ -72,6 +88,9 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("title").setAttribute("value", remote.title);
     this.shadowRoot.getElementById("url").setAttribute("value", remote.url);
     this.shadowRoot.getElementById("apiKey").setAttribute("value", remote.apiKey);
+    this.shadowRoot.getElementById("identifier").setAttribute("value", remote.identifier||"< not avaible - please refresh! >");
+
+    this.shadowRoot.getElementById("identity").innerText = remote.identity ? JSON.stringify(JSON.parse(remote.identity), null, 4) : "Not available - please refresh!";
 
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `federation/remote/${remote.id}`));
   }

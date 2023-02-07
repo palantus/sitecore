@@ -6,7 +6,7 @@ import "/components/field-ref.mjs"
 import "/components/field-edit.mjs"
 import "/components/context-menu.mjs"
 import "/components/collapsible-card.mjs"
-import {showDialog, confirmDialog} from "/components/dialog.mjs"
+import {showDialog, confirmDialog, alertDialog} from "/components/dialog.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -95,6 +95,9 @@ class Element extends HTMLElement {
           confirmDialog(`Are you sure that you want to delete the remote titled "${this.remotes.find(f => f.id == id).title}"?`)
               .then(answer => answer ? api.del(`federation/remote/${id}`).then(this.refreshData) : null)
           break;
+        case "refresh":
+          api.post(`federation/remote/${id}/refresh`).then(res => alertDialog(res.success ? "Succesful refresh" : "Refresh failed"))
+          break;
       }
     })
   }
@@ -116,6 +119,7 @@ class Element extends HTMLElement {
         <td>
           <context-menu width="150px">
             <span data-button="delete">Delete remote</span>
+            <span data-button="refresh">Refresh details</span>
           </context-menu>
         </td>
       </tr>
