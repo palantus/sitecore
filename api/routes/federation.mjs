@@ -1,6 +1,6 @@
 import express from "express"
 const { Router, Request, Response } = express;
-import {noGuest, validateAccess} from "../../services/auth.mjs"
+import {noGuest, permission, validateAccess} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
 import Setup from "../../models/setup.mjs";
 
@@ -9,35 +9,30 @@ export default (app) => {
   const route = Router();
   app.use("/federation", noGuest, route)
 
-  route.post('/remote', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.post('/remote', permission("admin"),  (req, res, next) => {
     if(typeof req.body.title !== "string") throw "Invalid title"
     let remote = new Remote(req.body)
     res.json(remote.toObj())
   });
 
-  route.get('/remote', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.get('/remote', permission("admin"), (req, res, next) => {
     res.json(Remote.all().map(f => f.toObj()));
   });
 
-  route.delete('/remote/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.delete('/remote/:id', permission("admin"), (req, res, next) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     remote.delete();
     res.json({success: true});
   });
 
-  route.get('/remote/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.get('/remote/:id', permission("admin"), (req, res, next) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     res.json(remote.toObj());
   });
 
-  route.post('/remote/:id/test', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.post('/remote/:id/test', permission("admin"), (req, res, next) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     remote.get("me")
@@ -45,13 +40,11 @@ export default (app) => {
           .then(user => res.json({userId: user?.id, name: user?.name, success: !!user?.id}))
   });
 
-  route.post('/remote/test', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.post('/remote/test', permission("admin"), (req, res, next) => {
     Remote.testConfig(req.body).then(result => res.json(result))
   });
 
-  route.patch('/remote/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.patch('/remote/:id', permission("admin"), (req, res, next) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     if(typeof req.body.title === "string" && req.body.title) remote.title = req.body.title;
@@ -60,16 +53,14 @@ export default (app) => {
     res.json(true);
   });
   
-  route.get('/setup', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.get('/setup', permission("admin"), (req, res, next) => {
     let setup = Setup.lookup()
     res.json({
       identifier: setup.identifier||null
     });
   });
   
-  route.patch('/setup', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
+  route.patch('/setup', permission("admin"), (req, res, next) => {
     let setup = Setup.lookup()
     if(typeof req.body.identifier === "string" || !req.body.identifier) setup.identifier = req.body.identifier||null;
     res.json(true);

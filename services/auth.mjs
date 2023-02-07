@@ -200,6 +200,13 @@ export function noGuest(req, res, next){
   if(res.locals.user && res.locals.user.id != "guest") return next();
   return res.status(403).json({ error: "You must be signed in to use this endpoint", redirectTo: global.sitecore.loginURL })
 }
+export function permission(permission){
+  return (req, res, next) => {
+    if(service.hasPermission(res.locals, permission)) return next();
+    console.log(`Unauthorized access by user ${res.locals.user?.id}: ${req.method} ${req.originalUrl}. Missing: ${permission}`)
+    return res.status(403).json({ error: "You do not have permission: " + permission, redirectTo: global.sitecore.loginURL })
+  }
+}
 
 export function throttle(maxRequests = 2, interval = "hour"){
 
