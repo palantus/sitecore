@@ -39,6 +39,10 @@ template.innerHTML = `
     div.share field-edit[field=name]{
       margin-right: 10px;
     }
+    dropdown-menu-component[always-show] #button{
+      margin-bottom: 5px;
+      display: inline-block;
+    }
   </style>
   <dropdown-menu-component width="200px">
     <span slot="button">
