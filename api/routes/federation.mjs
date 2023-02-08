@@ -83,9 +83,14 @@ export default (app) => {
   });
 
   route.get('/:fed/api/*', noGuest, permission("user.federate"), async (req, res) => {
-    let remote = Remote.lookupIdentifier(req.params.fed)
-    if(!remote) return res.sendStatus(404);
     let path = decodeURI(req.path.substring(5)).split("/").slice(1).join("/")
+    let remote = Remote.lookupIdentifier(req.params.fed)
+    if(!remote) {
+      if(Setup.lookup().identifier == req.params.fed)
+        return res.redirect(`/api/${path}`)
+      else
+        return res.sendStatus(404);
+    }
     try{
       let response = await remote.get(path, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
       let headers = {}
