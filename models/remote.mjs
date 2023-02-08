@@ -1,6 +1,7 @@
 import Entity, {query, nextNum} from "entitystorage"
 import fetch, {FormData, File as FetchFile} from "node-fetch"
 import LogEntry from './logentry.mjs'
+import Setup from "./setup.mjs"
 
 export default class Remote extends Entity {
   initNew({title, apiKey, url} = {}) {
@@ -16,18 +17,21 @@ export default class Remote extends Entity {
     return query.type(Remote).tag("remote").prop("id", id).first
   }
 
+  static lookupIdentifier(identifier){
+    if(!identifier) return null;
+    return query.type(Remote).tag("remote").prop("identifier", identifier).first
+  }
+
   static all(){
     return query.type(Remote).tag("remote").all
   }
 
-  async get(path, {returnRaw = false} = {}){
+  async get(path, {returnRaw = false, user = null} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res;
     try{
       res = await fetch(`${this.url}/${path}`, {
-        headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64')
-        }
+        headers: this.getHeaders(null, user)
       })
     } catch(err){
       throw err
@@ -43,9 +47,7 @@ export default class Remote extends Entity {
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     return (await fetch(`${this.url}/${path}`, {
       method: "DELETE",
-      headers: {
-        'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64')
-      }
+      headers: this.getHeaders()
     })).json()
   }
   
@@ -53,10 +55,7 @@ export default class Remote extends Entity {
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res = await fetch(`${this.url}/${path}`, {
       method: "POST",
-      headers: {
-        'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64'),
-        'Content-Type' : contentType||"application/json"
-      },
+      headers: this.getHeaders(contentType||"application/json"),
       body: isRawBody ? body : JSON.stringify(body)
     })
     return returnRaw ? res : res.json()
@@ -71,9 +70,7 @@ export default class Remote extends Entity {
 
     let res = await fetch(`${this.url}/${path}`, {
       method: "POST",
-      headers: {
-        'Authorization': 'Bearer ' + this.apiKey
-      },
+      headers: this.getHeaders(),
       body: formData
     })
     return returnRaw ? res : res.json()
@@ -83,10 +80,7 @@ export default class Remote extends Entity {
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     return (await fetch(`${this.url}/${path}`, {
       method: "PATCH",
-      headers: {
-        'Authorization': 'Basic ' + Buffer.from(`${''}:${this.apiKey}`, 'binary').toString('base64'),
-        'Content-Type' : "application/json"
-      },
+      headers: this.getHeaders("application/json"),
       body: JSON.stringify(body)
     })).json()
   }
@@ -111,6 +105,14 @@ export default class Remote extends Entity {
       }
     } catch(error){
       return {success: false, error: `${error}`}
+    }
+  }
+
+  getHeaders(contentType = null, user = null){
+    return {
+      'Authorization': 'Bearer ' + this.apiKey,
+      'Content-Type' : contentType||undefined,
+      'X-SiteCore-Federate': user ? `${user.id}@${Setup.lookup().identifier};${user.name}` : undefined
     }
   }
 

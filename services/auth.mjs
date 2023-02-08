@@ -70,7 +70,7 @@ class Service {
     return { user, msUser };
   }
 
-  async tokenToUser(token, impersonate = null){
+  async tokenToUser(token, impersonate = null, federateUser = null){
     let user = null;
     
     if(!user){
@@ -83,7 +83,7 @@ class Service {
     if(!user && token && token.length < 100){
       let apiKey = APIKey.tokenToKey(token)
       if (apiKey) {
-        user = User.from(apiKey.related.user);
+        user = apiKey.getUser(federateUser);
       }
     }
 

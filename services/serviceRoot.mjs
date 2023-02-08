@@ -4,7 +4,7 @@ import { startCleanupService } from "./cleanup.mjs";
 
 export default async () => {
 
-  Role.lookupOrCreate("federation").addPermission(["system.federation.client"], true)
+  Role.lookupOrCreate("federation").addPermission(["user.federate"], true)
 
   let services = {
     auth: auth.init(),

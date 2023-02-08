@@ -108,7 +108,7 @@ export default (app) => {
     
       if(token){
         try{
-          let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"])
+          let {user: foundUser, responseCode, response} = await service.tokenToUser(token, req.headers["impersonate-user"], req.headers["x-sitecore-federate"])
           if(foundUser){
             user = foundUser;
             res.locals.jwt = token

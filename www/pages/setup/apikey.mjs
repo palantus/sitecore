@@ -126,7 +126,6 @@ class Element extends HTMLElement {
     let permissions = user?.permissions||[]
     this.shadowRoot.getElementById("status").innerHTML = `
       <p class="${user ? "ok" : "fail"}">User must exist</p>
-      <p class="${permissions.includes("system.federation.client") ? "ok" : "fail"}">User must have permission system.federation.client.</p>
     `
 
     this.shadowRoot.querySelectorAll("field-list field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `system/apikeys/${this.keyId}`));

@@ -3,6 +3,7 @@ const { Router, Request, Response } = express;
 import {noGuest, permission, validateAccess} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
 import Setup from "../../models/setup.mjs";
+import APIKey from "../../models/apikey.mjs";
 
 export default (app) => {
 
@@ -32,7 +33,7 @@ export default (app) => {
     res.json(remote.toObj());
   });
 
-  route.post('/remote/:id/test', permission("admin"), (req, res, next) => {
+  route.post('/remote/:id/test', permission("admin"), async (req, res, next) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     remote.get("me")
@@ -73,7 +74,14 @@ export default (app) => {
     res.json(true);
   });
 
-  route.get('/:fed/token', noGuest, (req, res) => {
-
+  route.get('/:fed/me/token', noGuest, permission("user.federate"), async (req, res) => {
+    let remote = Remote.lookupIdentifier(req.params.fed)
+    if(!remote) throw "Unknown identifier: " + req.params.fed;
+    remote.get('me/token', {user: res.locals.user}).catch(err => {
+      console.log(`Could not get token for user ${res.locals.user.id} from remote ${remote.title}`)
+      res.sendStatus(500)
+    }).then(token => {
+      res.json(token)
+    })
   })
 };

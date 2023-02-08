@@ -2,6 +2,7 @@ import Entity, {query}  from "entitystorage"
 import {getTimestamp} from "../tools/date.mjs"
 import {createHash} from 'crypto'
 import Role from "./role.mjs";
+import User from "./user.mjs";
 
 let dailyTokensToKeyMap = new Map()
 let cacheDate = null;
@@ -27,7 +28,14 @@ class APIKey extends Entity {
         dailyTokensToKeyMap.set(key.generateDailyToken(cacheDate), key)
       }
     }
-    return dailyTokensToKeyMap.get(token) || APIKey.find(`tag:apikey prop:"key=${token}" !prop:daily=true`) 
+    if(dailyTokensToKeyMap.has(token))
+      return dailyTokensToKeyMap.get(token)
+      
+    let key = APIKey.lookupKey(token);
+    if(key && !key.daily)
+      return key
+
+    return null;
   }
 
   generateDailyToken(date){
@@ -50,8 +58,39 @@ class APIKey extends Entity {
     return query.type(APIKey).tag("apikey").id(id).first
   }
 
+  static lookupKey(key){
+    if(!key) return null;
+    return query.type(APIKey).tag("apikey").prop("key", key).first
+  }
+
+  static lookupIdentifier(identifier){
+    if(!identifier) return null;
+    return query.type(APIKey).tag("apikey").prop("identifier", identifier).first
+  }
+
   get roles(){
     return this.rels.role?.map(r => Role.from(r))||[]
+  }
+
+  getUser(federateUser){
+    let keyUser = User.from(this.related.user);
+    if(!federateUser) return keyUser;
+    if(!this.federation) return null;
+    if(!this.identifier) return null;
+    let [federateUserId, name] = federateUser.split(";")
+    let userIdSplit = federateUserId.split("@");
+    if(userIdSplit.length != 2) return null; // Only one @ allowed and that one is mandatory
+    let [userId, identifier] = userIdSplit;
+    if(this.identifier != identifier) return null;
+    let user = User.lookup(federateUserId)
+    if(!user){
+      user = new User(federateUserId, {name})
+      user.tag("federated")
+      for(let role of this.roles){
+        user.addRole(role.id)
+      }
+    }
+    return user;
   }
 
   toObj() {
