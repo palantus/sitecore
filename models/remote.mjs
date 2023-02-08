@@ -26,7 +26,7 @@ export default class Remote extends Entity {
     return query.type(Remote).tag("remote").all
   }
 
-  async get(path, {returnRaw = false, user = null} = {}){
+  async get(path, {returnRaw = false, user = null, ignoreErrors = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res;
     try{
@@ -36,11 +36,11 @@ export default class Remote extends Entity {
     } catch(err){
       throw err
     }
-    if(res.status !== 200){
+    if(!ignoreErrors && res.status !== 200){
       this.log(`Received status ${res.status} on request to remote for ${path}`)
       throw `Received status ${res.status} on request to remote for ${path}`
-    } else
-      return returnRaw ? res : res.json()
+    }
+    return returnRaw ? res : res.json()
   }
   
   async del(path){

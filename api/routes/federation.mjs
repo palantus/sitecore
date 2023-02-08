@@ -82,14 +82,21 @@ export default (app) => {
     res.json(true);
   });
 
-  route.get('/:fed/me/token', noGuest, permission("user.federate"), async (req, res) => {
+  route.get('/:fed/api/*', noGuest, permission("user.federate"), async (req, res) => {
     let remote = Remote.lookupIdentifier(req.params.fed)
     if(!remote) return res.sendStatus(404);
+    let path = decodeURI(req.path.substring(5)).split("/").slice(1).join("/")
     try{
-      let token = await remote.get('me/token', {user: res.locals.user})
-      res.json(token)
+      let response = await remote.get(path, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+      let headers = {}
+      if(response.headers.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
+      if(response.headers.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
+      if(response.headers.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
+      res.writeHead(response.status, headers)
+      response.body.pipe(res)
     } catch(err) {
-      console.log(`Could not get token for user ${res.locals.user.id} from remote ${remote.title}`)
+      console.log(`Could not get ${path} on ${remote.identifier} for ${res.locals.user.id} from remote ${remote.title}`)
+      console.log(err)
       res.sendStatus(500)
     }
   })
