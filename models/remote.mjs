@@ -109,11 +109,10 @@ export default class Remote extends Entity {
   }
 
   getHeaders(contentType = null, user = null){
-    return {
-      'Authorization': 'Bearer ' + this.apiKey,
-      'Content-Type' : contentType||undefined,
-      'X-SiteCore-Federate': user ? `${user.id}@${Setup.lookup().identifier};${user.name}` : undefined
-    }
+    let ret = {'Authorization': 'Bearer ' + this.apiKey}
+    if(contentType) ret['Content-Type'] = contentType
+    if(user) ret['X-SiteCore-Federate'] = `${user.id}@${Setup.lookup().identifier};${user.name}`
+    return ret;
   }
 
   async refresh(){

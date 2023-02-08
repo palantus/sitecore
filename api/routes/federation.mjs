@@ -36,13 +36,21 @@ export default (app) => {
   route.post('/remote/:id/test', permission("admin"), async (req, res, next) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
-    remote.get("me")
-          .catch(error => res.json({error, success: false}))
-          .then(user => res.json({userId: user?.id, name: user?.name, success: !!user?.id}))
+    try{
+      let user = await remote.get("me")
+      res.json({userId: user?.id, name: user?.name, success: !!user?.id})
+    } catch(error){
+      res.json({error, success: false})
+    }
   });
 
-  route.post('/remote/test', permission("admin"), (req, res, next) => {
-    Remote.testConfig(req.body).then(result => res.json(result))
+  route.post('/remote/test', permission("admin"), async (req, res, next) => {
+    try{
+      let result = await Remote.testConfig(req.body)
+      res.json(result)
+    } catch(error){
+      res.json({success: false, error})
+    }
   });
 
   route.post('/remote/:id/refresh', permission("admin"), (req, res, next) => {
@@ -76,12 +84,13 @@ export default (app) => {
 
   route.get('/:fed/me/token', noGuest, permission("user.federate"), async (req, res) => {
     let remote = Remote.lookupIdentifier(req.params.fed)
-    if(!remote) throw "Unknown identifier: " + req.params.fed;
-    remote.get('me/token', {user: res.locals.user}).catch(err => {
+    if(!remote) return res.sendStatus(404);
+    try{
+      let token = await remote.get('me/token', {user: res.locals.user})
+      res.json(token)
+    } catch(err) {
       console.log(`Could not get token for user ${res.locals.user.id} from remote ${remote.title}`)
       res.sendStatus(500)
-    }).then(token => {
-      res.json(token)
-    })
+    }
   })
 };
