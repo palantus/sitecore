@@ -88,16 +88,18 @@ export default (app) => {
     let remote = Remote.lookupIdentifier(req.params.fed)
     if(!remote) {
       if(Setup.lookup().identifier == req.params.fed) {
-        return res.redirect(url.format({
-          pathname: `/api/${path}`,
-          query: req.query,
-        }))
+        let redirectUrl = url.format({pathname: `/api/${path}`, query: req.query});
+        return res.redirect(redirectUrl);
       } else {
         return res.sendStatus(404);
       }
     }
     try{
-      let response = await remote.get(path, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+      let query = req.query;
+      delete query.token;
+      delete query.impersonate;
+      let redirectUrl = url.format({pathname: path, query});
+      let response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
       let headers = {}
       if(response.headers.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
       if(response.headers.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
