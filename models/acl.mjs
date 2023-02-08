@@ -1,4 +1,4 @@
-import Entity from "entitystorage"
+import Entity, { query } from "entitystorage"
 import Permission from "./permission.mjs"
 import Role from "./role.mjs"
 import Share from "./share.mjs"
@@ -74,6 +74,10 @@ export default class ACL{
 
   static getDefaultEntity(user, type){
     return Entity.find(`tag:acldef type.id:${type} user.id:${user}`) || new Entity().tag("acldef").rel(type, "type").rel(user, "user")
+  }
+
+  static getAllUserDefaults(user){
+    return query.tag("acldef").relatedTo(user, "user").all
   }
 
   accessFromCode(code){

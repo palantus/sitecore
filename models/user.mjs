@@ -6,6 +6,7 @@ import Notification from "./notification.mjs"
 import { pbkdf2Sync } from 'crypto';
 import Role from "./role.mjs";
 import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs";
+import ACL from "./acl.mjs";
 
 class User extends Entity {
   initNew(userId, { name = "", email } = {}) {
@@ -149,6 +150,7 @@ class User extends Entity {
     this.msUsers.forEach(msUser => msUser.delete());
     this.notifications.forEach(n => n.delete());
     this.related.setup?.delete();
+    ACL.getAllUserDefaults(this).forEach(def => def.delete())
     super.delete();
   }
 
