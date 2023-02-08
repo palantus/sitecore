@@ -4,6 +4,7 @@ import {noGuest, permission, validateAccess} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
 import Setup from "../../models/setup.mjs";
 import APIKey from "../../models/apikey.mjs";
+import url from "url"
 
 export default (app) => {
 
@@ -86,10 +87,14 @@ export default (app) => {
     let path = decodeURI(req.path.substring(5)).split("/").slice(1).join("/")
     let remote = Remote.lookupIdentifier(req.params.fed)
     if(!remote) {
-      if(Setup.lookup().identifier == req.params.fed)
-        return res.redirect(`/api/${path}`)
-      else
+      if(Setup.lookup().identifier == req.params.fed) {
+        return res.redirect(url.format({
+          pathname: `/api/${path}`,
+          query: req.query,
+        }))
+      } else {
         return res.sendStatus(404);
+      }
     }
     try{
       let response = await remote.get(path, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
