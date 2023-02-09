@@ -80,7 +80,7 @@ class API {
     return null;
   }
 
-  async get(path, { returnIfError = false, cache = false, maxAge } = {}) {
+  async get(path, { returnIfError = false, cache = false, maxAge, redirectAuth = true } = {}) {
     this.checkInit();
     if (this.failedLoginState === true) return;
     let url = `${apiURL()}/${path}`;
@@ -112,7 +112,7 @@ class API {
       } else if (res.status == 401) {
         try{
           let retObj = await res.json()
-          if(retObj?.errorCode == "expired" && !window.location.pathname.startsWith("/login")){
+          if(retObj?.errorCode == "expired" && !window.location.pathname.startsWith("/login") && redirectAuth){
             goto(`/login?redirect=${window.location.pathname}`)
           }
         } catch{
