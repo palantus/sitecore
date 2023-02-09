@@ -7,10 +7,13 @@ export default (app) => {
   app.get("/jobs", permission("admin"), async (req, res, next) => {
     try{
       let jobs = []
-      let physicalFiles = await fs.readdir(join(global.sitecore.storagePath, 'jobs'))
-      physicalFiles.forEach(file => {
-        jobs.push({name: file, source: "filesystem", owner: null})
-      });
+      try{
+        let physicalFiles = await fs.readdir(join(global.sitecore.storagePath, 'jobs'))
+        physicalFiles.forEach(file => {
+          jobs.push({name: file, source: "filesystem", owner: null})
+        });
+      } catch(err){}
+      
       try{
         let {default: File} = await import('../../mods/files/models/file.mjs');
         let files = File.allByTag("system-job").filter(f => (f.name.endsWith(".mjs") || f.name.endsWith(".js")) && f.hasAccess(res.locals.user))
