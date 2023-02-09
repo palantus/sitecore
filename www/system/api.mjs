@@ -101,7 +101,7 @@ class API {
         res = await fetch(url, {headers: this.getHeaders(false)})
       } catch(err){
         fire("log", { level: "error", message: `Request returned an error. Information: ${err}`})
-        reject();
+        reject(res);
         return;
       }
 
@@ -119,7 +119,7 @@ class API {
         }
         //this.notLoggedIn()
         this.cache.delete(url)
-        reject(ret);
+        reject(res);
       } else if (res.status == 404) {
         this.cache.delete(url)
         resolve(null)
@@ -128,12 +128,12 @@ class API {
         console.log(`${res.status}: ${res.statusText}`, retObj)
         fire("log", { level: "error", message: retObj.message || retObj.error })
         this.cache.delete(url)
-        reject();
+        reject(res);
         throw retObj.message || retObj.error
       } else {
         fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
         this.cache.delete(url)
-        reject();
+        reject(res);
       }
     })
     this.cache.set(url, requestPromise);
