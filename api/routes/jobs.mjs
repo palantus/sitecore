@@ -9,13 +9,16 @@ export default (app) => {
       let jobs = []
       try{
         let jobsPath = join(global.sitecore.storagePath, 'jobs')
-        if(!(await fs.stat(jobsPath)))
+        try{
+          await fs.stat(jobsPath)
+        } catch(err){
           await fs.mkdir(jobsPath)
+        }
         let physicalFiles = await fs.readdir(jobsPath)
         physicalFiles.forEach(file => {
           jobs.push({name: file, source: "filesystem", owner: null})
         });
-      } catch(err){}
+      } catch(err){console.log(err)}
       
       try{
         let {default: File} = await import('../../mods/files/models/file.mjs');
