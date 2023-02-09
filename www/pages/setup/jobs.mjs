@@ -2,6 +2,7 @@ const elementName = 'jobs-page'
 
 import api from "/system/api.mjs"
 import {on, off} from "/system/events.mjs"
+import "/components/field-ref.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -18,10 +19,17 @@ template.innerHTML = `
   </style>
 
   <div id="container">
+    <h1>System jobs</h1>
+
+    <p>Jobs can be added to the folder "jobs" in your storage folder or as a file (if files mod is installed) with tag "system-job".</p>
+    <p>Please remember to be VERY careful when running a file that you do not own and/or control.</p>
+
     <table>
         <thead>
             <tr>
               <th>Name</th>
+              <th>Source</th>
+              <th>Owner</th>
               <th></th>
             </tr>
         </thead>
@@ -60,12 +68,14 @@ class Element extends HTMLElement {
     let tab = this.shadowRoot.querySelector('table tbody')
     tab.innerHTML = "";
 
-    for(let job of jobs){
+    for(let job of jobs.sort((a, b) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1)){
         let row = document.createElement("tr")
         row.classList.add("result")
         row.innerHTML = `
             <tr>
-                <td>${job.name}</td>
+                <td>${job.source == "files" ? `<field-ref ref="/file/${job.fileId}">${job.name}</field-ref>` : job.name}</td>
+                <td>${job.source}</td>
+                <td>${job.owner ? `${job.owner.name} (${job.owner.id})` : ""}</td>
                 <td><button data-name="${job.name}" class="run">Run</button></td>
             </tr>
         `
