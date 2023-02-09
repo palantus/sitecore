@@ -8,7 +8,10 @@ export default (app) => {
     try{
       let jobs = []
       try{
-        let physicalFiles = await fs.readdir(join(global.sitecore.storagePath, 'jobs'))
+        let jobsPath = join(global.sitecore.storagePath, 'jobs')
+        if(!(await fs.stat(jobsPath)))
+          await fs.mkdir(jobsPath)
+        let physicalFiles = await fs.readdir(jobsPath)
         physicalFiles.forEach(file => {
           jobs.push({name: file, source: "filesystem", owner: null})
         });
