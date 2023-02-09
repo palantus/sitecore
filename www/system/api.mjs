@@ -119,7 +119,7 @@ class API {
         }
         //this.notLoggedIn()
         this.cache.delete(url)
-        reject();
+        reject(ret);
       } else if (res.status == 404) {
         this.cache.delete(url)
         resolve(null)
