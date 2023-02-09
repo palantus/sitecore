@@ -53,7 +53,7 @@ export default (app) => {
       }
     } catch(err){
       console.log(err)
-      res.json({success: false, error: err})
+      res.json({success: false, error: ""+err})
     }
   });
 };
