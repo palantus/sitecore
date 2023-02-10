@@ -14,6 +14,7 @@ export default (app) => {
   route.post('/remote', permission("admin"),  (req, res, next) => {
     if(typeof req.body.title !== "string") throw "Invalid title"
     let remote = new Remote(req.body)
+    remote.refresh().catch(err => null);
     res.json(remote.toObj())
   });
 
