@@ -264,10 +264,10 @@ class API {
     }
   }
 
-  async query(query, variables) {
+  async query(query, variables, {federationIdentifier = null} = {}) {
     this.checkInit();
     if (this.failedLoginState === true) return;
-    let res = await fetch(`${apiURL()}/graphql`, {
+    let res = await fetch(`${apiURL()}/${federationIdentifier ? `federation/${federationIdentifier}/api/` : ""}graphql`, {
       method: 'POST',
       headers: this.getHeaders(true),
       body: JSON.stringify({

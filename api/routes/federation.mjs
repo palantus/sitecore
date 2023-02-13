@@ -84,7 +84,7 @@ export default (app) => {
     res.json(true);
   });
 
-  route.get('/:fed/api/*', noGuest, permission("user.federate"), async (req, res) => {
+  route.all('/:fed/api/*', noGuest, permission("user.federate"), async (req, res) => {
     let path = decodeURI(req.path.substring(5)).split("/").slice(1).join("/")
     let remote = Remote.lookupIdentifier(req.params.fed)
     if(!remote) {
@@ -100,7 +100,23 @@ export default (app) => {
       delete query.token;
       delete query.impersonate;
       let redirectUrl = url.format({pathname: path, query});
-      let response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+      let response;
+      switch(req.method){
+        case "GET":
+          response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          break;
+        case "DELETE":
+          response = await remote.del(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          break;
+        case "POST":
+          response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          break;
+        case "PATCH":
+          response = await remote.patch(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          break;
+        default:
+          return res.sendStatus(404);
+      }
       let headers = {}
       if(response.headers.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
       if(response.headers.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
