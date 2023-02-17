@@ -168,7 +168,7 @@ class Element extends HTMLElement {
         break;
 
       case 13: //enter
-        let target = (evt.originalTarget||evt.target)
+        let target = evt.target || evt.srcElement || evt.originalTarget;
         if(target?.tagName != "TEXTAREA" || target?.hasAttribute("dialog-no-enter"))
           this.shadowRoot.getElementById("ok").click();
         break;
@@ -184,7 +184,7 @@ class Element extends HTMLElement {
   disconnectedCallback() {
     this.shadowRoot.getElementById('ok').removeEventListener('click', this.ok);
     this.shadowRoot.getElementById('cancel').removeEventListener('click', this.cancel);
-    document.addEventListener("keydown", this.keydown)
+    document.removeEventListener("keydown", this.keydown)
   }
   
   attributeChangedCallback(name, oldValue, newValue) {
