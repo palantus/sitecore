@@ -59,6 +59,8 @@ export default (app) => {
 
       if(job){
         res.json({success:true, result: await job()});
+      } else {
+        res.json({sucess: false, error: "No job/function found. If you haven't created a default export, the job might have been executed anyway."})
       }
     } catch(err){
       console.log(err)
