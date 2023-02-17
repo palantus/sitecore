@@ -86,6 +86,8 @@ class Element extends HTMLElement {
 
     if(this.hasAttribute("wrap"))
       this.shadowRoot.getElementById("container").style.whiteSpace = "initial"
+    if(this.hasAttribute("disabled"))
+      this.shadowRoot.getElementById("add").classList.toggle("hidden", true)
   }
 
   setup(setup){
@@ -100,7 +102,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("items").innerHTML = data.map((r, i) => `
         <span class="item${typeof this._setup.click === "function" ? " clickable" : ""}" data-index="${i}">
           <span class="content">${this._setup.toHTML(r)}</span>
-          <span class="remove">&#10060;</span>
+          <span class="remove${this.hasAttribute("disabled")?" hidden" : ""}">&#10060;</span>
         </span>
       `).join("")
 
