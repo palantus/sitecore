@@ -210,7 +210,12 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
   dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
 
   if(typeof show === "function"){
-    show();
+    try{
+      show();
+    } catch(err){
+      console.log(err)
+      dialog.setAttribute("validationerror", "Encountered an error showing the dialog. Contact admin.")
+    }
   }
 
   let doClose = () => {
@@ -220,7 +225,11 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
     dialog.removeAttribute("validationerror")
     
     if(typeof close === "function"){
-      close(typeof values === "function" ? values() : {})
+      try{
+        close(typeof values === "function" ? values() : {})
+      } catch(err){
+        console.log(err)
+      }
     }
   }
 
@@ -231,17 +240,22 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
     if(typeof validate === "function"){
       dialog.removeAttribute("validationerror")
 
-      let validateResult = await validate(val)
+      try {
+        let validateResult = await validate(val)
 
-      if(validateResult === false){
-        dialog.setAttribute("validationerror", "Invalid input")
-        dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
-        return;
-      }
-      if(typeof validateResult === "string"){
-        dialog.setAttribute("validationerror", validateResult)
-        dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
-        return;
+        if(validateResult === false){
+          dialog.setAttribute("validationerror", "Invalid input")
+          dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
+          return;
+        }
+        if(typeof validateResult === "string"){
+          dialog.setAttribute("validationerror", validateResult)
+          dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
+          return;
+        }
+      } catch(err){
+        console.log(err)
+        dialog.setAttribute("validationerror", err||"Some error occured. Expect that it didn't work.")
       }
     }
     if(typeof ok === "function"){
@@ -259,7 +273,11 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close} =
   let cancelClicked = () => {
     let val = typeof values === "function" ? values() : {}
     if(typeof cancel === "function"){
-      cancel(val)
+      try{
+        cancel(val)
+      } catch(err){
+        console.log(err)
+      }
     }
     doClose();
   }
