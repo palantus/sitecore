@@ -9,7 +9,7 @@ import url from "url"
 export default (app) => {
 
   const route = Router();
-  app.use("/federation", noGuest, route)
+  app.use("/federation", route)
 
   route.post('/remote', permission("admin"),  (req, res, next) => {
     if(typeof req.body.title !== "string") throw "Invalid title"
