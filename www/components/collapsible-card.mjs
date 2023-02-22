@@ -81,6 +81,11 @@ class Element extends HTMLElement {
         setTimeout(() => content.style.maxHeight = "0px", 1);
       }
     })
+
+    if(this.hasAttribute("open")){
+      this.shadowRoot.getElementById("content").style.maxHeight = "initial"
+      this.shadowRoot.getElementById("button").classList.toggle("active", true);
+    }
   }
 }
 
