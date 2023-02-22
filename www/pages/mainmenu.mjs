@@ -126,7 +126,7 @@ class Page extends HTMLElement {
       let path;
       if(event.target.classList.contains("item")){
         path = event.target.getAttribute("data-path")
-      } else if(event.target.parentElement.classList.contains("item")){
+      } else if(event.target.parentElement?.classList.contains("item")){
         path = event.target.parentElement.getAttribute("data-path")
       }
 
@@ -136,7 +136,7 @@ class Page extends HTMLElement {
 
       if(event.target.classList.contains("menu")){
         this.toggleMenu(event.target)
-      } else if(event.target.parentElement.classList.contains("menu")){
+      } else if(event.target.parentElement?.classList.contains("menu")){
         this.toggleMenu(event.target.parentElement)
       }
     })
