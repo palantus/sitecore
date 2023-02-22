@@ -43,7 +43,7 @@ export let getCommands = async (context, query) => {
     cmd.priority = 0;
     for(let keyword of cmd.constructor.keywords||[]){
       if((keyword.words||[keyword.word]).filter(w => queryArray.includes(w)).length > 0){
-        cmd.priority += keyword.priority ?? keyword.mandatory ? 3 : 1
+        cmd.priority += keyword.priority ?? (keyword.mandatory ? 3 : 1)
       }
     }
     return cmd;
