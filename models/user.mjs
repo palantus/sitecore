@@ -7,6 +7,7 @@ import { pbkdf2Sync } from 'crypto';
 import Role from "./role.mjs";
 import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs";
 import ACL from "./acl.mjs";
+import Permission from "./permission.mjs";
 
 class User extends Entity {
   initNew(userId, { name = "", email } = {}) {
@@ -31,12 +32,33 @@ class User extends Entity {
 
   static lookupEmail(email) {
     if(!email) return null;
-    return query.tag("user").prop("email", email).first
+    return query.type(User).tag("user").prop("email", email).first
   }
 
   static lookupName(name) {
     if (!name) return null;
     return query.tag("user").prop("name", name).type(User).first
+  }
+
+  static all() {
+    return query.tag("user").type(User).all
+  }
+
+  static active() {
+    return query.tag("user").not(query.tag("obsolete")).type(User).all
+  }
+
+  static activeByRole(roleName) {
+    let role = Role.lookup(roleName)
+    if (!role) return []
+    return query.tag("user").not(query.tag("obsolete")).type(User).relatedTo(role, "role").all
+  }
+
+  static activeByPermission(permissionId){
+    if(!permissionId) return [];
+    let permission = Permission.lookup(permissionId)
+    if(!permission) return [];
+    return query.type(User).tag("user").not(query.tag("obsolete")).relatedTo(query.tag("role").relatedTo(permission, "permission"), "role").all
   }
 
   static validateLocalUserId(newId) {
@@ -122,20 +144,6 @@ class User extends Entity {
   activate() {
     this.removeTag("obsolete")
     return this;
-  }
-
-  static all() {
-    return query.tag("user").type(User).all
-  }
-
-  static active() {
-    return query.tag("user").not(query.tag("obsolete")).type(User).all
-  }
-
-  static activeByRole(roleName) {
-    let role = Role.lookup(roleName)
-    if (!role) return []
-    return query.tag("user").not(query.tag("obsolete")).type(User).relatedTo(role, "role").all
   }
 
   get msUsers() {
