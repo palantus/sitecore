@@ -10,7 +10,7 @@ import { service as userService } from "./user.mjs"
 import jwt from 'jsonwebtoken'
 import APIKey from "../models/apikey.mjs";
 import Setup from "../models/setup.mjs";
-import { storeCode } from "./mslogin.mjs";
+import { getToken, storeCode } from "./mslogin.mjs";
 
 class Service {
   init(){
@@ -27,16 +27,21 @@ class Service {
   }
 
   async login(query) {
-    let {token, state, error} = await storeCode(query.code, query.state||"{}")
-
+    let {response, state, error} = await storeCode(query.code, query.state||"{}")
     if (error) {
       console.log("Got error logging user in")
       return null;
     }
 
+    let token = await getToken(response.account.username, ["user.read"])
+    if(!token.success){
+      console.log("Could not get user.read for sign in")
+      return null;
+    }
+
     let msUserRemote;
     try{
-      msUserRemote = await (await fetch("https://graph.microsoft.com/beta/me", { headers: { Authorization: `Bearer ${token}` } })).json()
+      msUserRemote = await (await fetch("https://graph.microsoft.com/beta/me", { headers: { Authorization: `Bearer ${token.token}` } })).json()
     } catch(err){
       console.log(err)
       return null;

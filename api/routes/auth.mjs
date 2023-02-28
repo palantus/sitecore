@@ -49,7 +49,7 @@ export default (app) => {
           url.searchParams.set("token", token);
           res.redirect(url)
         } else {
-          res.redirect(`${global.sitecore.apiURL}/loginsuccess.html`)
+          res.end("Login successful! You can close this window/tab now")
         }
       } else {
         res.send(`<html><body><h1>Oops</h1><p>Your account has not been authorized to login as a user. Contact administrator, if you believe this to be a mistake.</p><a href="${global.sitecore.siteURL}/login">Go back to site</a></body></html>`)

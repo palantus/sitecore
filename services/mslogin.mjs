@@ -15,8 +15,6 @@ export async function getSignInURL(scopes = ["user.read"], redirect = "/"){
       })
     );
 
-    if(!scopes.includes("user.read")) scopes.push("user.read");
-
     return await cca.getAuthCodeUrl({ scopes, redirectUri: `${global.sitecore.apiURL}/auth/redirect`, state })
   } catch(err){
     console.log(err)
@@ -34,7 +32,7 @@ export async function storeCode(code, _state){
       scopes: state.scopes,
       redirectUri: `${global.sitecore.apiURL}/auth/redirect`,
     });
-    return {token: response?.accessToken||null, state};
+    return {token: response?.accessToken||null, state, response};
   } catch(err){
     console.log(err)
     LogEntry.create("Error getting token from code", "mslogin")
