@@ -10,6 +10,7 @@ import { service as userService } from "./user.mjs"
 import jwt from 'jsonwebtoken'
 import APIKey from "../models/apikey.mjs";
 import Setup from "../models/setup.mjs";
+import { storeCode } from "./mslogin.mjs";
 
 class Service {
   init(){
@@ -25,27 +26,21 @@ class Service {
       console.log("ACCESS_TOKEN_SECRET must be provided in .env to handle JWT")
   }
 
-  async login(code, redirect) {
-    if (!this.clientId || !this.secret)
-      return null;
+  async login(query) {
+    let {token, state, error} = await storeCode(query.code, query.state||"{}")
 
-    let res = await fetch("https://login.microsoftonline.com/common/oauth2/v2.0/token",
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        // Note offline_access: necessary for getting refresh_token
-        body: `client_id=${this.clientId}&scope=${this.scope}&code=${encodeURIComponent(code)}&redirect_uri=${redirect || this.redirect}&grant_type=authorization_code&client_secret=${this.secret}`
-      })
-    res = await res.json();
-
-    if (res.error) {
+    if (error) {
       console.log("Got error logging user in")
-      console.log(res)
+      return null;
     }
 
-    let msUserRemote = await (await fetch("https://graph.microsoft.com/v1.0/me", { headers: { Authorization: `Bearer ${res.access_token}` } })).json()
+    let msUserRemote;
+    try{
+      msUserRemote = await (await fetch("https://graph.microsoft.com/beta/me", { headers: { Authorization: `Bearer ${token}` } })).json()
+    } catch(err){
+      console.log(err)
+      return null;
+    }
 
     if (!msUserRemote)
       return null;
@@ -53,7 +48,7 @@ class Service {
     if (msUserRemote.error) {
       console.log("Got error asking for user info")
       console.log(msUserRemote.error)
-      return;
+      return null;
     }
 
     let msUser = MSUser.lookup(msUserRemote.userPrincipalName)
@@ -67,7 +62,7 @@ class Service {
     }
 
     let user = User.from(msUser.related.user);
-    return { user, msUser };
+    return { user, msUser, state };
   }
 
   async tokenToUser(token, impersonate = null, federateUser = null){

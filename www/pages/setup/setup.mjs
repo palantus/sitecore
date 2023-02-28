@@ -37,10 +37,11 @@ template.innerHTML = `
     <br><br>
 
     <h2>Microsoft sign-in support</h2>
-    <p>Note: Changing these values requirest a server restart.</p>
+    <p>Note: Changing these values requires a server restart.</p>
     <field-list labels-pct="20">
       <field-edit type="text" label="Client Id" id="msSigninClientId" title="Available from Azure app"></field-edit>
       <field-edit type="text" label="Secret" id="msSigninSecret"></field-edit>
+      <field-edit type="text" label="Tenant (optional)" id="msSigninTenant" title="Everything after 'https://login.microsoftonline.com/'. Defaults to 'common'"></field-edit>
     </field-list>
   </div>
 `;
@@ -67,6 +68,7 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById('msSigninClientId').setAttribute("value", setup.msSigninClientId||"")
     this.shadowRoot.getElementById('msSigninSecret').setAttribute("value", setup.msSigninSecretSet ? "*********" : "")
+    this.shadowRoot.getElementById('msSigninTenant').setAttribute("value", setup.msSigninTenant||"")
 
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `system/setup`));
   }

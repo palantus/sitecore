@@ -15,7 +15,7 @@ export default async ({ app, mode, config, storagePath }) => {
 
   Archiver.registerFormat('zip-encrypted', ArchiverEncrypted);
 
-  setupLoader({ app, mode, config, storagePath })
+  await setupLoader({ app, mode, config, storagePath })
   
   await modsLoader({ app, mode, config });
   

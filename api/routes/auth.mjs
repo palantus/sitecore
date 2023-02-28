@@ -8,6 +8,8 @@ import {sanitize} from "entitystorage"
 import User from "../../models/user.mjs"
 import { lookupUserPermissions, lookupUserRoles} from '../../tools/usercache.mjs';
 import Setup from "../../models/setup.mjs";
+import { getSignInURL } from "../../services/mslogin.mjs";
+import LogEntry from "../../models/logentry.mjs";
 
 export default (app) => {
 
@@ -16,27 +18,34 @@ export default (app) => {
   if (process.env.ADMIN_MODE === "true")
     console.log("Warning: Is in ADMIN mode, which means that user requests aren't authorized")
 
-  global.sitecore.loginURL = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${Setup.lookup().msSigninClientId}&response_type=code&redirect_uri=${encodeURIComponent(`${global.sitecore.apiURL}/auth/redirect`)}&response_mode=query&scope=offline_access%20https%3A%2F%2Fgraph.microsoft.com%2Fuser.read&state=`
+  global.sitecore.loginURL = `${global.sitecore.apiURL}/login`
 
   app.use("/auth", route)
 
   route.get('/redirect', async function (req, res, next) {
-    const requestToken = req.query.code
-    const state = req.query.state
-
     try{
-      let loginResult = await service.login(requestToken)
+      if(req.query.error){
+        LogEntry.create(`${req.query.error}: ${req.query.error_description}`, "mslogin")
+        console.log("token response", req.query)
+        return res.sendStatus(500)
+      }
+
+      if(!req.query.code){
+        LogEntry.create(`No code returned from ms login`, "mslogin")
+        console.log("token response", req.query)
+        return res.sendStatus(500)
+      }
+
+      let loginResult = await service.login(req.query)
 
       let user = loginResult?.user
-      let msUser = loginResult?.msUser
 
       if (user) {
         let data = user.toObj();
         let token = jwt.sign(data, global.sitecore.accessTokenSecret, { expiresIn: '7d' })
-        //console.log(token)
         res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
-        if (state.startsWith("http")) {
-          let url = new URL(decodeURIComponent(state))
+        if (loginResult?.state?.redirect) {
+          let url = new URL(loginResult.state.redirect)
           url.searchParams.set("token", token);
           res.redirect(url)
         } else {
@@ -64,8 +73,12 @@ export default (app) => {
 	})
 
   route.get('/login', (req, res, next) => {
-    var redirect = new URL(req.query.redirect);
-    res.redirect(`${global.sitecore.loginURL}${redirect ? encodeURIComponent(redirect) : ""}`)
+    getSignInURL(req.query.scopes?.split(" ") || ["user.read"], req.query.redirect||null).catch(err => {
+      console.log(err)
+      res.sendStatus(500)
+    }).then(url => {
+      res.redirect(url);
+    })
   })
 
   route.use("/logout", (req, res, next) => {

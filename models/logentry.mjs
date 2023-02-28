@@ -27,6 +27,10 @@ class LogEntry extends Entity {
   static all(){
     return query.type(LogEntry).tag("logentry").all
   }
+
+  static create(text, areaName = null){
+    return new LogEntry(text, areaName||null)
+  }
 }
 
 export default LogEntry

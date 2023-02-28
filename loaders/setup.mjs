@@ -1,8 +1,9 @@
 import config from "../config/index.mjs"
 import { v4 as uuidv4 } from 'uuid';
 import fs from "fs"
+import { initMSLogin } from "../services/mslogin.mjs";
 
-export default ({mode, storagePath}) => {
+export default async ({mode, storagePath}) => {
   let setup = {}
 
   let setupToAppend = ""
@@ -49,4 +50,6 @@ export default ({mode, storagePath}) => {
 
   console.log("Loaded with the following setup:")
   console.log(global.sitecore)
+
+  await initMSLogin();
 }

@@ -52,8 +52,8 @@ export default (app) => {
 
   route.patch("/setup", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
-    Object.assign(Setup.lookup(), req.body)
-    res.json(true)
+    Setup.lookup().patch(req.body);
+    res.json(true);
   })
 
   route.post("/database/download/data", (req, res, next) => {
