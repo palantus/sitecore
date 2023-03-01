@@ -85,7 +85,7 @@ export function clearCache(){
 export async function initMSLogin(){
   if(cca) return; // Already initialized
   let system = Setup.lookup();
-  if(!system.msSigninClientId || !system.msSigninTenant || !system.msSigninSecret){
+  if(!system.msSigninClientId || !system.msSigninSecret){
     LogEntry.create("WARNING: Missing setup for Microsoft login. MS login won't work.")
     return;
   }
