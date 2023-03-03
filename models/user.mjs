@@ -8,6 +8,8 @@ import Role from "./role.mjs";
 import { clearUserRoleAndPermissionCache } from "../tools/usercache.mjs";
 import ACL from "./acl.mjs";
 import Permission from "./permission.mjs";
+import { uuidv4 } from "../www/libs/uuid.mjs";
+import Setup from "./setup.mjs"
 
 class User extends Entity {
   initNew(userId, { name = "", email } = {}) {
@@ -87,6 +89,24 @@ class User extends Entity {
     let salt = global.sitecore.accessTokenSecret.toString('hex');
     let hash = pbkdf2Sync(possiblePassword, salt, 1000, 64, `sha512`).toString(`hex`);
     return this.password === hash
+  }
+
+  resetPassword(){
+    let newPassword = uuidv4()
+    this.setPassword(newPassword);
+    if(this.email && global.mods.find(m => m.id == "mail")) {
+      import("../mods/mail/models/mail.mjs").catch(() => null)
+                                            .then(({default: Mail}) => {
+        this.setPassword(newPassword)
+        new Mail({
+          to: this.email, 
+          subject: `${Setup.lookup().siteTitle}: Password reset`, 
+          body: `<h1>Hi ${this.name}!</h1><p>Here is your new password:</p><div>${newPassword}</div><br>You can change your new password to something of your choice <a href="${global.sitecore.siteURL}/profile">here</a>.<br>If you just want to go to the site and log in, follow <a href="${global.sitecore.siteURL}/login">this link</a>.`,
+          bodyType: "html"
+        }).send()
+      })
+    }
+    return newPassword
   }
 
   static validateEmailAddress(email) {

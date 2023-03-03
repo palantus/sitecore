@@ -38,6 +38,7 @@ template.innerHTML = `
   <action-bar>
       <action-bar-item id="msuser-btn">Assign to MS user</action-bar-item>
       <action-bar-item id="change-username-btn">Change user id</action-bar-item>
+      <action-bar-item id="reset-password-btn">Reset password</action-bar-item>
       <action-bar-item id="delete-user-btn">Delete user</action-bar-item>
   </action-bar>
 
@@ -93,11 +94,13 @@ class Element extends HTMLElement {
     this.deleteUser = this.deleteUser.bind(this)
     this.roleClick = this.roleClick.bind(this)
     this.refreshData = this.refreshData.bind(this)
+    this.resetPassword = this.resetPassword.bind(this)
     
     this.userId = /\/setup\/users\/([a-zA-Z0-9\-_@.]+)/.exec(state().path)[1]
     this.shadowRoot.getElementById("msuser-btn").addEventListener("click", this.assignToMSUser)
     this.shadowRoot.getElementById("change-username-btn").addEventListener("click", this.changeUsername)
     this.shadowRoot.getElementById("delete-user-btn").addEventListener("click", this.deleteUser)
+    this.shadowRoot.getElementById("reset-password-btn").addEventListener("click", this.resetPassword)
     this.shadowRoot.getElementById("roles").addEventListener("change", this.roleClick)
 
     this.elementId = `${elementName}-${this.userId}`
@@ -225,6 +228,16 @@ class Element extends HTMLElement {
     if(!(await confirmDialog(`Are you sure that you want to delete user ${this.userId}? Deletion of users isn't fully supported yet, so some user data might not be correctly deleted with it.`))) return;
     await api.del(`user/${this.userId}`)
     window.history.back();
+  }
+
+  async resetPassword(){
+    if(!(await confirmDialog(`
+      This will reset the password of the user. 
+      The new password will be shown here and (if the mail mod is enabled) it will be sent to the user by E-mail.
+      Are you sure that you want to continue?`))) return;
+
+    let user = await api.post(`user/${this.userId}/reset-password`)
+    alertDialog(`The new password is: <br><pre>${user.password}</pre>`, {title: "Password reset"})
   }
 
   connectedCallback() {

@@ -108,6 +108,14 @@ export default (app) => {
     user.id = req.body.newId
     res.json(true)
   });
+
+  userRoute.post('/:id/reset-password', noGuest, function (req, res, next) {
+    if(!validateAccess(req, res, {permission: "admin"})) return;
+    let user = User.lookup(req.params.id)
+    if (!user) throw "Unknown user"
+    let newPassword = user.resetPassword()
+    res.json({...user.toObjSimple(), password: newPassword})
+  });
   
   /* Me */
 
