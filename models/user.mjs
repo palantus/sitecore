@@ -186,6 +186,7 @@ class User extends Entity {
     return {
       id: this.id,
       name: this.name,
+      email: this.email,
       msUsers: this.msUsers.map(msu => msu.toObj()),
       active: !this.tags.includes("obsolete"),
       virtual: this.tags.includes("virtual"),

@@ -118,9 +118,10 @@ export default (app) => {
           return res.sendStatus(404);
       }
       let headers = {}
-      if(response.headers.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
-      if(response.headers.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
-      if(response.headers.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
+      if(!response.headers) console.log(response)
+      if(response.headers?.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
+      if(response.headers?.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
+      if(response.headers?.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
       res.writeHead(response.status, headers)
       response.body.pipe(res)
     } catch(err) {

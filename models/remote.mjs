@@ -43,12 +43,13 @@ export default class Remote extends Entity {
     return returnRaw ? res : res.json()
   }
   
-  async del(path, {user = null} = {}){
+  async del(path, {returnRaw = false, user = null} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
-    return (await fetch(`${this.url}/${path}`, {
+    let res = await fetch(`${this.url}/${path}`, {
       method: "DELETE",
       headers: this.getHeaders(null, user)
-    })).json()
+    })
+    return returnRaw ? res : res.json()
   }
   
   async post(path, body, {returnRaw = false, contentType = null, user = null, isRawBody = false} = {}){
@@ -76,13 +77,14 @@ export default class Remote extends Entity {
     return returnRaw ? res : res.json()
   }
   
-  async patch(path, body, {user = null} = {}){
+  async patch(path, body, {returnRaw = false, user = null} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
-    return (await fetch(`${this.url}/${path}`, {
+    let res =await fetch(`${this.url}/${path}`, {
       method: "PATCH",
       headers: this.getHeaders("application/json", user),
       body: JSON.stringify(body)
-    })).json()
+    })
+    return returnRaw ? res : res.json()
   }
   
   async query(query, variables, {user = null} = {}){
