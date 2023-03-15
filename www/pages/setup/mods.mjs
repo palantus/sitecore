@@ -51,7 +51,7 @@ template.innerHTML = `
               <th>Id</th>
               <th>Enabled</th>
               <th>Version</th>
-              <th>New version</th>
+              <th>Update?</th>
               <th></th>
             </tr>
         </thead>
