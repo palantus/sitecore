@@ -3,7 +3,7 @@ const { Router, Request, Response } = express;
 const route = Router();
 import {query, uiAPI} from "entitystorage"
 import LogEntry from "../../models/logentry.mjs";
-import {validateAccess} from "../../services/auth.mjs"
+import {permission, validateAccess} from "../../services/auth.mjs"
 import APIKey from "../../models/apikey.mjs";
 import Setup from "../../models/setup.mjs";
 import DataType from "../../models/datatype.mjs";
@@ -129,6 +129,11 @@ export default (app) => {
     });
     zip.pipe(res)
     zip.finalize()
+  })
+
+  route.post("/restart", permission("admin"), (req, res) => {
+    res.json({success: true})
+    setTimeout(() => process.exit(1), 500)
   })
 
   // API keys

@@ -80,7 +80,7 @@ class API {
     return null;
   }
 
-  async get(path, { returnIfError = false, cache = false, maxAge, redirectAuth = true } = {}) {
+  async get(path, { returnIfError = false, cache = false, maxAge, redirectAuth = true, silent = false } = {}) {
     this.checkInit();
     if (this.failedLoginState === true) return;
     let url = `${apiURL()}/${path}`;
@@ -100,14 +100,16 @@ class API {
       try{
         res = await fetch(url, {headers: this.getHeaders(false)})
       } catch(err){
-        fire("log", { level: "error", message: `Request returned an error. Information: ${err}`})
+        if(!silent) fire("log", { level: "error", message: `Request returned an error. Information: ${err}`})
         reject(res);
         return;
       }
 
       if (res.status < 300 || returnIfError === true) {
         let jsonResult = await res.json();
-        this.cache.set(url, {result: jsonResult, ts: new Date().getTime()})
+        if(res.status < 300){
+          this.cache.set(url, {result: jsonResult, ts: new Date().getTime()})
+        }
         resolve(jsonResult);
       } else if (res.status == 401) {
         try{
@@ -126,12 +128,12 @@ class API {
       } else if (res.status >= 400 && res.status < 500) {
         let retObj = await res.json()
         console.log(`${res.status}: ${res.statusText}`, retObj)
-        fire("log", { level: "error", message: retObj.message || retObj.error })
+        if(!silent) fire("log", { level: "error", message: retObj.message || retObj.error })
         this.cache.delete(url)
         reject(res);
         throw retObj.message || retObj.error
       } else {
-        fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
+        if(!silent) fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
         this.cache.delete(url)
         reject(res);
       }
