@@ -131,19 +131,6 @@ export default (app) => {
     zip.finalize()
   })
 
-  // Mods
-  route.get("/mods", (req, res, next) => {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
-    res.json(query.tag("sitemod").all.map(m => ({id: m.id, enabled: m.enabled || false, hasSetup: !!m.hasSetup})))
-  })
-  route.patch("/mod/:id", (req, res, next) => {
-    if(!validateAccess(req, res, {permission: "admin"})) return;
-    let mod = query.tag("sitemod").prop("id", req.params.id).first
-    if(!mod) throw "Unknown mod"
-    if(req.body.enabled !== undefined) mod.enabled = !!req.body.enabled
-    res.json({success: true})
-  })
-
   // API keys
   const routeAPIKeys = Router();
   app.use("/system/apikeys", routeAPIKeys)

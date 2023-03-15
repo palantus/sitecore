@@ -8,6 +8,7 @@ import fs from 'fs'
 import express from "express"
 import acl from "./routes/acl.mjs"
 import federation from "./routes/federation.mjs"
+import mod from "./routes/mod.mjs"
 const { Router, Request, Response } = express;
 const route = Router();
 
@@ -28,6 +29,7 @@ export default async (app) => {
   jobs(router);
   federation(router)
   system(router)
+  mod(router)
 
   for(let {id : mod} of global.mods){
     let handler = (await import(`../mods/${mod}/api/index.mjs`)).default;
