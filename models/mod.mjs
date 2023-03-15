@@ -24,9 +24,10 @@ class Mod extends Entity {
   }
 
   async update(){
-    await this.loadGit().pull()
+    let result = await this.loadGit().pull()
     await this.refreshVersion();
     this.updateAvailable = false;
+    return result
   }
 
   async checkUpdates(){
