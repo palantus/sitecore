@@ -51,7 +51,7 @@ template.innerHTML = `
               <th>Id</th>
               <th>Enabled</th>
               <th>Version</th>
-              <th>Update?</th>
+              <th>Update</th>
               <th></th>
             </tr>
         </thead>
@@ -88,11 +88,12 @@ class Element extends HTMLElement {
         <td>${(m.hasSetup && m.enabled) ? `<field-ref ref="/${m.id}/setup">${m.id}</field-ref>` : `${m.id}`}</td>
         <td><field-edit field="enabled" type="checkbox" patch="system/mod/${m.id}" value="${m.enabled ? "true" : "false"}"></field-edit></td>
         <td>${m.version||""}</td>
-        <td>${m.updateAvailable ? "&#10003;" : ""}</td>
+        <td>${m.updateAvailable ? `<span style="color: green">Available!</span>` : ""}</td>
         <td>
           <context-menu width="150px" title="${m.id}">
             <span data-button="update">Update</span>
           </context-menu>
+        </td>
       </context-menu>
       </tr>
     `).join("")
