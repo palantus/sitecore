@@ -38,7 +38,9 @@ class Mod extends Entity {
   async refreshVersion(){
     let result = await this.loadGit().revparse({"--short": null, "HEAD": null})
     if(typeof result === "string" && result.length < 50){
-      this.version = result
+      this.version = result;
+    } else {
+      this.version = null;
     }
   }
 
