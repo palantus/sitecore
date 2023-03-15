@@ -35,6 +35,7 @@
     "node-fetch": "^3.2.9",
     "searchqueryparser": "^1.0.16",
     "showdown": "^2.1.0",
+    "simple-git": "^3.17.0",
     "uuid": "^8.3.2",
     "ws": "^8.8.0",
     "yargs": "^15.4.1"

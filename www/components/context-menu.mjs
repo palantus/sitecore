@@ -30,6 +30,11 @@ const template = document.createElement('template');
 template.innerHTML = `
   <link rel='stylesheet' href='/css/global.css'>
   <style>
+    #title{
+      border-bottom: 1px solid var(--contrast-color-muted);
+      margin: 0px;
+      margin-bottom: 5px;
+    }
     #items > button{
       display: block;
       background: none;
@@ -39,6 +44,10 @@ template.innerHTML = `
       font: inherit;
       cursor: pointer;
       outline: inherit;
+      width: 100%;
+      text-align: left;
+      padding-top: 2px;
+      padding-left: 2px;
     }
     #items > button:hover{
       background-color: var(--table-hover);
@@ -48,6 +57,7 @@ template.innerHTML = `
   <dropdown-menu-component class="options" title="Options" >
       <span slot="label" tabindex="0">&vellip;</span>
       <div slot="content">
+        <p id="title" class="hidden">Test</p>
         <div id="items">
         </div>
       </div>
@@ -80,11 +90,18 @@ class Element extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["width"];
+    return ["width", "title"];
   }  
 
   attributeChangedCallback(name, oldValue, newValue) {
-    this.dropMenu.setAttribute(name, newValue)
+    switch(name){
+      case "title":
+        this.shadowRoot.getElementById("title").innerText = newValue
+        this.shadowRoot.getElementById("title").classList.toggle("hidden", !newValue)
+        break;
+      default:
+        this.dropMenu.setAttribute(name, newValue)
+    }
   }
 }
 
