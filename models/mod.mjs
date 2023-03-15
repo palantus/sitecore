@@ -23,8 +23,10 @@ class Mod extends Entity {
     return query.type(Mod).tag("sitemod").all
   }
 
-  update(){
-    return this.loadGit().pull()
+  async update(){
+    await this.loadGit().pull()
+    await this.refreshVersion();
+    this.updateAvailable = false;
   }
 
   async checkUpdates(){
