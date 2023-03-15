@@ -55,6 +55,14 @@ export default class Toast {
     this.update({ ...DEFAULT_OPTIONS, ...options })
   }
 
+  pause(){
+    this.#pause();
+  }
+
+  unpause(){
+    this.#unpause();
+  }
+
   set autoClose(value) {
     this.#autoClose = value
     this.#timeVisible = 0

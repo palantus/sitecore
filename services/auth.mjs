@@ -207,6 +207,14 @@ export function permission(permission){
     return res.status(403).json({ error: "You do not have permission: " + permission, redirectTo: global.sitecore.loginURL })
   }
 }
+export function lookupType(Type, variableName){
+  return (req, res, next) => {
+    if(typeof Type?.lookup !== "function") return res.sendStatus(500);
+    res.locals[variableName] = Type.lookup(req.params.id);
+    if (!res.locals[variableName]) return res.sendStatus(404);
+    next()
+  }
+}
 
 export function throttle(maxRequests = 2, interval = "hour"){
 

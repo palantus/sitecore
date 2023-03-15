@@ -18,7 +18,7 @@ export default (app) => {
   if (process.env.ADMIN_MODE === "true")
     console.log("Warning: Is in ADMIN mode, which means that user requests aren't authorized")
 
-  global.sitecore.loginURL = `${global.sitecore.apiURL}/login`
+  global.sitecore.loginURL = `${global.sitecore.apiURL}/auth/login`
 
   app.use("/auth", route)
 
