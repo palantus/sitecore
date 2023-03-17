@@ -94,6 +94,7 @@ class Element extends HTMLElement {
         <td>
           <context-menu width="150px" title="${m.id}">
             <span data-button="update">Update</span>
+            <span data-button="uninstall">Uninstall</span>
           </context-menu>
         </td>
       </context-menu>
@@ -111,13 +112,23 @@ class Element extends HTMLElement {
     let id = container.getAttribute("data-id")
     if(!id) return;
     switch(e.detail.button){
-      case "update":
+      case "update": {
         let toast = new Toast({text: `Updating ${id}...`, showProgress: false})
         let res = await api.post(`system/mod/${id}/update`)
         toast.remove()
-        new Toast({text: `Module ${id} has been updated!`})
+        new Toast({text: `${id} has been updated!`})
         this.refreshData()
         break;
+      }
+      case "uninstall": {
+        if(!(await (confirmDialog(`Are you sure that you want to uninstall mod ${id}?`, {title: "Uninstall mod"})))) return;
+        let toast = new Toast({text: `Uninstalling ${id}...`, showProgress: false})
+        let res = await api.post(`system/mod/${id}/uninstall`)
+        toast.remove()
+        new Toast({text: `${id} has been uninstalled`})
+        this.refreshData()
+        break;
+      }
     }
   }
 
