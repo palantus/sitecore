@@ -48,13 +48,13 @@ export default class Setup extends Entity {
     for(let file of content.filter(f => f != "node_modules" && f != ".git")){
       if(file == "mods") continue;
       if(!decompressed[`${rootKey}/${file}`] && !decompressed[`${rootKey}/${file}/`]) continue;
-      //await fsp.rm(join(process.cwd(), file), {recursive: true})
-      console.log(`delete ${file}`)
+      await fsp.rm(join(process.cwd(), file), {recursive: true})
     }
-    /*
+    
     for (let [relativePath, content] of Object.entries(decompressed)) {
       if(relativePath.endsWith("/")) continue;
       let relPath = relativePath.split("/").slice(1).join("/")
+      if(relPath.startsWith("mods")) continue;
       var outf = join(destPath, relPath);
       mkdirp.sync(dirname(outf));
       fs.writeFileSync(outf, content);
@@ -66,7 +66,6 @@ export default class Setup extends Entity {
     });
 
     this.versionInstalled = this.versionAvailable||null;
-    */
     return {success: true};
   }
 
