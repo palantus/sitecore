@@ -14,12 +14,16 @@ export default (app) => {
     res.json(Mod.all().map(m => m.toObj()))
   })
 
-  route.post("/refresh-versions", (req, res) => {
-    Promise.all(Mod.all().map(m => m.refreshVersion())).then(() => res.json({success: true}))
+  route.post("/update-check", (req, res) => {
+    Mod.checkUpdates().then(() => res.json({success: true}))
   })
 
-  route.post("/update-check", (req, res) => {
-    Promise.all(Mod.all().map(m => m.checkUpdates())).then(() => res.json({success: true}))
+  route.post("/refresh-available", (req, res) => {
+    Mod.refreshAvailableMods().then(() => res.json({success: true}))
+  })
+
+  route.get("/installed", (req, res) => {
+    res.json(Mod.installed().map(m => m.toObj()))
   })
 
   /* Endpoint: /mod/<id> */
@@ -27,6 +31,18 @@ export default (app) => {
   const idRoute = Router();
   app.use("/system/mod/:id", permission("admin"), lookupType(Mod, "mod"), idRoute);
   
+  idRoute.get("/readme", (req, res) => {
+    res.json({html: res.locals.mod.readme||null})
+  })
+
+  idRoute.post("/install", (req, res) => {
+    res.locals.mod.install().then(resp => res.json(resp))
+  })
+
+  idRoute.post("/uninstall", (req, res) => {
+    res.locals.mod.uninstall().then(resp => res.json(resp))
+  })
+
   idRoute.get("/", (req, res) => {
     res.json(res.locals.mod.toObj())
   })
@@ -37,10 +53,6 @@ export default (app) => {
   })
 
   idRoute.post("/update", (req, res) => {
-    res.locals.mod.update().catch(err => {
-      res.json({success: false, err})
-    }).then(resp => {
-      res.json({success: true, resp})
-    })
+    res.locals.mod.update().then(resp => res.json({success: true, resp}))
   })
 };

@@ -37,8 +37,8 @@ template.innerHTML = `
   </style>  
 
   <action-bar>
+    <action-bar-item id="shop-btn">Mod shop</action-bar-item>
     <action-bar-item id="update-check-btn">Check for updates</action-bar-item>
-    <action-bar-item id="refresh-versions-btn">Refresh versions</action-bar-item>
     <action-bar-item id="restart-server-btn">Restart server</action-bar-item>
   </action-bar>
 
@@ -72,25 +72,24 @@ class Element extends HTMLElement {
     this.refreshData = this.refreshData.bind(this);
     this.clicked = this.clicked.bind(this)
     this.modActionClicked = this.modActionClicked.bind(this)
-    this.refreshVersions = this.refreshVersions.bind(this)
     this.checkForUpdates = this.checkForUpdates.bind(this)
     this.restartServer = this.restartServer.bind(this)
 
-    this.shadowRoot.getElementById("refresh-versions-btn").addEventListener("click", this.refreshVersions)
     this.shadowRoot.getElementById("update-check-btn").addEventListener("click", this.checkForUpdates)
     this.shadowRoot.getElementById("restart-server-btn").addEventListener("click", this.restartServer)
+    this.shadowRoot.getElementById("shop-btn").addEventListener("click", () => goto("/setup/shop"))
 
     this.shadowRoot.getElementById("mods").addEventListener("click", this.clicked)
     this.shadowRoot.getElementById("mods").addEventListener("item-clicked", this.modActionClicked)
   }
 
   async refreshData(){
-    let mods = await api.get("system/mods")
+    let mods = await api.get("system/mods/installed")
     this.shadowRoot.getElementById("mods").innerHTML = mods.sort((a, b) => a.id < b.id ? -1 : 1).map(m => `
       <tr class="mod" data-id="${m.id}">
         <td>${(m.hasSetup && m.enabled) ? `<field-ref ref="/${m.id}/setup">${m.id}</field-ref>` : `${m.id}`}</td>
         <td><field-edit field="enabled" type="checkbox" patch="system/mod/${m.id}" value="${m.enabled ? "true" : "false"}"></field-edit></td>
-        <td>${m.version||""}</td>
+        <td>${m.versionInstalled||""}</td>
         <td>${m.updateAvailable ? `<span style="color: green">Available!</span>` : ""}</td>
         <td>
           <context-menu width="150px" title="${m.id}">
@@ -113,18 +112,13 @@ class Element extends HTMLElement {
     if(!id) return;
     switch(e.detail.button){
       case "update":
-        let toast = new Toast({text: `Updaing ${id}...`, showProgress: false})
+        let toast = new Toast({text: `Updating ${id}...`, showProgress: false})
         let res = await api.post(`system/mod/${id}/update`)
         toast.remove()
-        alertDialog(`<p>Module ${id} has been updated. The following is the details about the update:</p><pre>${JSON.stringify(res.resp, null, 2)}</pre>`, {title: `Update result`})
+        new Toast({text: `Module ${id} has been updated!`})
         this.refreshData()
         break;
     }
-  }
-
-  async refreshVersions(){
-    await api.post("system/mods/refresh-versions")
-    this.refreshData()
   }
 
   async checkForUpdates(){
@@ -138,7 +132,7 @@ class Element extends HTMLElement {
   }
 
   async restartServer(){
-    if(!(await (confirmDialog("Restarting the server actually just stops it and it is therefore expected that you have some kind of process manager (like pm2) to start it again automatically. Do you want to continue?")))) return;
+    if(!(await (confirmDialog("Restarting the server actually just stops it and it is expected that you have some kind of process manager (like pm2) to start it again automatically. Do you want to continue?", {title: "Restart server"})))) return;
     
     let toast = new Toast({text: "Successfully forced a system restart. Awaiting resurrection...", showProgress: false, autoClose: 5000})
     toast.pause()

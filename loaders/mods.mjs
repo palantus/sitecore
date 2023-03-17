@@ -25,6 +25,8 @@ export default async ({mode}) => {
       hasSetup: mod.hasSetup
     })
   }
-  Mod.all().filter(m => !mods.includes(m.id)).forEach(m => m.delete())
+  Mod.all().forEach(m => {
+    m.installed = mods.includes(m.id)
+  })
   global.modRoutes += "export default routes;"
 }
