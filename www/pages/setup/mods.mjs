@@ -13,6 +13,7 @@ import Toast from "/components/toast.mjs"
 import {on, off} from "/system/events.mjs"
 import {goto} from "/system/core.mjs"
 import { alertDialog, confirmDialog } from "/components/dialog.mjs"
+import { restartServer } from "./setup.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -73,10 +74,9 @@ class Element extends HTMLElement {
     this.clicked = this.clicked.bind(this)
     this.modActionClicked = this.modActionClicked.bind(this)
     this.checkForUpdates = this.checkForUpdates.bind(this)
-    this.restartServer = this.restartServer.bind(this)
 
     this.shadowRoot.getElementById("update-check-btn").addEventListener("click", this.checkForUpdates)
-    this.shadowRoot.getElementById("restart-server-btn").addEventListener("click", this.restartServer)
+    this.shadowRoot.getElementById("restart-server-btn").addEventListener("click", () => restartServer())
     this.shadowRoot.getElementById("shop-btn").addEventListener("click", () => goto("/setup/shop"))
 
     this.shadowRoot.getElementById("mods").addEventListener("click", this.clicked)
@@ -140,27 +140,6 @@ class Element extends HTMLElement {
     toast.showProgress = true
     toast.unpause()
     this.refreshData()
-  }
-
-  async restartServer(){
-    if(!(await (confirmDialog("Restarting the server actually just stops it and it is expected that you have some kind of process manager (like pm2) to start it again automatically. Do you want to continue?", {title: "Restart server"})))) return;
-    
-    let toast = new Toast({text: "Successfully forced a system restart. Awaiting resurrection...", showProgress: false, autoClose: 5000})
-    toast.pause()
-    await api.post("system/restart")
-    await new Promise(resolve => {
-      let interval = setInterval(() => {
-        api.get("me", {silent: true}).catch(() => null).then(res => {
-          if(!res) return;
-          clearInterval(interval)
-          resolve()
-        })
-      }, 1000)
-    })
-    toast.text = "Server restarted sucessfully. Reloading page in 5 seconds..."
-    toast.showProgress = true
-    toast.unpause()
-    setTimeout(() => location.reload(), 5000)
   }
 
   connectedCallback() {

@@ -101,7 +101,6 @@ class Mod extends Entity {
 
     this.versionInstalled = this.versionAvailable||null;
     this.installed = true;
-    return {success: true};
   }
 
   async update(){

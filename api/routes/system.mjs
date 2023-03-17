@@ -136,6 +136,14 @@ export default (app) => {
     setTimeout(() => process.exit(1), 500)
   })
 
+  route.post("/update-check", permission("admin"), (req, res) => {
+    Setup.lookup().checkForUpdates().then(() => res.json({success: true}))
+  })
+
+  route.post("/update", permission("admin"), (req, res) => {
+    Setup.lookup().update().then(() => res.json({success: true}))
+  })
+
   // API keys
   const routeAPIKeys = Router();
   app.use("/system/apikeys", routeAPIKeys)
