@@ -46,6 +46,8 @@ Any menu, or item in the menu, can have `roles` (array), `permissions` (array) o
 ## Mods
 Take a look at the mod sample in mods folder. It is loaded by default, but can be disabled under System/Mods in the UI. For more advanced samples, check out `sitemod-files`, `sitemod-wiki`, `sitemod-lists` or `sitemod-passec` in my repositories.
 
+Installing, updating and uninstalling mods is possible in the GUI.
+
 ### Client files (js, css etc.)
 It is important to note that the www folder in a mod is exposed on the root of the site, meaning that the mod can overrule ANY public file from core, if it needs to. That is a great power, but consider using namespacing (subfolders) for mod files, to avoid accidental name clashes.
 
@@ -82,3 +84,16 @@ Create a component in a file called `topbar-XXXX.mjs` in your mod and it will be
 ### Data types
 
 Using datatypes, any custom types that a mod introduces, can be used to create things like custom lookups etc. that work across types. Take a look in services.mjs in eg. `sitemod-files` for a sample of how to define a new datatype.
+
+### Defining dependencies
+
+Add a section to the mod's package.json:
+
+```json
+"sitecore": {
+  "dependencies": [
+    "files",
+    "wiki
+  ]
+}
+```
