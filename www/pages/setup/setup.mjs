@@ -57,6 +57,7 @@ template.innerHTML = `
         <button id="update-check" class="styled">Check for updates</button>
         <button id="update" class="styled">Update Core</button>
         <button id="restart-server-btn" class="styled">Restart server</button>
+        <button id="source-btn" class="styled">View source</button>
       </div>
     </collapsible-card>
 
@@ -109,6 +110,7 @@ class Element extends HTMLElement {
       this.refreshData();
     })
     this.shadowRoot.getElementById("restart-server-btn").addEventListener("click", () => restartServer())
+    this.shadowRoot.getElementById("source-btn").addEventListener("click", () => window.open(`https://github.com/palantus/sitecore`))
   }
 
   async refreshData(){
