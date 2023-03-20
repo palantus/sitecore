@@ -3,6 +3,7 @@ const elementName = 'system-setup-page'
 import api from "/system/api.mjs"
 import "/components/field-edit.mjs"
 import "/components/field-list.mjs"
+import "/components/collapsible-card.mjs"
 import {on, off} from "/system/events.mjs"
 import Toast from "/components/toast.mjs"
 import { confirmDialog } from "/components/dialog.mjs"
@@ -24,36 +25,63 @@ template.innerHTML = `
     field-list{
       width: 600px;
     }
+    collapsible-card > div{
+      padding: 10px;
+    }
+    collapsible-card{
+      margin-bottom: 15px;
+      display: block;
+    }
   </style>  
 
   <div id="container">
 
     <h1>System setup</h1>
 
-    <h2>General</h2>
-    <field-list labels-pct="20">
-      <field-edit type="text" label="Site title" id="siteTitle"></field-edit>
-      <field-edit type="text" label="Home - public" id="homePublic"></field-edit>
-      <field-edit type="text" label="Home - signed in" id="homeInternal"></field-edit>
-    </field-list>
-    <br><br>
+    <collapsible-card open>
+      <span slot="title">General</span>
+      <div>
+        <field-list labels-pct="20">
+          <field-edit type="text" label="Site title" id="siteTitle"></field-edit>
+          <field-edit type="text" label="Home - public" id="homePublic"></field-edit>
+          <field-edit type="text" label="Home - signed in" id="homeInternal"></field-edit>
+        </field-list>
+      </div>
+    </collapsible-card>
 
-    <h2>Core version</h2>
-    <p>Current version: <span id="cur-version"></span></p>
-    <p>Update available: <span id="update-available"></span></p>
-    <button id="update-check" class="styled">Check for updates</button>
-    <button id="update" class="styled">Update Core</button>
-    <button id="restart-server-btn" class="styled">Restart server</button>
+    <collapsible-card open>
+      <span slot="title">Core version</span>
+      <div>
+        <p>Current version: <span id="cur-version"></span></p>
+        <p>Update available: <span id="update-available"></span></p>
+        <button id="update-check" class="styled">Check for updates</button>
+        <button id="update" class="styled">Update Core</button>
+        <button id="restart-server-btn" class="styled">Restart server</button>
+      </div>
+    </collapsible-card>
 
-    <br><br><br>
+    <collapsible-card>
+      <span slot="title">Mod shop</span>
+      <div>
+        <p>Inserting an API key here will allow you to access otherwise private GitHub repositories that your GitHub account has access to.</p>
+        <field-list labels-pct="20">
+          <field-edit type="text" label="GitHub API Key" id="githubAPIKey"></field-edit>
+          <field-edit type="date" label="Expiration date" id="githubAPIKeyExpiration" title="Only used as a reminder"></field-edit>
+        </field-list>
+      </div>
+    </collapsible-card>
 
-    <h2>Microsoft sign-in support</h2>
-    <p>Note: Changing these values requires a server restart.</p>
-    <field-list labels-pct="20">
-      <field-edit type="text" label="Client Id" id="msSigninClientId" title="Available from Azure app"></field-edit>
-      <field-edit type="text" label="Secret" id="msSigninSecret"></field-edit>
-      <field-edit type="text" label="Tenant (optional)" id="msSigninTenant" title="Everything after 'https://login.microsoftonline.com/'. Defaults to 'common'"></field-edit>
-    </field-list>
+    <collapsible-card>
+      <span slot="title">Microsoft sign-in support</span>
+      <div>
+        <p>Note: Changing these values requires a server restart.</p>
+        <field-list labels-pct="20">
+          <field-edit type="text" label="Client Id" id="msSigninClientId" title="Available from Azure app"></field-edit>
+          <field-edit type="text" label="Secret" id="msSigninSecret"></field-edit>
+          <field-edit type="text" label="Tenant (optional)" id="msSigninTenant" title="Everything after 'https://login.microsoftonline.com/'. Defaults to 'common'"></field-edit>
+        </field-list>
+      </div>
+    </collapsible-card>
   </div>
 `;
 
@@ -97,6 +125,9 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById('cur-version').innerText = setup.versionInstalled||"Unknown"
     this.shadowRoot.getElementById('update-available').innerHTML = (setup.versionInstalled != setup.versionAvailable) ? `<span style="color: green">Yes! (${setup.versionAvailable})</span>` : "No"
+
+    this.shadowRoot.getElementById('githubAPIKey').setAttribute("value", setup.githubAPIKey||"")
+    this.shadowRoot.getElementById('githubAPIKeyExpiration').setAttribute("value", setup.githubAPIKeyExpiration||"")
 
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `system/setup`));
   }

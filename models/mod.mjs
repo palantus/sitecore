@@ -5,6 +5,7 @@ import { unzipSync } from 'fflate';
 import { mkdirp } from 'mkdirp'
 import fs, {rm, promises as fsp} from "fs"
 import child_process from "child_process"
+import Setup from "./setup.mjs";
 
 class Mod extends Entity {
 
@@ -33,8 +34,13 @@ class Mod extends Entity {
   }
 
   static async checkUpdates(){
+    let setup = Setup.lookup();
     let user = "palantus";
-    let mods = (await (await fetch(`https://api.github.com/users/${user}/repos?per_page=1000`)).json())
+    let mods = (await (await fetch(`https://api.github.com/users/${user}/repos?per_page=1000`, {
+      headers : {
+        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+      }
+    })).json())
     for(let avMod of mods.filter(r => r.name.startsWith("sitemod-"))){
       let id = avMod.name.replaceAll("sitemod-", "")
       let mod = Mod.lookup(id)
@@ -48,10 +54,14 @@ class Mod extends Entity {
   }
 
   static async refreshAvailableMods(){
+    let setup = Setup.lookup();
     let user = "palantus";
-    let mods = (await (await fetch(`https://api.github.com/users/${user}/repos?per_page=1000`)).json())
-
-    for(let avMod of mods.filter(r => r.name.startsWith("sitemod-"))){
+    let mods = (await (await fetch(`https://api.github.com/search/repositories?q=user:${user}&per_page=1000`, {
+      headers : {
+        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+      }
+    })).json())
+    for(let avMod of mods.items.filter(r => r.name.startsWith("sitemod-"))){
       let id = avMod.name.replaceAll("sitemod-", "")
       let mod = Mod.lookupOrCreate(id)
       mod.description = avMod.description
@@ -63,12 +73,22 @@ class Mod extends Entity {
   }
 
   async refreshModVersion(){
-    let details = (await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}`)).json())
+    let setup = Setup.lookup();
+    let details = (await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}`, {
+      headers : {
+        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+      }
+    })).json())
     this.versionAvailable = details.pushed_at
   }
 
   static async fetchReadme(user, repo){
-    return md2html(await (await fetch(`https://raw.githubusercontent.com/${user}/${repo}/main/README.md`)).text())
+    let setup = Setup.lookup();
+    return md2html(await (await fetch(`https://raw.githubusercontent.com/${user}/${repo}/main/README.md`, {
+      headers : {
+        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+      }
+    })).text())
   }
 
   async install(){
@@ -79,8 +99,13 @@ class Mod extends Entity {
   }
 
   async doInstall(){
+    let setup = Setup.lookup();
     await this.refreshModVersion();
-    let zipBuffer = await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}/zipball`)).arrayBuffer()
+    let zipBuffer = await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}/zipball`, {
+      headers : {
+        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+      }
+    })).arrayBuffer()
     
     let destPath = this.directory;
     let zipUInt = new Uint8Array(zipBuffer);
@@ -115,7 +140,7 @@ class Mod extends Entity {
 
   uninstall(){
     return new Promise((resolve, reject) => rm(this.directory, {recursive: true}, err => {
-      console.log(err)
+      if(err) console.log(err)
       this.installed = false;
       resolve({success: true})
     }))
@@ -131,7 +156,11 @@ class Mod extends Entity {
       directory: this.directory,
       versionAvailable: this.versionAvailable||null,
       versionInstalled: this.installed ? this.versionInstalled||null : null,
-      updateAvailable: this.versionAvailable != this.versionInstalled && this.versionAvailable && this.installed
+      updateAvailable: this.versionAvailable != this.versionInstalled && this.versionAvailable && this.installed,
+      github:{
+        user: this.user,
+        repo: this.repo
+      }
     }
   }
 }

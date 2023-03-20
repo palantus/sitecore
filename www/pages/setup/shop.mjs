@@ -66,6 +66,7 @@ template.innerHTML = `
     <div id="right">
       <button id="install-btn" class="styled hidden">Install</button>
       <button id="uninstall-btn" class="styled hidden">Uninstall</button>
+      <button id="source-btn" class="styled hidden">View source</button>
       <div id="active-mod">
         <p>Select a mod on the list and view the details here. <br>When a mod is selected, you can choose to install it.</p>
       </div>
@@ -95,6 +96,10 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("modstab").addEventListener("click", this.modClick);
     this.shadowRoot.getElementById("install-btn").addEventListener("click", this.install);
     this.shadowRoot.getElementById("uninstall-btn").addEventListener("click", this.uninstall);
+    this.shadowRoot.getElementById("source-btn").addEventListener("click", () => {
+      let mod = this.getSelectedMod()
+      window.open(`https://github.com/${mod.github.user}/${mod.github.repo}`)
+    });
   }
 
   connectedCallback() {
@@ -126,6 +131,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("active-mod").innerHTML = (await api.get(`/system/mod/${mod.id}/readme`)).html
     this.shadowRoot.getElementById("install-btn").classList.toggle("hidden", mod.installed)
     this.shadowRoot.getElementById("uninstall-btn").classList.toggle("hidden", !mod.installed)
+    this.shadowRoot.getElementById("source-btn").classList.toggle("hidden", false)
   }
 
   async refreshData(){

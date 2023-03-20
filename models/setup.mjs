@@ -22,7 +22,9 @@ export default class Setup extends Entity {
     if(typeof obj.msSigninClientId === "string") this.msSigninClientId = obj.msSigninClientId
     if(typeof obj.msSigninSecret === "string") this.msSigninSecret = obj.msSigninSecret
     if(typeof obj.msSigninTenant === "string") this.msSigninTenant = obj.msSigninTenant
-
+    if(typeof obj.githubAPIKey === "string" || obj.githubAPIKey === null) this.githubAPIKey = obj.githubAPIKey
+    if(typeof obj.githubAPIKeyExpiration === "string" || obj.githubAPIKeyExpiration === null) this.githubAPIKeyExpiration = obj.githubAPIKeyExpiration
+    
     if(obj.msSigninClientId || obj.msSigninSecretSet || obj.msSigninTenant){
       clearCache();
       reloadMSLogin();
@@ -81,6 +83,8 @@ export default class Setup extends Entity {
       msSigninTenant: this.msSigninTenant||null,
       versionAvailable: this.versionAvailable||null,
       versionInstalled: this.versionInstalled||null,
+      githubAPIKey: this.githubAPIKey||null,
+      githubAPIKeyExpiration: this.githubAPIKeyExpiration||null
     }
   }
 }
