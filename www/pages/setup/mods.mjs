@@ -128,7 +128,11 @@ class Element extends HTMLElement {
     toast.text = "Finished update check"
     toast.showProgress = true
     toast.unpause()
-    this.refreshData()
+    await this.refreshData()
+
+    //Also check for Core updates
+    let res = await api.post("system/update-check")
+    if(res.updateAvailable) new Toast({text: "A new Core update is available. Please consider updating Core before mods.", autoClose: 10000})
   }
 
   connectedCallback() {
