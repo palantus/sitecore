@@ -111,9 +111,13 @@ class Mod extends Entity {
 
   async install(){
     if(this.installed) throw "Mod is already installed";
-    await this.doInstall();
-    this.enabled = true;
-    return {success: true};
+    try{
+      await this.doInstall();
+      this.enabled = true;
+      return {success: true};
+    } catch(err){
+      throw err;
+    }
   }
 
   async doInstall(){
@@ -152,12 +156,16 @@ class Mod extends Entity {
 
   async update(){
     if(!this.installed) throw "Mod is not installed";
-    let content = await fsp.readdir(this.directory)
-    for(let file of content.filter(f => f != "node_modules" && f != ".git")){
-      await fsp.rm(join(this.directory, file), {recursive: true})
+    try{
+      let content = await fsp.readdir(this.directory)
+      for(let file of content.filter(f => f != "node_modules" && f != ".git")){
+        await fsp.rm(join(this.directory, file), {recursive: true})
+      }
+      await this.doInstall();
+      return {success: true};
+    } catch(err){
+      throw err;
     }
-    await this.doInstall();
-    return {success: true};
   }
 
   uninstall(){
