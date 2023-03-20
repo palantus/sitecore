@@ -36,16 +36,21 @@ class Mod extends Entity {
   static async checkUpdates(){
     let setup = Setup.lookup();
     let user = "palantus";
-    let mods = (await (await fetch(`https://api.github.com/users/${user}/repos?per_page=1000`, {
-      headers : {
-        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+    try{
+      let mods = (await (await fetch(`https://api.github.com/users/${user}/repos?per_page=1000`, {
+        headers : {
+          "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+        }
+      })).json())
+      for(let avMod of mods.filter(r => r.name.startsWith("sitemod-"))){
+        let id = avMod.name.replaceAll("sitemod-", "")
+        let mod = Mod.lookup(id)
+        if(!mod) continue;
+        mod.versionAvailable = avMod.pushed_at
       }
-    })).json())
-    for(let avMod of mods.filter(r => r.name.startsWith("sitemod-"))){
-      let id = avMod.name.replaceAll("sitemod-", "")
-      let mod = Mod.lookup(id)
-      if(!mod) continue;
-      mod.versionAvailable = avMod.pushed_at
+    } catch(err){
+      console.log(err)
+      throw "Failed to check for updates"
     }
   }
 
@@ -56,39 +61,52 @@ class Mod extends Entity {
   static async refreshAvailableMods(){
     let setup = Setup.lookup();
     let user = "palantus";
-    let mods = (await (await fetch(`https://api.github.com/search/repositories?q=user:${user}&per_page=1000`, {
-      headers : {
-        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+    try{
+      let mods = (await (await fetch(`https://api.github.com/search/repositories?q=user:${user}&per_page=1000`, {
+        headers : {
+          "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+        }
+      })).json())
+      for(let avMod of mods.items.filter(r => r.name.startsWith("sitemod-"))){
+        let id = avMod.name.replaceAll("sitemod-", "")
+        let mod = Mod.lookupOrCreate(id)
+        mod.description = avMod.description
+        mod.user = user
+        mod.repo = avMod.name
+        mod.versionAvailable = avMod.pushed_at
+        mod.readme = await Mod.fetchReadme(user, avMod.name)
       }
-    })).json())
-    for(let avMod of mods.items.filter(r => r.name.startsWith("sitemod-"))){
-      let id = avMod.name.replaceAll("sitemod-", "")
-      let mod = Mod.lookupOrCreate(id)
-      mod.description = avMod.description
-      mod.user = user
-      mod.repo = avMod.name
-      mod.versionAvailable = avMod.pushed_at
-      mod.readme = await Mod.fetchReadme(user, avMod.name)
+    } catch(err){
+      console.log(err)
+      throw "Failed to refresh available mods"
     }
   }
 
   async refreshModVersion(){
     let setup = Setup.lookup();
-    let details = (await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}`, {
-      headers : {
-        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
-      }
-    })).json())
-    this.versionAvailable = details.pushed_at
+    try{
+      let details = (await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}`, {
+        headers : {
+          "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+        }
+      })).json())
+      this.versionAvailable = details.pushed_at
+    } catch(err){
+      throw "Failed to refresh mod version"
+    }
   }
 
   static async fetchReadme(user, repo){
     let setup = Setup.lookup();
-    return md2html(await (await fetch(`https://raw.githubusercontent.com/${user}/${repo}/main/README.md`, {
-      headers : {
-        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
-      }
-    })).text())
+    try{
+      return md2html(await (await fetch(`https://raw.githubusercontent.com/${user}/${repo}/main/README.md`, {
+        headers : {
+          "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+        }
+      })).text())
+    } catch(err){
+      throw "Failed to fetch readme"
+    }
   }
 
   async install(){
@@ -101,31 +119,35 @@ class Mod extends Entity {
   async doInstall(){
     let setup = Setup.lookup();
     await this.refreshModVersion();
-    let zipBuffer = await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}/zipball`, {
-      headers : {
-        "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+    try{
+      let zipBuffer = await (await fetch(`https://api.github.com/repos/${this.user}/${this.repo}/zipball`, {
+        headers : {
+          "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+        }
+      })).arrayBuffer()
+      
+      let destPath = this.directory;
+      let zipUInt = new Uint8Array(zipBuffer);
+      let decompressed = unzipSync(zipUInt)   
+
+      for (let [relativePath, content] of Object.entries(decompressed)) {
+        if(relativePath.endsWith("/")) continue;
+        let relPath = relativePath.split("/").slice(1).join("/")
+        var outf = join(destPath, relPath);
+        mkdirp.sync(dirname(outf));
+        fs.writeFileSync(outf, content);
       }
-    })).arrayBuffer()
-    
-    let destPath = this.directory;
-    let zipUInt = new Uint8Array(zipBuffer);
-    let decompressed = unzipSync(zipUInt)   
 
-    for (let [relativePath, content] of Object.entries(decompressed)) {
-      if(relativePath.endsWith("/")) continue;
-      let relPath = relativePath.split("/").slice(1).join("/")
-      var outf = join(destPath, relPath);
-      mkdirp.sync(dirname(outf));
-      fs.writeFileSync(outf, content);
+      var exec = child_process.exec,child;
+      child = exec('npm install', {cwd: this.directory}, function(err,out) { 
+        console.log(out); err && console.log(err); 
+      });
+
+      this.versionInstalled = this.versionAvailable||null;
+      this.installed = true;
+    } catch(err){
+      throw "Failed to install mod"
     }
-
-    var exec = child_process.exec,child;
-    child = exec('npm install', {cwd: this.directory}, function(err,out) { 
-      console.log(out); err && console.log(err); 
-    });
-
-    this.versionInstalled = this.versionAvailable||null;
-    this.installed = true;
   }
 
   async update(){

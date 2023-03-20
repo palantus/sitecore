@@ -16,12 +16,20 @@ export default async () => {
       }
 
       let {menu} = await import(`../mods/${mod}/ui.mjs`);
-      for(let mi of menu.reverse()){
-        global.menu.push(mi)
+      for(let mi of menu){
+        let existingMenu = global.menu.find(m => m.title == mi.title)
+        if(existingMenu){
+          existingMenu.items.push(...mi.items)
+        } else {
+          global.menu.push(mi)
+        }
       }
     }
 
-    global.menu.reverse()
+    global.menu = global.menu.sort((a, b) => a.title < b.title ? -1 : 1)
+    for(let m of global.menu){
+      m.items = m.items.sort((a, b) => a.title < b.title ? -1 : 1)
+    }
   }
 }
 

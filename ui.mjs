@@ -2,9 +2,9 @@ export let menu = [
   {
     title: "Me",
     public: true,
-    hideWhenSignedIn: true,
     items: [
-      {title: "Sign in", path: "/login", public: true}
+      {title: "Sign in", path: "/login", public: true, hideWhenSignedIn: true},
+      {title: "Profile", path: "/profile"}
     ]
   },
   {

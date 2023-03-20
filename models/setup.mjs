@@ -32,45 +32,53 @@ export default class Setup extends Entity {
   }
 
   async checkForUpdates(){
-    let details = (await (await fetch(`https://api.github.com/repos/palantus/sitecore`)).json())
-    this.versionAvailable = details.pushed_at
+    try{
+      let details = (await (await fetch(`https://api.github.com/repos/palantus/sitecore`)).json())
+      this.versionAvailable = details.pushed_at
+    } catch(err){
+      throw "Failed to check for Core updates"
+    }
     return this.versionInstalled != this.versionAvailable
   }
 
   async update(){
-    await this.checkForUpdates();
-    let zipBuffer = await (await fetch(`https://api.github.com/repos/palantus/sitecore/zipball`)).arrayBuffer()
-    
-    let destPath = process.cwd();
-    let zipUInt = new Uint8Array(zipBuffer);
-    let decompressed = unzipSync(zipUInt)   
+    try{
+      await this.checkForUpdates();
+      let zipBuffer = await (await fetch(`https://api.github.com/repos/palantus/sitecore/zipball`)).arrayBuffer()
+      
+      let destPath = process.cwd();
+      let zipUInt = new Uint8Array(zipBuffer);
+      let decompressed = unzipSync(zipUInt)   
 
-    let content = await fsp.readdir(process.cwd())
+      let content = await fsp.readdir(process.cwd())
 
-    let rootKey = Object.keys(decompressed)[0].split("/")[0]
+      let rootKey = Object.keys(decompressed)[0].split("/")[0]
 
-    for(let file of content.filter(f => f != "node_modules" && f != ".git")){
-      if(file == "mods") continue;
-      if(!decompressed[`${rootKey}/${file}`] && !decompressed[`${rootKey}/${file}/`]) continue;
-      await fsp.rm(join(process.cwd(), file), {recursive: true})
+      for(let file of content.filter(f => f != "node_modules" && f != ".git")){
+        if(file == "mods") continue;
+        if(!decompressed[`${rootKey}/${file}`] && !decompressed[`${rootKey}/${file}/`]) continue;
+        await fsp.rm(join(process.cwd(), file), {recursive: true})
+      }
+      
+      for (let [relativePath, content] of Object.entries(decompressed)) {
+        if(relativePath.endsWith("/")) continue;
+        let relPath = relativePath.split("/").slice(1).join("/")
+        if(relPath.startsWith("mods")) continue;
+        var outf = join(destPath, relPath);
+        mkdirp.sync(dirname(outf));
+        fs.writeFileSync(outf, content);
+      }
+
+      var exec = child_process.exec,child;
+      child = exec('npm install', {cwd: process.cwd()}, function(err,out) { 
+        console.log(out); err && console.log(err); 
+      });
+
+      this.versionInstalled = this.versionAvailable||null;
+      return {success: true};
+    } catch(err){
+      throw "Failed to update Core"
     }
-    
-    for (let [relativePath, content] of Object.entries(decompressed)) {
-      if(relativePath.endsWith("/")) continue;
-      let relPath = relativePath.split("/").slice(1).join("/")
-      if(relPath.startsWith("mods")) continue;
-      var outf = join(destPath, relPath);
-      mkdirp.sync(dirname(outf));
-      fs.writeFileSync(outf, content);
-    }
-
-    var exec = child_process.exec,child;
-    child = exec('npm install', {cwd: process.cwd()}, function(err,out) { 
-      console.log(out); err && console.log(err); 
-    });
-
-    this.versionInstalled = this.versionAvailable||null;
-    return {success: true};
   }
 
   toObj(){
