@@ -9,6 +9,7 @@ import express from "express"
 import acl from "./routes/acl.mjs"
 import federation from "./routes/federation.mjs"
 import mod from "./routes/mod.mjs"
+import path from 'path';
 const { Router, Request, Response } = express;
 const route = Router();
 
@@ -16,10 +17,12 @@ export default async (app) => {
 	const router = Router();
 
   for(let {id : mod} of global.mods){
-    if(!!(await fs.promises.stat(`./mods/${mod}/api/pre-auth.mjs`).catch(e => false))){
-      let handler = (await import(`../mods/${mod}/api/pre-auth.mjs`)).default;
-      handler(router, app)
-    }
+    try{
+      if(!!(await fs.promises.stat(`./mods/${mod}/api/pre-auth.mjs`).catch(e => false))){
+        let handler = (await import(`../mods/${mod}/api/pre-auth.mjs`)).default;
+        handler(router, app)
+      }
+    } catch(err){}
   }
 
   auth(router);
@@ -32,6 +35,9 @@ export default async (app) => {
   mod(router)
 
   for(let {id : mod} of global.mods){
+    if(!(await apiExists(`./mods/${mod}/api`))) {
+      continue;
+    }
     let handler = (await import(`../mods/${mod}/api/index.mjs`)).default;
     handler(router, fields, app)
   }
@@ -39,4 +45,11 @@ export default async (app) => {
   graphql(router);
   
 	return router
+}
+
+async function apiExists(basePath){
+  return new Promise(r => fs.access(path.join(basePath, "index.mjs"), fs.F_OK, (err) => {
+    if (err) return r(false);
+    return r(true)
+  }))
 }

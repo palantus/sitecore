@@ -6,7 +6,6 @@ import "/components/action-bar-item.mjs"
 import "/components/field-ref.mjs"
 import "/components/field.mjs"
 import "/components/field-edit.mjs"
-import "/components/context-menu.mjs"
 import "/components/action-bar.mjs"
 import "/components/action-bar-item.mjs"
 import Toast from "/components/toast.mjs"
@@ -34,7 +33,7 @@ template.innerHTML = `
     table thead th:nth-child(1){width: 100px}
     table thead th:nth-child(2){width: 70px}
     table thead th:nth-child(3){width: 70px}
-    table thead th:nth-child(4){width: 90px}
+    table thead th:nth-child(4){width: 130px}
   </style>  
 
   <action-bar>
@@ -53,7 +52,7 @@ template.innerHTML = `
               <th>Id</th>
               <th>Enabled</th>
               <th>Version</th>
-              <th>Update</th>
+              <th>Update available</th>
               <th></th>
             </tr>
         </thead>
@@ -72,7 +71,6 @@ class Element extends HTMLElement {
 
     this.refreshData = this.refreshData.bind(this);
     this.clicked = this.clicked.bind(this)
-    this.modActionClicked = this.modActionClicked.bind(this)
     this.checkForUpdates = this.checkForUpdates.bind(this)
 
     this.shadowRoot.getElementById("update-check-btn").addEventListener("click", this.checkForUpdates)
@@ -80,55 +78,46 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("shop-btn").addEventListener("click", () => goto("/setup/shop"))
 
     this.shadowRoot.getElementById("mods").addEventListener("click", this.clicked)
-    this.shadowRoot.getElementById("mods").addEventListener("item-clicked", this.modActionClicked)
   }
 
   async refreshData(){
     let mods = await api.get("system/mods/installed")
     this.shadowRoot.getElementById("mods").innerHTML = mods.sort((a, b) => a.id < b.id ? -1 : 1).map(m => `
-      <tr class="mod" data-id="${m.id}">
+      <tr class="mod result" data-id="${m.id}">
         <td>${(m.hasSetup && m.enabled) ? `<field-ref ref="/${m.id}/setup">${m.id}</field-ref>` : `${m.id}`}</td>
         <td><field-edit field="enabled" type="checkbox" patch="system/mod/${m.id}" value="${m.enabled ? "true" : "false"}"></field-edit></td>
         <td>${m.versionInstalled||""}</td>
         <td>${m.updateAvailable ? `<span style="color: green">Available!</span>` : ""}</td>
         <td>
-          <context-menu width="150px" title="${m.id}">
-            <span data-button="update">Update</span>
-            <span data-button="uninstall">Uninstall</span>
-          </context-menu>
+            <button class="update">Update</button>
+            <button class="uninstall">Uninstall</button>
         </td>
       </context-menu>
       </tr>
     `).join("")
   }
 
-  clicked(e){
-    if(!e.target.classList.contains("setupbtn")) return;
-    goto(`/${e.target.getAttribute("data-mod")}/setup`)
-  }
-
-  async modActionClicked(e){
-    let container = e.detail.menu.closest(".mod")
-    let id = container.getAttribute("data-id")
-    if(!id) return;
-    switch(e.detail.button){
-      case "update": {
-        let toast = new Toast({text: `Updating ${id}...`, showProgress: false})
-        let res = await api.post(`system/mod/${id}/update`)
-        toast.remove()
-        new Toast({text: `${id} has been updated!`})
-        this.refreshData()
-        break;
-      }
-      case "uninstall": {
-        if(!(await (confirmDialog(`Are you sure that you want to uninstall mod ${id}?`, {title: "Uninstall mod"})))) return;
-        let toast = new Toast({text: `Uninstalling ${id}...`, showProgress: false})
-        let res = await api.post(`system/mod/${id}/uninstall`)
-        toast.remove()
-        new Toast({text: `${id} has been uninstalled`})
-        this.refreshData()
-        break;
-      }
+  async clicked(e){
+    let id = e.target.closest(".mod").getAttribute("data-id")
+    if(e.target.classList.contains("setupbtn")){
+      goto(`/${id}/setup`)
+    } else if(e.target.classList.contains("update")){
+      e.target.toggleAttribute("disabled", true)
+      let toast = new Toast({text: `Updating ${id}...`, showProgress: false})
+      await api.post(`system/mod/${id}/update`)
+      toast.remove()
+      new Toast({text: `${id} has been updated!`})
+      this.refreshData()
+      e.target.toggleAttribute("disabled", false)
+    } else if(e.target.classList.contains("uninstall")){
+      if(!(await (confirmDialog(`Are you sure that you want to uninstall mod ${id}?`, {title: "Uninstall mod"})))) return;
+      e.target.toggleAttribute("disabled", true)
+      let toast = new Toast({text: `Uninstalling ${id}...`, showProgress: false})
+      await api.post(`system/mod/${id}/uninstall`)
+      toast.remove()
+      new Toast({text: `${id} has been uninstalled. Please restart the server.`})
+      this.refreshData()
+      e.target.toggleAttribute("disabled", false)
     }
   }
 

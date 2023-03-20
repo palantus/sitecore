@@ -15,13 +15,15 @@ export default async () => {
         return;
       }
 
-      let {menu} = await import(`../mods/${mod}/ui.mjs`);
-      for(let mi of menu){
-        let existingMenu = global.menu.find(m => m.title == mi.title)
-        if(existingMenu){
-          existingMenu.items.push(...mi.items)
-        } else {
-          global.menu.push(mi)
+      if(await uiExists(`./mods/${mod}`)){
+        let {menu} = await import(`../mods/${mod}/ui.mjs`);
+        for(let mi of menu){
+          let existingMenu = global.menu.find(m => m.title == mi.title)
+          if(existingMenu){
+            existingMenu.items.push(...mi.items)
+          } else {
+            global.menu.push(mi)
+          }
         }
       }
     }
@@ -35,6 +37,12 @@ export default async () => {
 
 async function menuExists(basePath){
   return new Promise(r => fs.access(path.join(basePath, "menu.mjs"), fs.F_OK, (err) => {
+    if (err) return r(false);
+    return r(true)
+  }))
+}
+async function uiExists(basePath){
+  return new Promise(r => fs.access(path.join(basePath, "ui.mjs"), fs.F_OK, (err) => {
     if (err) return r(false);
     return r(true)
   }))
