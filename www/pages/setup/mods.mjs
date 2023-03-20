@@ -23,7 +23,6 @@ template.innerHTML = `
         padding: 10px;
     }
     table{
-      width: 100%;
       margin-top: 5px;
     }
     table thead tr{
@@ -44,7 +43,6 @@ template.innerHTML = `
 
   <div id="container">
     <h1>Server mods</h1>
-    <p>Note: Enabling/disabling mods only has an effect after the server is restarted.</p>
 
     <table>
         <thead>
@@ -59,6 +57,8 @@ template.innerHTML = `
         <tbody id="mods" class="container">
         </tbody>
     </table>
+
+    <p>Note: Enabling/disabling mods only has an effect after the server is restarted.</p>
   </div>
 `;
 
