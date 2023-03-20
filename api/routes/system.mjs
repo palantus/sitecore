@@ -137,7 +137,7 @@ export default (app) => {
   })
 
   route.post("/update-check", permission("admin"), (req, res) => {
-    Setup.lookup().checkForUpdates().then(() => res.json({success: true}))
+    Setup.lookup().checkForUpdates().then(updateAvailable => res.json({success: true, updateAvailable}))
   })
 
   route.post("/update", permission("admin"), (req, res) => {

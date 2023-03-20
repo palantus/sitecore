@@ -3,6 +3,7 @@ import { clearCache, reloadMSLogin } from "../services/mslogin.mjs"
 import { unzipSync } from 'fflate';
 import { mkdirp } from 'mkdirp'
 import fs, {rm, promises as fsp} from "fs"
+import { join, dirname } from "path";
 import child_process from "child_process"
 
 export default class Setup extends Entity {
@@ -31,6 +32,7 @@ export default class Setup extends Entity {
   async checkForUpdates(){
     let details = (await (await fetch(`https://api.github.com/repos/palantus/sitecore`)).json())
     this.versionAvailable = details.pushed_at
+    return this.versionInstalled != this.versionAvailable
   }
 
   async update(){

@@ -67,7 +67,9 @@ class Element extends HTMLElement {
     this.refreshData = this.refreshData.bind(this);
     
     this.shadowRoot.getElementById("update-check").addEventListener("click", async () => {
-      await api.post("system/update-check")
+      let res = await api.post("system/update-check")
+      if(res.updateAvailable) new Toast({text: "A new update is available"})
+      else new Toast({text: "No new update is available"})
       this.refreshData();
     })
     this.shadowRoot.getElementById("update").addEventListener("click", async () => {
