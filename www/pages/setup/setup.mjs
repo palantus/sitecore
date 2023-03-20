@@ -105,7 +105,7 @@ class Element extends HTMLElement {
       let toast = new Toast({text: `Updating Core...`, showProgress: false})
       await api.post("system/update")
       toast.remove()
-      new Toast({text: `Core has been updated. Please restart the server.`, showProgress: false, autoClose: false})
+      new Toast({text: `Core has been updated. Please restart the server.`, autoClose: 10000})
       this.refreshData();
     })
     this.shadowRoot.getElementById("restart-server-btn").addEventListener("click", () => restartServer())
