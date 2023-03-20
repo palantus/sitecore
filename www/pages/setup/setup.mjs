@@ -73,6 +73,7 @@ class Element extends HTMLElement {
       this.refreshData();
     })
     this.shadowRoot.getElementById("update").addEventListener("click", async () => {
+      if(!(await (confirmDialog("Are you sure that you want to update Core now? It will require a restart afterwards.", {title: "Update Core"})))) return;
       let toast = new Toast({text: `Updating Core...`, showProgress: false})
       await api.post("system/update")
       toast.remove()
