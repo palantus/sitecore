@@ -20,7 +20,7 @@ template.innerHTML = `
         grid-gap: 0px;
         width: 100%;
         height: 100%;
-        grid-template-columns: 420px auto;
+        grid-template-columns: 520px auto;
     }
     @media only screen and (max-width: 1100px) {
       #container{
@@ -31,9 +31,10 @@ template.innerHTML = `
 
     #modstab {margin-top: 5px;}
     #modstab thead th:nth-child(1){width: 85px}
-    #modstab thead th:nth-child(2){width: 250px}
+    #modstab thead th:nth-child(2){width: 350px}
     #modstab thead th:nth-child(3){width: 85px}
     #modstab thead tr{border-bottom: 1px solid gray;}
+    #modstab tbody td{padding-bottom: 5px;}
 
     #left{grid-area: left; border-right: 1px solid gray;overflow-y: auto;}
     #right{grid-area: right; padding: 10px; overflow-y: auto}
@@ -56,7 +57,11 @@ template.innerHTML = `
       </div>
       <table id="modstab" class="hidden">
         <thead>
-          <tr><th>Id</th><th>Description</th><th>Installed</th></tr>
+          <tr>
+            <th>Id</th>
+            <th>Description</th>
+            <th>Installed</th>
+          </tr>
         </thead>
         <tbody id="mods">
         </tbody>
@@ -87,7 +92,7 @@ class Element extends HTMLElement {
     this.uninstall = this.uninstall.bind(this)
 
     this.shadowRoot.getElementById("refresh-btn").addEventListener("click", async () => {
-      let toast = new Toast({text: `Refreshing list...`, showProgress: false})
+      let toast = new Toast({text: `Refreshing list...`, showProgress: false, autoClose: false})
       await api.post("system/mods/refresh-available")
       this.refreshData()
       toast.remove()
@@ -151,7 +156,7 @@ class Element extends HTMLElement {
                                                            .map(m => `
       <tr class="result" data-modid="${m.id}">
         <td>${m.id}</td>
-        <td>${m.description}</td>
+        <td>${m.description||""}</td>
         <td>${m.installed ? "Yes" : "No"}</td>
       </tr>
     `).join("")
