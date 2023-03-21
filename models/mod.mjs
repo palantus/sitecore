@@ -37,12 +37,12 @@ class Mod extends Entity {
     let setup = Setup.lookup();
     let user = "palantus";
     try{
-      let mods = (await (await fetch(`https://api.github.com/users/${user}/repos?per_page=1000`, {
+      let mods = (await (await fetch(`https://api.github.com/search/repositories?q=user:${user}&per_page=1000`, {
         headers : {
           "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
         }
       })).json())
-      for(let avMod of mods.filter(r => r.name.startsWith("sitemod-"))){
+      for(let avMod of mods.items.filter(r => r.name.startsWith("sitemod-"))){
         let id = avMod.name.replaceAll("sitemod-", "")
         let mod = Mod.lookup(id)
         if(!mod) continue;
