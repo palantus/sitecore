@@ -132,6 +132,10 @@ class User extends Entity {
     return this.rels.role?.map(r => r.id) || []
   }
 
+  get rolesTyped() {
+    return this.rels.role?.map(r => Role.from(r)) || []
+  }
+
   addRole(id) {
     this.rel(Role.lookupOrCreate(id), "role");
     clearUserRoleAndPermissionCache()
