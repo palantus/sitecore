@@ -228,4 +228,5 @@ export function mods(){return apiConfig.mods}
 export function menu(){return apiConfig.menu}
 export function getApiConfig(){return apiConfig}
 export function setPageTitle(title){sc.state.title = title; sc.setWindowTitle()}
+export function pageElement(){return axm.pages[axm.state.path]}
 export { sc }
