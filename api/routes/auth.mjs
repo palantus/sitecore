@@ -126,6 +126,7 @@ export default (app) => {
             user = foundUser;
             res.locals.jwt = token
           } else {
+            res.cookie('jwtToken', "", { domain: global.sitecore.cookieDomain, maxAge: 1000, httpOnly: true, secure: true, sameSite: "None" });
             return res.status(responseCode||401).json(response || "Could not find user from token")
           }
         } catch(err){
