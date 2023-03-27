@@ -2,7 +2,7 @@ import express from 'express';
 //import bodyParser from 'body-parser';
 import cors from 'cors';
 import routes from '../api/index.mjs';
-import cookieParser from 'cookie-parser';
+//import cookieParser from 'cookie-parser';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
@@ -34,7 +34,7 @@ export default async ({ app, mode, config }) => {
     app.use(express.json());
     app.use(express.text());
     app.use(express.urlencoded({ extended: false }));
-    app.use(cookieParser());
+    //app.use(cookieParser());
     
     let setup = Setup.lookup()
     let apiPrefixWithSlash = global.sitecore.apiPrefix ? `/${global.sitecore.apiPrefix}` : "";

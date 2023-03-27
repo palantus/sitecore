@@ -43,7 +43,7 @@ export default (app) => {
       if (user) {
         let data = user.toObj();
         let token = jwt.sign(data, global.sitecore.accessTokenSecret, { expiresIn: '7d' })
-        res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
+        //res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 90000000, httpOnly: true, secure: true, sameSite: "None" });
         if (loginResult?.state?.redirect) {
           let url = new URL(loginResult.state.redirect)
           url.searchParams.set("token", token);
@@ -68,7 +68,7 @@ export default (app) => {
     }
 
     let token = jwt.sign(user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
-    res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
+    //res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
     res.json({success: true, token})
 	})
 
@@ -82,7 +82,6 @@ export default (app) => {
   })
 
   route.use("/logout", (req, res, next) => {
-    res.cookie('jwtToken', "", { domain: global.sitecore.cookieDomain, maxAge: 1000, httpOnly: true, secure: true, sameSite: "None" });
     res.json({ success: true })
   })
 
@@ -114,8 +113,8 @@ export default (app) => {
         token = Buffer.from(authHeader.split(" ")[1], 'base64').toString().split(':')?.[1] || authHeader.split(" ")[1]
       else if (authHeader)
         token = authHeader.split(' ')[1]
-      else if (req.cookies.jwtToken)
-        token = req.cookies.jwtToken
+      //else if (req.cookies.jwtToken)
+      //  token = req.cookies.jwtToken
 
       token = (token && typeof token === "string") ? sanitize(token) : null;
     
@@ -164,7 +163,7 @@ export default (app) => {
 
     if(tomorrow.getTime() > expires.getTime()){
       let token = jwt.sign(res.locals.user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
-      res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
+      //res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
       return res.json(token)
     }
 
