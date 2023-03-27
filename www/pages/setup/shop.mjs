@@ -133,7 +133,7 @@ class Element extends HTMLElement {
 
   async refreshSelected(){
     let mod = this.getSelectedMod()
-    this.shadowRoot.getElementById("active-mod").innerHTML = (await api.get(`/system/mod/${mod.id}/readme`)).html
+    this.shadowRoot.getElementById("active-mod").innerHTML = (await api.get(`system/mod/${mod.id}/readme`)).html
     this.shadowRoot.getElementById("install-btn").classList.toggle("hidden", mod.installed)
     this.shadowRoot.getElementById("uninstall-btn").classList.toggle("hidden", !mod.installed)
     this.shadowRoot.getElementById("source-btn").classList.toggle("hidden", false)
