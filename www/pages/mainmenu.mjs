@@ -228,7 +228,7 @@ class Page extends HTMLElement {
         titleElement.attributes.class = "itemtitle"
         titleElement.innerText = " - " + item.title
 
-        itemDiv.setAttribute("data-path", item.path)
+        itemDiv.setAttribute("data-path", item.target||item.path)
         itemDiv.setAttribute("data-menuid", parentMenuId)
       } else {
         itemDiv.className = "menu"

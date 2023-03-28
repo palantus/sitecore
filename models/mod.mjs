@@ -33,6 +33,10 @@ class Mod extends Entity {
     return query.type(Mod).tag("sitemod").prop("installed", true).all
   }
 
+  static allLoaded(){
+    return global.mods.map(m => Mod.lookup(m.id)).filter(m => !!m)
+  }
+
   static async checkUpdates(){
     let setup = Setup.lookup();
     let user = "palantus";
