@@ -91,7 +91,7 @@ class Element extends HTMLElement {
         <td><field-edit-inline type="text" patch="system/menu/item/${mi.id}" field="title" value="${mi.title}"></field-edit-inline></td>
         <td><field-edit-inline type="text" patch="system/menu/item/${mi.id}" field="target" value="${mi.target}"></field-edit-inline></td>
         <td><field-edit-inline type="select" patch="system/menu/item/${mi.id}" field="role" value="${mi.role||""}" lookup="role"></field-edit-inline></td>
-        <td><field-edit-inline type="select" patch="system/menu/item/${mi.id}" field="permisson" value="${mi.permisson||""}" lookup="permisson"></field-edit-inline></td>
+        <td><field-edit-inline type="select" patch="system/menu/item/${mi.id}" field="permission" value="${mi.permission||""}" lookup="permission"></field-edit-inline></td>
         <td><field-edit-inline type="checkbox" patch="system/menu/item/${mi.id}" field="public" value="${mi.public}"></field-edit-inline></td>
         <td><field-edit-inline type="checkbox" patch="system/menu/item/${mi.id}" field="hideWhenSignedIn" value="${mi.hideWhenSignedIn}"></field-edit-inline></td>
         <td><field-edit-inline type="checkbox" patch="system/menu/item/${mi.id}" field="hide" value="${mi.hide}"></field-edit-inline></td>

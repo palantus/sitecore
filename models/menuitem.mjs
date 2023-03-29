@@ -31,9 +31,9 @@ export default class MenuItem extends Entity {
     return query.type(MenuItem).tag("coremainmenuitem").id(id).first
   }
 
-  static lookupPathSuggested(title, path){
+  static lookupPathSuggested(title, path, owner){
     if(!title || !path) return null;
-    return query.type(MenuItem).tag("coremainmenuitem").prop("suggestedTitle", title).prop("suggestedPath", path).first
+    return query.type(MenuItem).tag("coremainmenuitem").prop("suggestedTitle", title).prop("suggestedPath", path).relatedTo(owner, "owner").first
   }
 
   static all(){

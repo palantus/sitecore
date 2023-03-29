@@ -30,7 +30,7 @@ export default (app) => {
     if(!req.body.title || typeof req.body.title !== "string") throw "Invalid title";
     if(!req.body.path || typeof req.body.path !== "string") throw "Invalid path";
     if(!req.body.target || typeof req.body.target !== "string") throw "Invalid target";
-    if(MenuItem.lookupPathSuggested(req.body.path, req.body.title)) throw "Menu item already exists";
+    if(MenuItem.lookupPathSuggested(req.body.path, req.body.title, Setup.lookup())) throw "Menu item already exists";
     let path = req.body.path.startsWith("/") ? req.body.path : "/"+req.body.path;
     let target = req.body.target.startsWith("/") ? req.body.target : "/"+req.body.target;
     let mi = new MenuItem(req.body.title, path, target, Setup.lookup(), "user");

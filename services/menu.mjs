@@ -11,7 +11,7 @@ export function generateMenu(){
   let items = owners.map(o => MenuItem.allEnabledFromOwner(o)).flat();
   let menu = {items: []}
 
-  for(let item of items){
+  for(let item of items.filter(i => !i.hide)){
     let parent = ensurePath(menu, item.path);
     parent.items.push({
       title: item.title,
@@ -19,8 +19,7 @@ export function generateMenu(){
       public:  item.public,
       hideWhenSignedIn: item.hideWhenSignedIn,
       role: item.role,
-      permission: item.permission,
-      hide: item.hide
+      permission: item.permission
     })
   }
   global.menu = sortMenu(menu).items;
@@ -70,7 +69,7 @@ function loadMenuFile(menu, owner){
   for(let mi of items){
     let id = `${mi.path}/${mi.title}`
     foundIds.add(id)
-    let item = MenuItem.lookupPathSuggested(mi.title, mi.path) || new MenuItem(mi.title, mi.path, mi.target, owner);
+    let item = MenuItem.lookupPathSuggested(mi.title, mi.path, owner) || new MenuItem(mi.title, mi.path, mi.target, owner);
     item.suggestedTitle = mi.title;
     item.suggestedPath = mi.path;
     item.suggestedTarget = mi.target;

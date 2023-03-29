@@ -214,7 +214,6 @@ class Page extends HTMLElement {
     let signedIn = isSignedIn();
     for(let item of items){
       if(!item.items){
-        if(item.hide) continue;
         if(item.role && !this.userRoles.includes(item.role)) continue;
         if(item.permission && !this.userPermissions.includes(item.permission)) continue;
         if(item.public !== true && !signedIn) continue;
