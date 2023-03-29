@@ -213,10 +213,13 @@ class Page extends HTMLElement {
     let anyAdded = false;
     let signedIn = isSignedIn();
     for(let item of items){
-      if(item.role && !this.userRoles.includes(item.role) && !this.userRoles.includes("admin")) continue;
-      if(item.permission && !this.userPermissions.includes(item.permission) && !this.userPermissions.includes("admin")) continue;
-      if(item.public !== true && !signedIn) continue;
-      if(item.hideWhenSignedIn && signedIn) continue;
+      if(!item.items){
+        if(item.hide) continue;
+        if(item.role && !this.userRoles.includes(item.role)) continue;
+        if(item.permission && !this.userPermissions.includes(item.permission)) continue;
+        if(item.public !== true && !signedIn) continue;
+        if(item.hideWhenSignedIn && signedIn) continue;
+      }
       anyAdded = true;
 
       let itemDiv = document.createElement("div")

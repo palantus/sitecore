@@ -10,6 +10,7 @@ let routes = [
     {path: "/setup/federation",       page: "../pages/setup/federation.mjs"},
     {path: "/setup/mods",             page: "../pages/setup/mods.mjs"},
     {path: "/setup/shop",             page: "../pages/setup/shop.mjs"},
+    {path: "/setup/menu",             page: "../pages/setup/menu.mjs"},
     {path: "/setup",                  page: "../pages/setup/setup.mjs"},
     {path: "/setup/jobs",             page: "../pages/setup/jobs.mjs"},
     {path: "/systemtools",            page: "../pages/setup/tools.mjs"},

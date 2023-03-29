@@ -20,6 +20,7 @@ export function generateMenu(){
       hideWhenSignedIn: item.hideWhenSignedIn,
       role: item.role,
       permission: item.permission,
+      hide: item.hide
     })
   }
   global.menu = sortMenu(menu).items;
@@ -69,10 +70,14 @@ function loadMenuFile(menu, owner){
   for(let mi of items){
     let id = `${mi.path}/${mi.title}`
     foundIds.add(id)
-    let item = MenuItem.lookup(mi.title, mi.path) || new MenuItem(mi.title, mi.path, mi.target, owner);
-    for(let prop in mi){
-      item.prop(prop, mi[prop]);
-    }
+    let item = MenuItem.lookupPathSuggested(mi.title, mi.path) || new MenuItem(mi.title, mi.path, mi.target, owner);
+    item.suggestedTitle = mi.title;
+    item.suggestedPath = mi.path;
+    item.suggestedTarget = mi.target;
+    item.suggestedPublic = mi.public;
+    item.suggestedHideWhenSignedIn = mi.hideWhenSignedIn;
+    item.suggestedRole = mi.role;
+    item.suggestedPermission = mi.permission;
   }
 
   for(let mi of MenuItem.allFromOwner(owner)){

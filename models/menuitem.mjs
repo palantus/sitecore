@@ -6,23 +6,34 @@ export default class MenuItem extends Entity {
     if(type == "auto"){
       this.suggestedTitle = title || "Untitled menu item";
       this.suggestedPath = path || "/";
+      this.suggestedTarget = target;
+      this.suggestedPublic = false;
+      this.suggestedHideWhenSignedIn = false;
+      this.suggestedRole = null;
+      this.suggestedPermission = null;
     } else {
       this.userTitle = title || "Untitled menu item";
       this.userPath = path || "/";
+      this.userTarget = target || "/"
+      this.userPublic = false;
+      this.userHideWhenSignedIn = false;
+      this.userRole = null;
+      this.userPermission = null;
     }
     this.type = type || "auto";
     this.enabled = true;
-    this.target = target;
     this.tag("coremainmenuitem");
     this.rel(owner, "owner");
   }
 
-  static lookup(title, path){
-    return query.type(MenuItem).tag("coremainmenuitem").prop("title", title).prop("path", path).first
+  static lookup(id){
+    if(!id) return null;
+    return query.type(MenuItem).tag("coremainmenuitem").id(id).first
   }
 
-  static lookupOrCreate(id){
-    return MenuItem.lookup(id) || new MenuItem(id)
+  static lookupPathSuggested(title, path){
+    if(!title || !path) return null;
+    return query.type(MenuItem).tag("coremainmenuitem").prop("suggestedTitle", title).prop("suggestedPath", path).first
   }
 
   static all(){
@@ -37,18 +48,64 @@ export default class MenuItem extends Entity {
     return query.type(MenuItem).tag("coremainmenuitem").prop("enabled", true).relatedTo(owner, "owner").all
   }
 
+  static resetAll(){
+    for(let mi of MenuItem.all()){
+      if(mi.type == "auto") mi.reset();
+      else mi.delete();
+    }
+  }
+
+  reset(){
+    this.userTitle = null;
+    this.userPath = null;
+    this.userTarget = null;
+    this.userPublic = null;
+    this.userHideWhenSignedIn = null;
+    this.userRole = null;
+    this.userPermission = null;
+    this.hide = false;
+  }
+
   get path(){
-    return this.userPath || this.suggestedPath;
+    return this.userPath ?? this.suggestedPath;
   }
 
   get title(){
-    return this.userTitle || this.suggestedTitle;
+    return this.userTitle ?? this.suggestedTitle;
+  }
+
+  get target(){
+    return this.userTarget ?? this.suggestedTarget;
+  }
+
+  get public(){
+    return this.userPublic ?? this.suggestedPublic ?? false;
+  }
+
+  get hideWhenSignedIn(){
+    return this.userHideWhenSignedIn ?? this.suggestedHideWhenSignedIn ?? false;
+  }
+
+  get role(){
+    return this.userRole ?? this.suggestedRole ?? null;
+  }
+
+  get permission(){
+    return this.userPermission ?? this.suggestedPermission ?? null;
   }
 
   toObj(){
     return {
       id: this._id,
-      title: this.title
+      title: this.title,
+      path: this.path,
+      target: this.target,
+      title: this.title,
+      public:  this.public,
+      hideWhenSignedIn: this.hideWhenSignedIn,
+      role: this.role,
+      permission: this.permission,
+      hide: this.hide ?? false
     }
   }
 }

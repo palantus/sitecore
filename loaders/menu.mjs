@@ -1,12 +1,11 @@
-/*
 import { generateMenu, loadStaticMenuFiles } from "../services/menu.mjs"
 
 export default async () => {
   await loadStaticMenuFiles()
   await generateMenu()
 }
-*/
 
+/*
 import fs from 'fs'
 import path from 'path'
 import {menu as defaultMenu} from "../ui.mjs"
@@ -57,3 +56,4 @@ async function uiExists(basePath){
     return r(true)
   }))
 }
+*/

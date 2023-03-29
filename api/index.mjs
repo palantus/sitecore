@@ -9,6 +9,7 @@ import express from "express"
 import acl from "./routes/acl.mjs"
 import federation from "./routes/federation.mjs"
 import mod from "./routes/mod.mjs"
+import menu from "./routes/menu.mjs"
 import path from 'path';
 const { Router, Request, Response } = express;
 const route = Router();
@@ -33,6 +34,7 @@ export default async (app) => {
   federation(router)
   system(router)
   mod(router)
+  menu(router)
 
   for(let {id : mod} of global.mods){
     if(!(await apiExists(`./mods/${mod}/api`))) {
