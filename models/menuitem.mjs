@@ -1,4 +1,5 @@
 import Entity, {query}  from "entitystorage"
+import Setup from "./setup.mjs";
 
 export default class MenuItem extends Entity {
 
@@ -99,17 +100,21 @@ export default class MenuItem extends Entity {
   }
 
   toObj(){
+    let owner = this.related.owner;
+    let setup = Setup.lookup()
     return {
       id: this._id,
+      type: this.type,
       title: this.title,
       path: this.path,
       target: this.target,
       title: this.title,
+      owner: owner._id != setup._id ? (owner.id||"N/A") : "core",
       public:  this.public,
       hideWhenSignedIn: this.hideWhenSignedIn,
       role: this.role,
       permission: this.permission,
-      hide: this.hide ?? false
+      hide: this.hide ?? false,
     }
   }
 }
