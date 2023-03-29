@@ -13,7 +13,7 @@ export default (app) => {
   app.use("/system/menu", permission("admin"), route)
 
   route.get("/", (req, res) => {
-    res.json(MenuItem.all().map(m => m.toObj()))
+    res.json(MenuItem.allEnabled().map(m => m.toObj()))
   })
 
   route.post("/regen", (req, res) => {

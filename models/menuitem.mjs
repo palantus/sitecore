@@ -40,6 +40,10 @@ export default class MenuItem extends Entity {
     return query.type(MenuItem).tag("coremainmenuitem").all
   }
 
+  static allEnabled(){
+    return query.type(MenuItem).tag("coremainmenuitem").prop("enabled", true).all
+  }
+
   static allFromOwner(owner){
     return query.type(MenuItem).tag("coremainmenuitem").relatedTo(owner, "owner").all
   }
