@@ -21,7 +21,7 @@ export class OpenMenuItem extends Command{
           this.menuItems.push({
             menu: subMenu.title,
             title: item.title,
-            path:  item.path
+            path:  item.target
           })
         }
       }
