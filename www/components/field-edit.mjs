@@ -176,6 +176,7 @@ class Element extends HTMLElement {
         case "text":
         case "password":
         case "date":
+        case "time":
         case "select":
         case "textarea":
           return this.getValueElement().value;
@@ -200,6 +201,7 @@ class Element extends HTMLElement {
         case "text":
         case "password":
         case "date":
+        case "time":
           return this.shadowRoot.querySelector("input")
         case "number":
           return this.shadowRoot.querySelector("input");
@@ -259,6 +261,7 @@ class Element extends HTMLElement {
       case "text":
       case "password":
       case "date":
+      case "time":
       case "number":
         this.shadowRoot.querySelector("input").value = newValue;
         break;
