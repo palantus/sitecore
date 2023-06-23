@@ -117,9 +117,10 @@ class Element extends HTMLElement {
         let permissions = await userPermissions()
         let type = dataTypes.find(t => t.id == lookup && (!t.permission || permissions.includes(t.permission) || permissions.includes("admin")))
         if(type){
+          let value = this.getAttribute("value")
           let options = (await api.get(type.api.path, {cache: true})).map(val => ({id: val[type.api.fields.id], name: val[type.api.fields.name]}))
                                                                     .sort((a, b) => a.name?.toLowerCase() < b.name?.toLowerCase() ? -1 : 1)
-                                                                    .map(({id, name}) => `<option value="${id}">${this.hasAttribute("only-id") ? id : (type.ui.showId || this.hasAttribute("show-id")) ? `${id}: ${name}` : name}</option>`)
+                                                                    .map(({id, name}) => `<option value="${id}" ${id==value?"selected":""}>${this.hasAttribute("only-id") ? id : (type.ui.showId || this.hasAttribute("show-id")) ? `${id}: ${name}` : name}</option>`)
                                                                     .join("");
           if(this.getAttribute("type") == "select"){
             this.shadowRoot.querySelector("select").innerHTML = `<option value=""></option>${options}`
