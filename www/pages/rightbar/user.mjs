@@ -5,6 +5,7 @@ import "/pages/rightbar/rightcard.mjs"
 import "/components/field.mjs"
 import { goto, state } from "/system/core.mjs"
 import { isSignedIn } from "/system/user.mjs"
+import { on, off } from "/system/events.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -41,6 +42,8 @@ class Element extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     
+    this.refreshData = this.refreshData.bind(this);
+
     this.shadowRoot.getElementById("login").addEventListener("click", () => goto("/login"))
     this.shadowRoot.getElementById("logout").addEventListener("click", () => {
       api.post("auth/logout").then(() => {
@@ -60,9 +63,11 @@ class Element extends HTMLElement {
   }
 
   connectedCallback() {
+    on("logged-in", elementName, this.refreshData)
   }
 
   disconnectedCallback() {
+    off("logged-in", elementName)
   }
 
   async refreshData(){
