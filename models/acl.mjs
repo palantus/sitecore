@@ -141,7 +141,13 @@ export default class ACL{
       default:
         result = !!user
     }
-    return !!(result || (user && this.entity.related.owner?.id == user?.id) || Share.hasAccess(this.entity, shareKey, accessTypeCode, this))
+    return    !!result 
+              // If you are owner, you always have access
+           || (!!user && this.entity.related.owner?.id == user?.id) 
+              // If you have access through a share, you have access
+           || Share.hasAccess(this.entity, shareKey, accessTypeCode, this)
+              // If you have w or x access, you also have r access
+           || ((accessTypeCode == "r" || !accessTypeCode) && (this.hasAccess(user, "w", shareKey) || this.hasAccess(user, "x", shareKey)))
   }
 
   validateAccess(res, right, respondIfFalse = true){
