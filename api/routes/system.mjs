@@ -14,6 +14,7 @@ import moment from "moment"
 import CoreSetup from "../../models/setup.mjs"
 import contentDisposition from 'content-disposition'
 import Role from "../../models/role.mjs";
+import { getTimestamp } from "../../tools/date.mjs";
 
 export default (app) => {
 
@@ -208,6 +209,12 @@ export default (app) => {
   route.get('/ip', function (req, res, next) {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
     res.json({ip})
+  });
+
+  route.get('/debug', function (req, res, next) {
+    res.json({
+      timestamp: getTimestamp()
+    })
   });
 
   route.get('/datatypes/:id', function (req, res, next) {
