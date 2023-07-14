@@ -144,7 +144,7 @@ class Element extends HTMLElement {
   connectedCallback() {
     this.shadowRoot.getElementById('ok').addEventListener('click', this.ok);
     this.shadowRoot.getElementById('cancel').addEventListener('click', this.cancel);
-    document.addEventListener("keydown", this.keydown)
+    this.shadowRoot.getElementById("container").addEventListener("keydown", this.keydown)
     this.shadowRoot.getElementById("container").addEventListener("click", this.containerClicked)
 
     if(this.hasAttribute("no-cancel"))
