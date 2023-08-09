@@ -4,7 +4,7 @@ import User from "../models/user.mjs"
 let activeConnections = []
 
 export function getActiveUsers(){
-  return [...new Set(activeConnections.map(c => c.userId))].map(userId => User.lookup(userId))
+  return [...new Set(activeConnections.map(c => c.userId))].map(userId => User.lookup(userId)).filter(u => !!u)
 }
 
 export function sendEvent(userId, eventName, data){
