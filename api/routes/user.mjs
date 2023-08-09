@@ -91,8 +91,9 @@ export default (app) => {
     if (req.body.active !== undefined) {if(req.body.active) user.activate(); else user.deactivate();}
     if (req.body.password !== undefined) user.setPassword(req.body.password || null);
     if(typeof req.body.email === "string") {
-      if(req.body.email && !User.validateEmailAddress(req.body.email)) throw "Invalid email"
-      user.email = req.body.email;
+      let email = req.body.email.trim();
+      if(req.body.email && !User.validateEmailAddress(email)) throw "Invalid email"
+      user.email = email;
     }
 
     res.json(true);
