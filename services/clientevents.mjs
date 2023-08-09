@@ -1,6 +1,11 @@
 import { WebSocketServer } from "ws"
 import service from "./auth.mjs"
+import User from "../models/user.mjs"
 let activeConnections = []
+
+export function getActiveUsers(){
+  return [...new Set(activeConnections.map(c => c.userId))].map(userId => User.lookup(userId))
+}
 
 export function sendEvent(userId, eventName, data){
   activeConnections.forEach(c => {

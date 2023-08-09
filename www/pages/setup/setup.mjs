@@ -144,7 +144,14 @@ class Element extends HTMLElement {
 }
 
 export async function restartServer(){
-  if(!(await (confirmDialog("Restarting the server actually just stops it and it is expected that you have some kind of process manager (like pm2) to start it again automatically. Do you want to continue?", {title: "Restart server"})))) return;
+  let activeUsers = await api.get("system/active-users")
+  if(!(await (confirmDialog(`
+    Restarting the server actually just stops it and it is expected that you have some kind of process manager (like pm2) to start it again automatically. 
+    Do you want to continue? 
+    <br><br> 
+    The following users are active on the site right now: 
+    <ul>${activeUsers.map(u => `<li>${u.name} (${u.id})</li>`).sort().join("")}</ul>`
+    , {title: "Restart server"})))) return;
   
   let toast = new Toast({text: "Successfully forced a system restart. Awaiting resurrection...", showProgress: false, autoClose: 5000})
   toast.pause()

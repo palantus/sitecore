@@ -15,6 +15,7 @@ import CoreSetup from "../../models/setup.mjs"
 import contentDisposition from 'content-disposition'
 import Role from "../../models/role.mjs";
 import { getTimestamp } from "../../tools/date.mjs";
+import { getActiveUsers } from "../../services/clientevents.mjs";
 
 export default (app) => {
 
@@ -144,6 +145,11 @@ export default (app) => {
   route.post("/update", permission("admin"), (req, res) => {
     Setup.lookup().update().then(() => res.json({success: true}))
   })
+
+  route.get("/active-users", permission("admin"), (req, res) => {
+    res.json(getActiveUsers().map(u => u.toObjSimple()))
+  })
+  
 
   // API keys
   const routeAPIKeys = Router();
