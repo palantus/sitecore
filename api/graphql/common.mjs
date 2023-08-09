@@ -25,6 +25,7 @@ export const PageableSearchArgsType = new GraphQLInputObjectType({
       end: { type: GraphQLInt},
       after: { type: GraphQLInt},
       before: { type: GraphQLInt},
-      reverse: { type: GraphQLBoolean}
+      reverse: { type: GraphQLBoolean},
+      sort: { type: GraphQLString}
   }
 });
