@@ -227,21 +227,33 @@ class Element extends HTMLElement {
 
       if(rItem.hide != lItem.hide)
         changes.push({type: "diff", rItem, lItem, field: "hide"})
-
-      if(!(await confirmDialog(`
-        Changed items:
-        <br>
-        <pre>${changes.filter(c => c.type == "diff").map(c => `${c.lItem.path}/${c.lItem.title}: Modified ${c.field}`).join("<br>")}</pre>
-        <br>
-        New items:
-        <br>
-        <pre>${changes.filter(c => c.type == "new").map(c => `${c.rItem.path}/${c.rItem.title} => ${c.rItem.target}`).join("<br>")}</pre>
-        `, "Confirm import"))) return;
-
-      alert("continue")
     }
 
-    console.log(changes)
+    if(!(await confirmDialog(`
+      Changed items:
+      <br>
+      <pre>${changes.filter(c => c.type == "diff").map(c => `${c.lItem.path}/${c.lItem.title}: Modified ${c.field}`).join("<br>")}</pre>
+      <br>
+      New items:
+      <br>
+      <pre>${changes.filter(c => c.type == "new").map(c => `${c.rItem.path}/${c.rItem.title} => ${c.rItem.target}`).join("<br>")}</pre>
+      `, "Confirm import"))) return;
+
+    for(let c of changes){
+      if(c.type == "diff"){
+        let change = {}
+        change[c.field] = c.rItem[c.field]
+        await api.patch(`system/menu/item/${c.lItem.id}`, change)
+      }
+    }
+
+    if(changes.find(c => c.type == "new")){
+      alertDialog("New menu items was skipped as importing these haven't been implemented yet")
+    }
+    
+    new Toast({text: "Import successful. Please re-generate the menu to see the result."})
+
+    this.refreshData();
   }
 
   connectedCallback() {
