@@ -108,10 +108,13 @@ export default {
       }
       fields.usersActive = {
         type: GraphQLList(UserType),
-        description: "Gets all users",
+        description: "Gets all active users. Can be limited by optional args.",
+        args: {
+          role: { type: GraphQLString }
+        },
         resolve: (parent, args, context) => {
           if(!validateAccess(null, context, {permission: "user.read"})) return;
-          return User.active()
+          return args.role ? User.activeByRole(args.role) : User.active()
         }
       }
       fields.user = {
