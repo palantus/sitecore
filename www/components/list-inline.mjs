@@ -149,6 +149,21 @@ class Element extends HTMLElement {
       this.refreshUI()
     })
   }
+
+  static get observedAttributes() {
+    return ["wrap", "disabled"];
+  }  
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    switch(name){
+      case "wrap":
+        this.shadowRoot.getElementById("container").style.whiteSpace = newValue != null ? "initial" : "nowrap"
+        break;
+      case "disabled":
+        this.shadowRoot.getElementById("add").classList.toggle("hidden", newValue != null)
+        break;
+    }
+  }
 }
 
 window.customElements.define(elementName, Element);
