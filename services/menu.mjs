@@ -81,7 +81,7 @@ function loadMenuFile(menu, owner){
 
   for(let mi of MenuItem.allFromOwner(owner)){
     if(mi.type != "auto") continue;
-    let id = `${mi.path}/${mi.title}`;
+    let id = `${mi.suggestedPath}/${mi.title}`;
     mi.enabled = foundIds.has(id);
   }
 }

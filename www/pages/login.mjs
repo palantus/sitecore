@@ -2,6 +2,7 @@ import { alertDialog, showDialog } from "../components/dialog.mjs";
 import api from "../system/api.mjs";
 import {goto, state, apiURL, siteTitle, ready, getApiConfig, mods} from "../system/core.mjs"
 import { refreshStatus } from "../system/user.mjs";
+import Toast from "/components/toast.mjs"
 
 const elementName = 'login-page'
 
@@ -154,6 +155,7 @@ class IndexPage extends HTMLElement {
       show: () => this.shadowRoot.getElementById("reset-id").focus(),
       ok: async (val) => {
         await api.post(`user/${val.id}/reset-password-mail`, val)
+        new Toast({text: "Success! You should receive a new mail in a few moments with a link"})
       },
       validate: (val) => 
           !val.id ? "Please fill out id"
