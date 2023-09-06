@@ -135,7 +135,7 @@ export default (app) => {
 
   route.post("/restart", permission("admin"), (req, res) => {
     res.json({success: true})
-    setTimeout(() => process.exit(1), 500)
+    setTimeout(() => process.exit(0), 500)
   })
 
   route.post("/update-check", permission("admin"), (req, res) => {
