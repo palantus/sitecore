@@ -15,12 +15,10 @@ export default async ({mode, storagePath}) => {
 
   if(!setup.apiHost) {
     setup.apiHost = `localhost:${config(mode).port}`
-    setupToAppend += `\nAPI_HOST=${setup.apiHost}`
   }
 
   if(!setup.siteHost) {
     setup.siteHost = `localhost:${config(mode).port}`
-    setupToAppend += `\nSITE_HOST=${setup.siteHost}`
   }
 
   setup.serverMode = mode
