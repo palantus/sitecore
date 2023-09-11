@@ -38,21 +38,19 @@ export default async ({ app, mode, config }) => {
     
     let setup = Setup.lookup()
     let apiPrefixWithSlash = global.sitecore.apiPrefix ? `/${global.sitecore.apiPrefix}` : "";
-    app.get(`${apiPrefixWithSlash}/clientconfig.mjs`, cors(corsOptions), (req, res) => {
-      res.type('.js')
-         .send(`export default {
-            api: "${global.sitecore.apiURL}",
-            site: "${global.sitecore.siteURL}",
-            secure: ${global.sitecore.isSecure ? "true" : "false"},
-            ws: "${global.sitecore.wsURL}",
-            title: "${setup.siteTitle || "SiteCore"}",
-            mods: ${JSON.stringify(global.mods)},
-            menu: ${JSON.stringify(global.menu)},
-            msSigninEnabled: ${setup.msSigninClientId && setup.msSigninSecret ? "true" : "false"},
-            homePublic: ${setup.homePublic ? `"${setup.homePublic}"` : "null"},
-            homeInternal: ${setup.homeInternal ? `"${setup.homeInternal}"` : "null"},
-          };`)
-         .end()
+    app.get(`${apiPrefixWithSlash}/clientconfig`, cors(corsOptions), (req, res) => {
+      res.json({
+            api: global.sitecore.apiURL,
+            site: global.sitecore.siteURL,
+            secure: global.sitecore.isSecure ? true : false,
+            ws: global.sitecore.wsURL,
+            title: setup.siteTitle || "SiteCore",
+            mods: global.mods,
+            menu: global.menu,
+            msSigninEnabled: setup.msSigninClientId && setup.msSigninSecret ? "true" : "false",
+            homePublic: setup.homePublic || null,
+            homeInternal: setup.homeInternal || null
+          })
     })
     
     app.get(`${apiPrefixWithSlash}/modroutes.mjs`, cors(corsOptions), (req, res) => res.type('.js').send(global.modRoutes).end())

@@ -22,8 +22,7 @@ class SiteCore {
 
     this.setWindowTitle();
 
-    apiConfig = (await import(`${config.api}/clientconfig.mjs`)).default;
-    
+    apiConfig = await (await fetch(`${config.api}/clientconfig`)).json();
     window.localStorage.setItem("SiteTitle", apiConfig.title)
 
     await Promise.all([refreshStatus(), initRouter(), this.loadMods()])
