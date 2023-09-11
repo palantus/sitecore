@@ -124,6 +124,36 @@ export default (app) => {
       res.writeHead(response.status, headers)
       response.body.pipe(res)
     } catch(err) {
+      console.log(`Could not ${req.method} ${path} on ${remote.identifier} for ${res.locals.user.id} from remote ${remote.title}`)
+      console.log(err)
+      res.sendStatus(500)
+    }
+  })
+
+  route.get('/:fed/www/*', async (req, res) => {
+    let path = decodeURI(req.path.split("/").slice(3).join("/")) // Go from eg. "/test/api/me" to "me"
+    let remote = Remote.lookupIdentifier(req.params.fed)
+    if(!remote) {
+      if(Setup.lookup().identifier == req.params.fed) {
+        let redirectUrl = url.format({pathname: `/${path}`, query: req.query});
+        return res.redirect(redirectUrl);
+      } else {
+        return res.sendStatus(404);
+      }
+    }
+    try{
+      let query = req.query;
+      delete query.token;
+      delete query.impersonate;
+      let redirectUrl = url.format({pathname: path, query});
+      let response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useSiteURL: true})
+      let headers = {}
+      if(response.headers?.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
+      if(response.headers?.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
+      if(response.headers?.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
+      res.writeHead(response.status, headers)
+      response.body.pipe(res)
+    } catch(err) {
       console.log(`Could not get ${path} on ${remote.identifier} for ${res.locals.user.id} from remote ${remote.title}`)
       console.log(err)
       res.sendStatus(500)

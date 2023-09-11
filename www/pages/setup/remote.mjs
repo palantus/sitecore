@@ -47,7 +47,8 @@ template.innerHTML = `
 
     <field-list labels-pct="20">
       <field-edit type="text" label="Title" id="title"></field-edit>
-      <field-edit type="text" label="URL" id="url"></field-edit>
+      <field-edit type="text" label="API URL" id="url"></field-edit>
+      <field-edit type="text" label="Site URL" id="siteURL" disabled></field-edit>
       <field-edit type="text" label="API Key" id="apiKey"></field-edit>
       <field-edit type="text" label="Identifier" id="identifier" disabled></field-edit>
     </field-list>
@@ -90,6 +91,7 @@ class Element extends HTMLElement {
 
     this.shadowRoot.getElementById("title").setAttribute("value", remote.title);
     this.shadowRoot.getElementById("url").setAttribute("value", remote.url);
+    this.shadowRoot.getElementById("siteURL").setAttribute("value", remote.siteURL);
     this.shadowRoot.getElementById("apiKey").setAttribute("value", remote.apiKey);
     this.shadowRoot.getElementById("identifier").setAttribute("value", remote.identifier||"< not avaible - please refresh! >");
 

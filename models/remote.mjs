@@ -26,11 +26,11 @@ export default class Remote extends Entity {
     return query.type(Remote).tag("remote").all
   }
 
-  async get(path, {returnRaw = false, user = null, ignoreErrors = false} = {}){
+  async get(path, {returnRaw = false, user = null, ignoreErrors = false, useSiteURL = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res;
     try{
-      res = await fetch(`${this.url}/${path}`, {
+      res = await fetch(`${useSiteURL ? this.siteURL : this.url}/${path}`, {
         headers: this.getHeaders(null, user)
       })
     } catch(err){
@@ -121,6 +121,7 @@ export default class Remote extends Entity {
     try{
       let identity = await this.get("system/identity")
       this.identifier = identity.identifier||null;
+      this.siteURL = identity.site;
       this.identity = JSON.stringify(identity)
       return true;
     } catch(err){
@@ -138,6 +139,7 @@ export default class Remote extends Entity {
       id: this.id,
       title: this.title,
       url: this.url,
+      siteURL: this.siteURL || null,
       apiKey: this.apiKey,
       identifier: this.identifier,
       identity: this.identity

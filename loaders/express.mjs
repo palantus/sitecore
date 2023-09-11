@@ -80,15 +80,13 @@ export default async ({ app, mode, config }) => {
     for(let {id} of global.mods){
       app.use("/", express.static(join(__dirname, `../mods/${id}/www`)))
     }
-    app.get("/wwwconfig.mjs", (req, res) => {
-      res.type('.js')
-         .send(`export default {
-            api: "${global.sitecore.apiURL}",
-            site: "${global.sitecore.siteURL}",
-            secure: ${global.sitecore.isSecure ? "true" : "false"},
-            ws: "${global.sitecore.wsURL}"
-          };`)
-         .end()
+    app.get("/wwwconfig", (req, res) => {
+      res.json({
+            api: global.sitecore.apiURL,
+            site: global.sitecore.siteURL,
+            secure: global.sitecore.isSecure ? true : false,
+            ws: global.sitecore.wsURL
+          })
     })
     app.use("/", express.static(join(__dirname, "../www"), {index: "index.html"}))
     app.use("/", (req, res) => {

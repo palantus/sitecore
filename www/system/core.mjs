@@ -1,7 +1,7 @@
 import lookupRoute, { init as initRouter } from "./router.mjs"
 import { fire, on } from "./events.mjs"
-import config from "/wwwconfig.mjs"
 import { isSignedIn, refreshStatus } from "./user.mjs";
+let config;
 let apiConfig;
 let readyResolve = null;
 export let ready = new Promise(r => {readyResolve = r})
@@ -22,7 +22,8 @@ class SiteCore {
 
     this.setWindowTitle();
 
-    apiConfig = await (await fetch(`${config.api}/clientconfig`)).json();
+    config = await (await fetch(`/wwwconfig`)).json(); // Fetch config from site (static resources/frontend)
+    apiConfig = await (await fetch(`${config.api}/clientconfig`)).json(); // Fetch config from API server
     window.localStorage.setItem("SiteTitle", apiConfig.title)
 
     await Promise.all([refreshStatus(), initRouter(), this.loadMods()])
