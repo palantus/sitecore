@@ -1,23 +1,46 @@
 import { WebSocketServer } from "ws"
 import service from "./auth.mjs"
 import User from "../models/user.mjs"
+import APIKey from "../models/apikey.mjs"
 let activeConnections = []
 
 export function getActiveUsers(){
   return [...new Set(activeConnections.map(c => c.userId))].map(userId => User.lookup(userId)).filter(u => !!u)
 }
 
-export function sendEvent(userId, eventName, data){
+export function sendEvent(userId, eventName, data, remoteId = null){
   activeConnections.forEach(c => {
-    if(c.userId != userId && userId) return;
-    c.send(JSON.stringify({type: "event", content: {name: eventName, data}}))
+    if(c.federation && userId.endsWith(`@${c.federationIdentifier}`)){
+      c.send(JSON.stringify({
+        type: "forward",
+        recipient: userId.split("@")[0], 
+        content:{
+          type: "event", 
+          content: {name: eventName, data}
+        }
+      }))
+    } else {
+      if(userId && c.userId != userId) return;
+      c.send(JSON.stringify({type: "event", remoteId, content: {name: eventName, data}}))
+    }
   })
 }
 
-export function sendMessage(userId, message, args){
+export function sendMessage(userId, message, args, remoteId = null){
   activeConnections.forEach(c => {
-    if(c.userId != userId && userId) return;
-    c.send(JSON.stringify({type: "message", content: {message, args}}))
+    if(c.federation && userId.endsWith(`@${c.federationIdentifier}`)){
+      c.send(JSON.stringify({
+        type: "forward",
+        recipient: userId.split("@")[0], 
+        content:{
+          type: "message", 
+          content: {message, args}
+        }
+      }))
+    } else {
+      if(userId && c.userId) return;
+      c.send(JSON.stringify({type: "message", remoteId, content: {message, args}}))
+    }
   })
 }
 
@@ -37,6 +60,13 @@ async function handleClientRequest(messageText, ws){
 
       if(userInfo?.user?.id){
         ws.userId = userInfo.user.id
+
+        let key = APIKey.lookupKey(token)
+        if(key && key.federation){
+          ws.federation = true;
+          ws.federationIdentifier = key.identifier;
+        }
+
         ws.send(JSON.stringify({type: "status", content: {status: "loggedin"}}))
       } else {
         ws.send(JSON.stringify({type: "error", content: userInfo?.reponse || "Could not log you in"}))

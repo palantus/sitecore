@@ -1,5 +1,5 @@
 import api from "./api.mjs"
-import {wsURL} from "./core.mjs"
+import {getRemoteId, wsURL} from "./core.mjs"
 let handlers = {}
 
 export function onMessage(eventName, id, fn){
@@ -43,6 +43,7 @@ class MessageServer{
     // Listen for messages
     this.socket.addEventListener('message', (event) => {
       let msg = JSON.parse(event.data)
+      if(msg.remoteId && msg.remoteId != getRemoteId()) return; 
       switch(msg.type){
         case "status":
           if(msg.content.status == "loggedin"){
