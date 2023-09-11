@@ -26,12 +26,12 @@ export default class Remote extends Entity {
     return query.type(Remote).tag("remote").all
   }
 
-  async get(path, {returnRaw = false, user = null, ignoreErrors = false, useSiteURL = false} = {}){
+  async get(path, {returnRaw = false, user = null, ignoreErrors = false, useSiteURL = false, useGuest = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res;
     try{
       res = await fetch(`${useSiteURL ? this.siteURL : this.url}/${path}`, {
-        headers: this.getHeaders(null, user)
+        headers: this.getHeaders(null, user, useGuest)
       })
     } catch(err){
       throw err
@@ -43,26 +43,26 @@ export default class Remote extends Entity {
     return returnRaw ? res : res.json()
   }
   
-  async del(path, {returnRaw = false, user = null} = {}){
+  async del(path, {returnRaw = false, user = null, useGuest = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res = await fetch(`${this.url}/${path}`, {
       method: "DELETE",
-      headers: this.getHeaders(null, user)
+      headers: this.getHeaders(null, user, useGuest)
     })
     return returnRaw ? res : res.json()
   }
   
-  async post(path, body, {returnRaw = false, contentType = null, user = null, isRawBody = false} = {}){
+  async post(path, body, {returnRaw = false, contentType = null, user = null, isRawBody = false, useGuest = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res = await fetch(`${this.url}/${path}`, {
       method: "POST",
-      headers: this.getHeaders(contentType||"application/json", user),
+      headers: this.getHeaders(contentType||"application/json", user, useGuest),
       body: isRawBody ? body : JSON.stringify(body)
     })
     return returnRaw ? res : res.json()
   }
   
-  async upload(path, buffer, filename, {returnRaw = false, user = null, contentType = null} = {}){
+  async upload(path, buffer, filename, {returnRaw = false, user = null, contentType = null, useGuest = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
 
     const formData = new FormData()
@@ -71,23 +71,23 @@ export default class Remote extends Entity {
 
     let res = await fetch(`${this.url}/${path}`, {
       method: "POST",
-      headers: this.getHeaders(null, user),
+      headers: this.getHeaders(null, user, useGuest),
       body: formData
     })
     return returnRaw ? res : res.json()
   }
   
-  async patch(path, body, {returnRaw = false, user = null} = {}){
+  async patch(path, body, {returnRaw = false, user = null, useGuest = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res =await fetch(`${this.url}/${path}`, {
       method: "PATCH",
-      headers: this.getHeaders("application/json", user),
+      headers: this.getHeaders("application/json", user, useGuest),
       body: JSON.stringify(body)
     })
     return returnRaw ? res : res.json()
   }
   
-  async query(query, variables, {user = null} = {}){
+  async query(query, variables, {user = null, useGuest = false} = {}){
     let res = await this.post(`graphql`, {query, variables, user})
     return res.data || res
   }
@@ -110,10 +110,11 @@ export default class Remote extends Entity {
     }
   }
 
-  getHeaders(contentType = null, user = null){
-    let ret = {'Authorization': 'Bearer ' + this.apiKey}
+  getHeaders(contentType = null, user = null, useGuest = false){
+    let ret = {}
+    if(!useGuest) ret['Authorization'] = 'Bearer ' + this.apiKey
     if(contentType) ret['Content-Type'] = contentType
-    if(user) ret['X-SiteCore-Federate'] = `${user.id}@${Setup.lookup().identifier};${user.name}`
+    if(user && !useGuest) ret['X-SiteCore-Federate'] = `${user.id}@${Setup.lookup().identifier};${user.name}`
     return ret;
   }
 

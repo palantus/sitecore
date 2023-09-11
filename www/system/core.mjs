@@ -4,6 +4,7 @@ import { isSignedIn, refreshStatus } from "./user.mjs";
 let config;
 let apiConfig;
 let readyResolve = null;
+let remoteId = null;
 export let ready = new Promise(r => {readyResolve = r})
 
 class SiteCore {
@@ -12,8 +13,10 @@ class SiteCore {
 
     let queryArgs = Object.fromEntries(new URLSearchParams(window.location.search).entries())
 
+    remoteId = window.location.pathname.startsWith("/_") ? window.location.pathname.split("/")[1].substring(1) : null
+
     this.state = {
-      path: window.location.pathname,
+      path: remoteId ? "/" + window.location.pathname.split("/").slice(2).join("/") : window.location.pathname,
       query: queryArgs,
       impersonate: queryArgs.impersonate || null,
       mobile: queryArgs.mobile ? true : false,
@@ -23,13 +26,19 @@ class SiteCore {
     this.setWindowTitle();
 
     config = await (await fetch(`/wwwconfig`)).json(); // Fetch config from site (static resources/frontend)
+
+    if(window.location.pathname.startsWith("/_")){
+      config.api = `${config.api}/federation/${remoteId}/api`;
+      config.site = `${config.site}/_${remoteId}`;
+    }
+
     apiConfig = await (await fetch(`${config.api}/clientconfig`)).json(); // Fetch config from API server
     window.localStorage.setItem("SiteTitle", apiConfig.title)
 
     await Promise.all([refreshStatus(), initRouter(), this.loadMods()])
     readyResolve();
 
-    window.history.replaceState(this.state, null, this.state.path + window.location.search);
+    window.history.replaceState(this.state, null, (remoteId ? `/_${remoteId}${this.state.path}` : this.state.path) + window.location.search);
 
     this.render().then(successful => {
       if(!successful) return;
@@ -132,14 +141,18 @@ class SiteCore {
 
     if (Object.entries(query).length > 0) {
       let q = Object.entries(query).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&")
-      if(replace) window.history.replaceState(this.state, null, `${this.state.path}?${q}`);
-      else window.history.pushState(this.state, null, `${this.state.path}?${q}`);
+      if(replace) window.history.replaceState(this.state, null, `${this.getBrowserUrl()}?${q}`);
+      else window.history.pushState(this.state, null, `${this.getBrowserUrl()}?${q}`);
     } else {
-      if(replace) window.history.replaceState(this.state, null, this.state.path);
-      else window.history.pushState(this.state, null, this.state.path);
+      if(replace) window.history.replaceState(this.state, null, this.getBrowserUrl());
+      else window.history.pushState(this.state, null, this.getBrowserUrl());
     }
 
     fire("state-changed", this.state)
+  }
+
+  getBrowserUrl(){
+    return window.location.pathname.startsWith("/_") ? `/_${window.location.pathname.split("/")[1].substring(1)}${this.state.path}` : this.state.path
   }
 
   async render(forceRefresh) {
@@ -229,4 +242,5 @@ export function menu(){return apiConfig.menu}
 export function getApiConfig(){return apiConfig}
 export function setPageTitle(title){sc.state.title = title; sc.setWindowTitle()}
 export function pageElement(){return sc.pages[sc.state.path]}
+export function getRemoteId(){return remoteId} // Id for a remote (federation) to use for site and API. Used for subs in particular.
 export { sc }

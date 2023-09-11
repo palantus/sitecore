@@ -5,6 +5,7 @@ import Remote from "../../models/remote.mjs"
 import Setup from "../../models/setup.mjs";
 import APIKey from "../../models/apikey.mjs";
 import url from "url"
+import User from "../../models/user.mjs";
 
 export default (app) => {
 
@@ -84,7 +85,7 @@ export default (app) => {
     res.json(true);
   });
 
-  route.all('/:fed/api/*', noGuest, permission("user.federate"), async (req, res) => {
+  route.all('/:fed/api/*', async (req, res) => {
     let path = decodeURI(req.path.split("/").slice(3).join("/")) // Go from eg. "/test/api/me" to "me"
     let remote = Remote.lookupIdentifier(req.params.fed)
     if(!remote) {
@@ -101,18 +102,19 @@ export default (app) => {
       delete query.impersonate;
       let redirectUrl = url.format({pathname: path, query});
       let response;
+      let useGuest = res.locals.user.id == "guest" || !res.locals.user.hasPermission("user.federate")
       switch(req.method){
         case "GET":
-          response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
           break;
         case "DELETE":
-          response = await remote.del(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          response = await remote.del(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
           break;
         case "POST":
-          response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
           break;
         case "PATCH":
-          response = await remote.patch(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true})
+          response = await remote.patch(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
           break;
         default:
           return res.sendStatus(404);
@@ -146,7 +148,7 @@ export default (app) => {
       delete query.token;
       delete query.impersonate;
       let redirectUrl = url.format({pathname: path, query});
-      let response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useSiteURL: true})
+      let response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useSiteURL: true, useGuest: true})
       let headers = {}
       if(response.headers?.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
       if(response.headers?.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");

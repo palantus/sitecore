@@ -7,6 +7,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
 import Setup from '../models/setup.mjs';
+import Remote from '../models/remote.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -40,10 +41,6 @@ export default async ({ app, mode, config }) => {
     let apiPrefixWithSlash = global.sitecore.apiPrefix ? `/${global.sitecore.apiPrefix}` : "";
     app.get(`${apiPrefixWithSlash}/clientconfig`, cors(corsOptions), (req, res) => {
       res.json({
-            api: global.sitecore.apiURL,
-            site: global.sitecore.siteURL,
-            secure: global.sitecore.isSecure ? true : false,
-            ws: global.sitecore.wsURL,
             title: setup.siteTitle || "SiteCore",
             mods: global.mods,
             menu: global.menu,
@@ -86,6 +83,15 @@ export default async ({ app, mode, config }) => {
             site: global.sitecore.siteURL,
             secure: global.sitecore.isSecure ? true : false,
             ws: global.sitecore.wsURL
+          })
+    })
+    app.get("/_:remote/wwwconfig", (req, res) => {
+      if(!Remote.lookupIdentifier(req.params.remote)) return res.sendStatus(404);
+      res.json({
+            api: `${global.sitecore.apiURL}/federation/${req.params.remote}/api`,
+            site: `${global.sitecore.siteURL}/_${req.params.remote}`,
+            secure: global.sitecore.isSecure ? true : false,
+            ws: `${global.sitecore.apiURL}/federation/${req.params.remote}/api`
           })
     })
     app.use("/", express.static(join(__dirname, "../www"), {index: "index.html"}))
