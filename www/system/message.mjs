@@ -43,7 +43,8 @@ class MessageServer{
     // Listen for messages
     this.socket.addEventListener('message', (event) => {
       let msg = JSON.parse(event.data)
-      if(msg.remoteId && msg.remoteId != getRemoteId()) return; 
+      let remoteId = getRemoteId()
+      if(msg.remoteId != remoteId && (remoteId || msg.remoteId)) return; 
       switch(msg.type){
         case "status":
           if(msg.content.status == "loggedin"){
