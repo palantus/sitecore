@@ -198,7 +198,9 @@ export default (app) => {
     if (!req.body.name || !req.body.key || !req.body.userId) throw "name, key and userId are mandatory"
     let user = User.lookup(req.body.userId)
     if (!user) throw `User ${req.body.userId} doesn't exist`
-    new APIKey(req.body.name, req.body.key, user, req.body.daily)
+    let key = new APIKey(req.body.name, req.body.key, user, req.body.daily)
+    if(typeof req.body.federation === "boolean") key.federation = req.body.federation;
+    if(typeof req.body.identifier === "string" || req.body.identifier === null) key.identifier = req.body.identifier||null;
     res.json({ success: true })
   })
 
