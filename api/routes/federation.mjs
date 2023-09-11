@@ -85,7 +85,7 @@ export default (app) => {
   });
 
   route.all('/:fed/api/*', noGuest, permission("user.federate"), async (req, res) => {
-    let path = decodeURI(req.path.substring(5)).split("/").slice(1).join("/")
+    let path = decodeURI(req.path.split("/").slice(3).join("/")) // Go from eg. "/test/api/me" to "me"
     let remote = Remote.lookupIdentifier(req.params.fed)
     if(!remote) {
       if(Setup.lookup().identifier == req.params.fed) {

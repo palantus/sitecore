@@ -39,6 +39,7 @@ template.innerHTML = `
 
   <action-bar>
     <action-bar-item id="test">Test connection</action-bar-item>
+    <action-bar-item id="test-fed" class="hidden">Test federation</action-bar-item>
   </action-bar>
 
   <div id="container">
@@ -71,10 +72,12 @@ class Element extends HTMLElement {
 
     this.refreshData = this.refreshData.bind(this)
     this.testConn = this.testConn.bind(this)
+    this.testFed = this.testFed.bind(this)
     
     this.remoteId = /\/federation\/remote\/([\d]+)/.exec(state().path)[1]
 
     this.shadowRoot.getElementById("test").addEventListener("click", this.testConn)
+    this.shadowRoot.getElementById("test-fed").addEventListener("click", this.testFed)
     this.shadowRoot.getElementById("refresh").addEventListener("click", () => api.post(`federation/remote/${this.remoteId}/refresh`).then(this.refreshData))
 
     this.elementId = `${elementName}-${this.userId}`
@@ -91,6 +94,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("identifier").setAttribute("value", remote.identifier||"< not avaible - please refresh! >");
 
     this.shadowRoot.getElementById("identity").innerText = remote.identity ? JSON.stringify(JSON.parse(remote.identity), null, 4) : "Not available - please refresh!";
+    this.shadowRoot.getElementById("test-fed").classList.toggle("hidden", !remote.identifier)
 
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `federation/remote/${remote.id}`));
   }
@@ -99,6 +103,12 @@ class Element extends HTMLElement {
     let result = await api.post(`federation/remote/${this.remoteId}/test`)
     if(!result || !result.success) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result.error)}`)
     else alertDialog(`Successfully logged in as user ${result.userId} (${result.name})`)
+  }
+
+  async testFed(){
+    let result = await api.get(`federation/${this.remote.identifier}/api/me`)
+    if(!result || !result.id) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result?.error||result)}`)
+    else alertDialog(`Successfully logged in as user ${result.id} (${result.name})`)
   }
 
   connectedCallback() {
