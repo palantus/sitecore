@@ -71,12 +71,14 @@ class Service {
   }
 
   async tokenToUser(token, impersonate = null, federateUser = null){
+    let authMethod = {type: null}
     let user = null;
     
     if(!user){
       let userId = userService.authTokenToUserId(token)
       if (userId) {
         user = this.lookupUser(userId)
+        authMethod.type = "temp-token"
       }
     }
 
@@ -84,11 +86,14 @@ class Service {
       let apiKey = APIKey.tokenToKey(token)
       if (apiKey) {
         user = apiKey.getUser(federateUser);
+        authMethod.type = "api-key"
+        authMethod.apiKey = apiKey
       }
     }
 
     if (!user) {
       user = lookupUserFromJWT(token)
+      authMethod.type = "jwt-cache"
     }
 
     if(!user){
@@ -102,6 +107,7 @@ class Service {
       if(!potentialUser.user)
         return potentialUser
       user = potentialUser.user
+      authMethod.type = "jwt"
     }
 
     if (!user) {
@@ -113,13 +119,14 @@ class Service {
       if(!user){
         return {user: null, responseCode: 404, response: { error: `The user to impersonate doesn't exist`, redirectTo: global.sitecore.loginURL }}
       }
+      authMethod.impersonate = user.id;
     }
     
     if(!user.active){
       return {user: null, responseCode: 401, response: { error: `The user ${user.id} is deactivated`, redirectTo: global.sitecore.loginURL }}
     }
 
-    return {user, responseCode: null, response: null};
+    return {user, responseCode: null, response: null, authMethod};
   }
 
   getAdmin(){
