@@ -37,8 +37,8 @@ export default class Remote extends Entity {
       throw err
     }
     if(!ignoreErrors && res.status !== 200){
-      this.log(`Received status ${res.status} on request to remote for ${path}`)
-      throw `Received status ${res.status} on request to remote for ${path}`
+      this.log(`Received status ${res.status} (${res.statusText}) on GET to remote  ${this.title} for ${path}`)
+      throw `Received status ${res.status} (${res.statusText}) on GET to remote ${this.title}  for ${path}`
     }
     return returnRaw ? res : res.json()
   }
@@ -52,13 +52,22 @@ export default class Remote extends Entity {
     return returnRaw ? res : res.json()
   }
   
-  async post(path, body, {returnRaw = false, contentType = null, user = null, isRawBody = false, useGuest = false} = {}){
+  async post(path, body, {returnRaw = false, contentType = null, user = null, isRawBody = false, useGuest = false} = {}, ignoreErrors = false){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
-    let res = await fetch(`${this.url}/${path}`, {
-      method: "POST",
-      headers: this.getHeaders(contentType||"application/json", user, useGuest),
-      body: isRawBody ? body : JSON.stringify(body)
-    })
+    let res;
+    try{
+      res = await fetch(`${this.url}/${path}`, {
+        method: "POST",
+        headers: this.getHeaders(contentType||"application/json", user, useGuest),
+        body: isRawBody ? body : JSON.stringify(body)
+      })
+    } catch(err){
+      throw err
+    }
+    if(!ignoreErrors && res.status !== 200){
+      this.log(`Received status ${res.status} (${res.statusText}) on POST to remote ${this.title} for ${path}`)
+      throw `Received status ${res.status} (${res.statusText}) on POST to remote ${this.title}  for ${path}`
+    }
     return returnRaw ? res : res.json()
   }
   
