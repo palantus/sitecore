@@ -27,6 +27,16 @@ export default async (app) => {
   }
 
   auth(router);
+  
+  for(let {id : mod} of global.mods){
+    try{
+      if(!!(await fs.promises.stat(`./mods/${mod}/api/post-auth.mjs`).catch(e => false))){
+        let handler = (await import(`../mods/${mod}/api/post-auth.mjs`)).default;
+        handler(router, app)
+      }
+    } catch(err){}
+  }
+
   acl(router)
   user(router);
   notifications(router);
