@@ -78,7 +78,7 @@ class Service {
       let userId = userService.authTokenToUserId(token)
       if (userId) {
         user = this.lookupUser(userId)
-        authMethod.type = "temp-token"
+        authMethod.type = "temptoken"
       }
     }
 
@@ -86,14 +86,18 @@ class Service {
       let apiKey = APIKey.tokenToKey(token)
       if (apiKey) {
         user = apiKey.getUser(federateUser);
-        authMethod.type = "api-key"
-        authMethod.apiKey = apiKey
+        if(user){
+          authMethod.type = "apikey"
+          authMethod.apiKey = apiKey
+        }
       }
     }
 
     if (!user) {
       user = lookupUserFromJWT(token)
-      authMethod.type = "jwt-cache"
+      if(user){
+        authMethod.type = "jwt-cache"
+      }
     }
 
     if(!user){
@@ -107,7 +111,9 @@ class Service {
       if(!potentialUser.user)
         return potentialUser
       user = potentialUser.user
-      authMethod.type = "jwt"
+      if(user){
+        authMethod.type = "jwt"
+      }
     }
 
     if (!user) {
