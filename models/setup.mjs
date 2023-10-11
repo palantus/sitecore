@@ -19,6 +19,7 @@ export default class Setup extends Entity {
     if(typeof obj.siteTitle === "string") this.siteTitle = obj.siteTitle
     if(typeof obj.homePublic === "string") this.homePublic = obj.homePublic
     if(typeof obj.homeInternal === "string") this.homeInternal = obj.homeInternal
+    if(typeof obj.identifier === "string" || obj.identifier === null) this.identifier = obj.identifier
     if(typeof obj.msSigninClientId === "string") this.msSigninClientId = obj.msSigninClientId
     if(typeof obj.msSigninSecret === "string") this.msSigninSecret = obj.msSigninSecret
     if(typeof obj.msSigninTenant === "string") this.msSigninTenant = obj.msSigninTenant
@@ -86,6 +87,7 @@ export default class Setup extends Entity {
       siteTitle: this.siteTitle||null,
       homePublic: this.homePublic||null,
       homeInternal: this.homeInternal||null,
+      identifier: this.identifier||null,
       msSigninClientId: this.msSigninClientId||null,
       msSigninSecretSet: !!this.msSigninSecret||null,
       msSigninTenant: this.msSigninTenant||null,
