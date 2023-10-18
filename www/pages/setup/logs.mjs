@@ -21,10 +21,11 @@ template.innerHTML = `
     }
 
     table thead th:nth-child(1){min-width: 150px !important;}
+    table thead th:nth-child(2){min-width: 120px !important;}
   </style>  
 
   <div id="container">
-    <label for="logselect">Log: </label>
+    <label for="logselect">Area: </label>
     <select id="logselect" value="vsts-work-items">
     </select>
     <br><br>
@@ -33,6 +34,7 @@ template.innerHTML = `
         <thead>
             <tr>
               <th>Timestamp</th>
+              <th>Area</th>
               <th>Text</th>
             </tr>
         </thead>
@@ -52,7 +54,7 @@ class Element extends HTMLElement {
     this.refreshData = this.refreshData.bind(this);
 
     api.get("system/logareas").then(areas => {
-      this.shadowRoot.getElementById("logselect").innerHTML = areas.map(e => `<option value="${e.id}">${e.id}</option>`).join("")
+      this.shadowRoot.getElementById("logselect").innerHTML = `<option value=""></option>` + areas.map(e => `<option value="${e.id}">${e.id}</option>`).join("")
 
       this.shadowRoot.getElementById("logselect").value = state().query.area || ""
 
@@ -65,7 +67,7 @@ class Element extends HTMLElement {
   }
   async refreshData(){
     let data = await api.get(`system/log/${this.shadowRoot.getElementById("logselect").value||""}`)
-    this.shadowRoot.getElementById("log").innerHTML = data.map(e => `<tr><td>${e.timestamp?.substr(0, 19).replace("T", " ")||"N/A"}</td><td>${e.text || "N/A"}</td></tr>`).join("")
+    this.shadowRoot.getElementById("log").innerHTML = data.map(e => `<tr><td>${e.timestamp?.substr(0, 19).replace("T", " ")||"N/A"}</td><td>${e.area?.id || "N/A"}</td><td>${e.text || "N/A"}</td></tr>`).join("")
   }
 
   connectedCallback() {
