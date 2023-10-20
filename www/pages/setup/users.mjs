@@ -29,7 +29,7 @@ template.innerHTML = `
     }
 
     table thead th:nth-child(1){width: 100px}
-    table thead th:nth-child(2){width: 150px}
+    table thead th:nth-child(2){width: 200px}
     table thead th:nth-child(3){width: 250px}
   </style>  
 
@@ -123,7 +123,7 @@ class Element extends HTMLElement {
             <tr>
                 <td><field-ref ref="/setup/users/${user.id}"/>${user.id}</field-ref></td>
                 <td>${user.name}</td>
-                <td>${user.roles.sort((a, b) => a < b ? -1 : 1).map(r => `<field-ref ref="/setup/role/${r}">${r}</field-ref>`).join("- ")}</td>
+                <td>${user.roles.sort((a, b) => a < b ? -1 : 1).map(r => `<field-ref ref="/setup/role/${r}">${r}</field-ref>`).join(" &#183; ")}</td>
                 <td>${user.msUsers.map(u => u.email).join(", ")}</td>
             </tr>
         `
