@@ -37,7 +37,7 @@ class Element extends HTMLElement {
     this.permClick = this.permClick.bind(this)
     this.refreshData = this.refreshData.bind(this)
     
-    this.roleId = /\/setup\/role\/([a-z0-9\_\-]+)/.exec(state().path)[1]
+    this.roleId = /\/setup\/role\/([a-zA-Z0-9\_\-]+)/.exec(state().path)[1]
     this.refreshData();
     this.shadowRoot.getElementById("permissions").addEventListener("change", this.permClick)
   }
