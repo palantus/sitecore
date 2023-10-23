@@ -131,7 +131,7 @@ class Element extends HTMLElement {
       }
       clickedE.closest(".item").remove()
       this.dispatchEvent(new CustomEvent("value-changed", {bubbles: false, cancelable: false}));
-    } else if(typeof this._setup.click === "function" && clickedE.matches(".item .content *")){
+    } else if(typeof this._setup.click === "function" && item){
       this._setup.click(item, this, this._setup)
     }
   }
