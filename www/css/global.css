@@ -135,3 +135,16 @@ button.styled[disabled]{
 span.highlight{
   color: var(--accent-color-light);
 }
+
+span.popup-button{
+  cursor: pointer;
+  font-size: 150%;
+  padding: 7px;
+  padding-right: 0px;
+}
+span.popup-button:hover{
+  color: var(--contrast-color-muted);
+}
+span.popup-button:focus{
+  outline: 0;
+}

@@ -56,28 +56,17 @@ template.innerHTML = `
     }
     #buttons{
       text-align: right;
-      position: absolute;
-      top: 10px;
-      right: 10px;
+      margin-left: auto;
+      padding-right: 5px;
+      padding-left: 5px;
     }
-    #buttons span{
-      cursor: pointer;
-      font-size: 150%;
-      padding: 7px;
-    }
-    #buttons span:hover{
-      color: var(--contrast-color-muted);
-    }
-    #buttons span:focus{
-      outline: 0;
-    }
-    #title{
-      border-bottom: 1px solid gray;
+    #topbar{
+      display: flex;border-bottom: 1px solid gray;
       margin-top: 0px;
-      padding-bottom: 10px;
+      margin-bottom: 10px;
       user-select: none;
-      padding-right: 37px;
     }
+
     :host, :host(popup-component:not(.open)){
       pointer-events: none;
     }
@@ -118,12 +107,15 @@ template.innerHTML = `
   </style>
   <div id="container">
     <div id="dialog">
-      <h2 id="title"></h2>
+      <div id="topbar">
+        <h2 id="title"></h2>
+        <div id="buttons">
+          <slot name="buttons"></slot>
+          <span id="close" class="popup-button" title="Close popup" tabindex="0">&#x2715;</span>
+        </div>
+      </div>
       <div id="slot-container">
         <slot></slot>
-      </div>
-      <div id="buttons">
-        <span id="close" title="Close popup" tabindex="0">&#x2715;</span>
       </div>
     </div>
   </div>
@@ -166,12 +158,6 @@ class Element extends HTMLElement {
     switch(evt.keyCode){
       case 27: //esc
         this.shadowRoot.getElementById("close").click();
-        break;
-
-      case 13: //enter
-        let target = evt.target || evt.srcElement || evt.originalTarget;
-        if(target?.tagName != "TEXTAREA" || target?.hasAttribute("dialog-no-enter"))
-          this.shadowRoot.getElementById("close").click();
         break;
     }
   }
