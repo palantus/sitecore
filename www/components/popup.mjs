@@ -76,6 +76,7 @@ template.innerHTML = `
       margin-top: 0px;
       padding-bottom: 10px;
       user-select: none;
+      padding-right: 37px;
     }
     :host, :host(popup-component:not(.open)){
       pointer-events: none;
