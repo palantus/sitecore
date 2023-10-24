@@ -205,9 +205,10 @@ class Element extends HTMLElement {
   }  
 }
 
-export function showDialog(dialog, {ok, cancel, show, validate, values, close} = {}){
+export function showDialog(dialog, {ok, cancel, show, validate, values, close, title} = {}){
   dialog.classList.add("open");
   dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
+  if(title) dialog.shadowRoot.getElementById("title").innerText = title
 
   if(typeof show === "function"){
     try{
