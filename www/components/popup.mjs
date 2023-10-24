@@ -118,7 +118,7 @@ template.innerHTML = `
   </style>
   <div id="container">
     <div id="dialog">
-      <h1 id="title"></h1>
+      <h2 id="title"></h2>
       <div id="slot-container">
         <slot></slot>
       </div>
