@@ -205,14 +205,15 @@ class Element extends HTMLElement {
   }  
 }
 
-export function showDialog(dialog, {ok, cancel, show, validate, values, close, title} = {}){
+export function showDialog(dialog, {ok, cancel, show, validate, values, close, title, data} = {}){
   dialog.classList.add("open");
   dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
   if(title) dialog.shadowRoot.getElementById("title").innerText = title
+  dialog.data = data || {}
 
   if(typeof show === "function"){
     try{
-      show();
+      show(dialog);
     } catch(err){
       console.log(err)
       dialog.setAttribute("validationerror", "Encountered an error showing the dialog. Contact admin.")
@@ -227,7 +228,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close, t
     
     if(typeof close === "function"){
       try{
-        close(typeof values === "function" ? values() : {})
+        close(typeof values === "function" ? values(dialog) : {}, dialog)
       } catch(err){
         console.log(err)
       }
@@ -236,7 +237,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close, t
 
   let okClicked = async e => {
     dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", true)
-    let val = typeof values === "function" ? values() : {}
+    let val = typeof values === "function" ? values(dialog) : {}
 
     if(typeof validate === "function"){
       dialog.removeAttribute("validationerror")
@@ -261,7 +262,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close, t
     }
     if(typeof ok === "function"){
       try{
-        await ok(val, e)
+        await ok(val, e, dialog)
       } catch(err){
         dialog.setAttribute("validationerror", err||"Some error occured. Expect that it didn't work.")
         dialog.shadowRoot.getElementById('ok').toggleAttribute("disabled", false)
@@ -272,7 +273,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close, t
   }
 
   let cancelClicked = () => {
-    let val = typeof values === "function" ? values() : {}
+    let val = typeof values === "function" ? values(dialog) : {}
     if(typeof cancel === "function"){
       try{
         cancel(val)

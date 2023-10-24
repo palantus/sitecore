@@ -91,6 +91,8 @@ class Element extends HTMLElement {
       this.shadowRoot.querySelector("textarea").setAttribute("rows", this.getAttribute("rows"))
     if(this.hasAttribute("cols"))
       this.shadowRoot.querySelector("textarea").setAttribute("cols", this.getAttribute("cols"))
+    if(this.hasAttribute("maxlength"))
+      this.shadowRoot.querySelector("input").setAttribute("maxlength", this.getAttribute("maxlength"))
 
     this.addEventListener("focus", this.focus)
   }
