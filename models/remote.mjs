@@ -26,6 +26,16 @@ export default class Remote extends Entity {
     return query.type(Remote).tag("remote").all
   }
 
+  static allWithMod(mod){
+    return query.type(Remote).tag("remote").all.filter(remote => {
+      if(!remote.identity) return false;
+      try{
+        return JSON.parse(remote.identity).mods.includes(mod)
+      } catch(err){}
+      return false;
+    })
+  }
+
   async get(path, {returnRaw = false, user = null, ignoreErrors = false, useSiteURL = false, useGuest = false} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
     let res;
