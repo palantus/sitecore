@@ -177,7 +177,7 @@ class SiteCore {
       if(!route)
         elementName = (await import("../pages/404.mjs")).name
       else if(path == "/login" || route.publicAccess === true || isSignedIn())
-        elementName = (await import(route.page)).name
+        elementName = (await import(route.path.startsWith("/") ? `../${route.page}` : route.page)).name
       else {
         this.renderPromise = null;
         resolve()
