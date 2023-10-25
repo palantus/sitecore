@@ -1,6 +1,6 @@
 let elementName = "field-ref"
 
-import {goto} from "../../system/core.mjs"
+import {goto} from "../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
