@@ -1,7 +1,7 @@
 let elementName = "field-edit"
 
-import api from "/system/api.mjs"
-import {userPermissions} from "/system/user.mjs"
+import api from "../system/api.mjs"
+import {userPermissions} from "../system/user.mjs"
 import { fire } from "../system/events.mjs";
 
 const template = document.createElement('template');

@@ -1,10 +1,5 @@
 const elementName = 'rightbar-card-component'
 
-import api from "/system/api.mjs"
-import "/components/field-ref.mjs"
-import "/components/field.mjs"
-import {on, off} from "/system/events.mjs"
-
 const template = document.createElement('template');
 template.innerHTML = `
   <style>

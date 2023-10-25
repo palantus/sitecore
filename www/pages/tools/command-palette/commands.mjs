@@ -1,4 +1,4 @@
-import {mods} from "/system/core.mjs"
+import {mods} from "../../../system/core.mjs"
 
 let commands = []
 let commandsPromise = null;

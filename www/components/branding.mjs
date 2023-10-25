@@ -1,7 +1,7 @@
 const elementName = 'branding-component'
 
-import {goto, siteTitle, ready} from "/system/core.mjs"
-import {fire} from "/system/events.mjs"
+import {goto, siteTitle, ready} from "../system/core.mjs"
+import {fire} from "../system/events.mjs"
 const template = document.createElement('template');
 template.innerHTML = `
     <style>

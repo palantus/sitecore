@@ -1,13 +1,12 @@
 const elementName = 'apikey-page'
 
-import api from "/system/api.mjs"
-import {on, off} from "/system/events.mjs"
-import "/components/field-ref.mjs"
-import "/components/field-edit.mjs"
-import "/components/field-list.mjs"
-import "/components/collapsible-card.mjs"
-import {state} from "/system/core.mjs"
-import { userPermissions } from "../../system/user.mjs"
+import api from "../../system/api.mjs"
+import {on, off} from "../../system/events.mjs"
+import "../../components/field-ref.mjs"
+import "../../components/field-edit.mjs"
+import "../../components/field-list.mjs"
+import "../../components/collapsible-card.mjs"
+import {state} from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

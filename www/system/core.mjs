@@ -67,7 +67,7 @@ class SiteCore {
   async loadMods(){
     let modPromises = []
     for(let mod of getApiConfig().mods){
-      let path = `/load-mod-${mod.id}.mjs`
+      let path = `../load-mod-${mod.id}.mjs`
       if(!mod.files.includes(path)) continue;
       modPromises.push(import(path))
     }

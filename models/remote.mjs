@@ -36,12 +36,13 @@ export default class Remote extends Entity {
     })
   }
 
-  async get(path, {returnRaw = false, user = null, ignoreErrors = false, useSiteURL = false, useGuest = false} = {}){
+  async get(path, {returnRaw = false, user = null, ignoreErrors = false, useSiteURL = false, useGuest = false, customHeaders = {}} = {}){
     if(!this.url || !this.apiKey) throw "apiKey and url must be provided"
+    if(useSiteURL && !this.siteURL) throw `Site URL must be defined for Remote ${this.title}`;
     let res;
     try{
       res = await fetch(`${useSiteURL ? this.siteURL : this.url}/${path}`, {
-        headers: this.getHeaders(null, user, useGuest)
+        headers: {...this.getHeaders(null, user, useGuest), ...customHeaders}
       })
     } catch(err){
       throw err

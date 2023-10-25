@@ -1,12 +1,12 @@
 const elementName = 'system-setup-page'
 
-import api from "/system/api.mjs"
-import "/components/field-edit.mjs"
-import "/components/field-list.mjs"
-import "/components/collapsible-card.mjs"
-import {on, off} from "/system/events.mjs"
-import Toast from "/components/toast.mjs"
-import { confirmDialog } from "/components/dialog.mjs"
+import api from "../../system/api.mjs"
+import "../../components/field-edit.mjs"
+import "../../components/field-list.mjs"
+import "../../components/collapsible-card.mjs"
+import {on, off} from "../../system/events.mjs"
+import Toast from "../../components/toast.mjs"
+import { confirmDialog } from "../../components/dialog.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

@@ -1,14 +1,13 @@
 const elementName = 'labels-page'
 
-import api from "/system/api.mjs"
-import "/components/action-bar.mjs"
-import "/components/action-bar-item.mjs"
-import "/components/field-ref.mjs"
-import "/components/field.mjs"
-import "/components/data/searchhelp.mjs"
-import {showDialog} from "/components/dialog.mjs"
-import {on, off, fire} from "/system/events.mjs"
-import {state, pushStateQuery, goto} from "/system/core.mjs"
+import api from "../../system/api.mjs"
+import "../../components/action-bar.mjs"
+import "../../components/action-bar-item.mjs"
+import "../../components/field-ref.mjs"
+import "../../components/field.mjs"
+import "../../components/data/searchhelp.mjs"
+import {on, off, fire} from "../../system/events.mjs"
+import {state, pushStateQuery, goto} from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

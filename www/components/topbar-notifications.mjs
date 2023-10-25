@@ -1,10 +1,10 @@
 
-import { onMessage } from "/system/message.mjs";
+import { onMessage } from "../system/message.mjs";
 import { on, off, fire } from "../system/events.mjs"
 import { isSignedIn } from "../system/user.mjs";
 import { ready, state } from "../system/core.mjs"
-import api from "/system/api.mjs";
-import Toast from "/components/toast.mjs"
+import api from "../system/api.mjs";
+import Toast from "../components/toast.mjs"
 
 let elementName = "topbar-notifications-component"
 const template = document.createElement('template');

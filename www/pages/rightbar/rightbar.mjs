@@ -1,9 +1,9 @@
 const elementName = 'rightbar-component'
 
-import "/pages/rightbar/user.mjs"
-import "/pages/rightbar/notifications.mjs"
-import "/components/field-ref.mjs"
-import "/components/field.mjs"
+import "./user.mjs"
+import "./notifications.mjs"
+import "../../components/field-ref.mjs"
+import "../../components/field.mjs"
 import {isMobile} from "/system/core.mjs"
 
 const template = document.createElement('template');

@@ -1,13 +1,13 @@
 const elementName = 'federation-remote-page'
 
-import api from "/system/api.mjs"
-import "/components/action-bar.mjs"
-import "/components/action-bar-item.mjs"
-import "/components/field-edit.mjs"
-import "/components/field-list.mjs"
-import "/components/collapsible-card.mjs"
-import {on, off} from "/system/events.mjs"
-import {state} from "/system/core.mjs"
+import api from "../../system/api.mjs"
+import "../../components/action-bar.mjs"
+import "../../components/action-bar-item.mjs"
+import "../../components/field-edit.mjs"
+import "../../components/field-list.mjs"
+import "../../components/collapsible-card.mjs"
+import {on, off} from "../../system/events.mjs"
+import {state} from "../../system/core.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
 
 

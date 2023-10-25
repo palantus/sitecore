@@ -1,14 +1,14 @@
 const elementName = 'apikeys-page'
 
-import api from "/system/api.mjs"
-import {getUser} from "/system/user.mjs"
-import "/components/action-bar.mjs"
-import "/components/action-bar-item.mjs"
-import "/components/field-ref.mjs"
-import "/components/field.mjs"
-import {showDialog, promptDialog, confirmDialog} from "/components/dialog.mjs"
-import {on, off, fire} from "/system/events.mjs"
-import {uuidv4} from "/libs/uuid.mjs"
+import api from "../../system/api.mjs"
+import {getUser} from "../../system/user.mjs"
+import "../../components/action-bar.mjs"
+import "../../components/action-bar-item.mjs"
+import "../../components/field-ref.mjs"
+import "../../components/field.mjs"
+import {showDialog, promptDialog, confirmDialog} from "../../components/dialog.mjs"
+import {on, off, fire} from "../../system/events.mjs"
+import {uuidv4} from "../../libs/uuid.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

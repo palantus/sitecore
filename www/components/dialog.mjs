@@ -1,6 +1,6 @@
 let elementName = "dialog-component"
 
-import "/components/field-edit.mjs"
+import "../components/field-edit.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

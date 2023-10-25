@@ -1,11 +1,9 @@
 import express from "express"
 const { Router, Request, Response } = express;
-import {noGuest, permission, validateAccess} from "../../services/auth.mjs"
+import { permission} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
 import Setup from "../../models/setup.mjs";
-import APIKey from "../../models/apikey.mjs";
 import url from "url"
-import User from "../../models/user.mjs";
 
 export default (app) => {
 
@@ -123,6 +121,9 @@ export default (app) => {
       if(response.headers?.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
       if(response.headers?.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
       if(response.headers?.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
+      if(response.headers?.get("Cache-Control")) headers["Cache-Control"] = response.headers.get("Cache-Control");
+      if(response.headers?.get("Vary")) headers["Vary"] = response.headers.get("Vary");
+      if(response.headers?.get("ETag")) headers["ETag"] = response.headers.get("ETag");
       res.writeHead(response.status, headers)
       response.body.pipe(res)
     } catch(err) {
@@ -153,6 +154,9 @@ export default (app) => {
       if(response.headers?.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
       if(response.headers?.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
       if(response.headers?.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
+      if(response.headers?.get("Cache-Control")) headers["Cache-Control"] = response.headers.get("Cache-Control");
+      if(response.headers?.get("Vary")) headers["Vary"] = response.headers.get("Vary");
+      if(response.headers?.get("ETag")) headers["ETag"] = response.headers.get("ETag");
       res.writeHead(response.status, headers)
       response.body.pipe(res)
     } catch(err) {

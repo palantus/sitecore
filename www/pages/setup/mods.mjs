@@ -1,14 +1,14 @@
 const elementName = 'mods-page'
 
-import api from "/system/api.mjs"
-import "/components/action-bar.mjs"
-import "/components/action-bar-item.mjs"
-import "/components/field-ref.mjs"
-import "/components/field-edit.mjs"
-import Toast from "/components/toast.mjs"
-import {on, off} from "/system/events.mjs"
-import {goto} from "/system/core.mjs"
-import { confirmDialog } from "/components/dialog.mjs"
+import api from "../../system/api.mjs"
+import "../../components/action-bar.mjs"
+import "../../components/action-bar-item.mjs"
+import "../../components/field-ref.mjs"
+import "../../components/field-edit.mjs"
+import Toast from "../../components/toast.mjs"
+import {on, off} from "../../system/events.mjs"
+import {goto} from "../../system/core.mjs"
+import { confirmDialog } from "../../components/dialog.mjs"
 import { restartServer } from "./setup.mjs"
 
 const template = document.createElement('template');

@@ -1,12 +1,12 @@
 const elementName = 'shop-page'
 
-import api from "/system/api.mjs"
-import {on, off} from "/system/events.mjs"
-import "/components/field-ref.mjs"
-import { alertDialog, confirmDialog } from "/components/dialog.mjs"
-import Toast from "/components/toast.mjs"
-import "/components/action-bar.mjs"
-import "/components/action-bar-item.mjs"
+import api from "../../system/api.mjs"
+import {on, off} from "../../system/events.mjs"
+import "../../components/field-ref.mjs"
+import { alertDialog, confirmDialog } from "../../components/dialog.mjs"
+import Toast from "../../components/toast.mjs"
+import "../../components/action-bar.mjs"
+import "../../components/action-bar-item.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

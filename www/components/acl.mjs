@@ -1,8 +1,8 @@
 let elementName = "acl-component"
 
-import {userPermissions} from "/system/user.mjs"
-import api from "/system/api.mjs"
-import "/components/dropdown-menu.mjs"
+import {userPermissions} from "../system/user.mjs"
+import api from "../system/api.mjs"
+import "../components/dropdown-menu.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

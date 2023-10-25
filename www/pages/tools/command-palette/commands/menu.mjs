@@ -1,4 +1,4 @@
-import {goto, menu} from "/system/core.mjs"
+import {goto, menu} from "../../../../system/core.mjs"
 import {Command, removeKeywordsFromQuery} from "../command.mjs"
 
 export class OpenMenuItem extends Command{

@@ -1,6 +1,6 @@
 let elementName = "searchhelp-component"
 
-import api from "/system/api.mjs"
+import api from "../../system/api.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

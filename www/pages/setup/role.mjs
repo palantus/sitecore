@@ -1,7 +1,7 @@
 const elementName = 'role-page'
 
-import api from "/system/api.mjs"
-import {state} from "/system/core.mjs"
+import api from "../../system/api.mjs"
+import {state} from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

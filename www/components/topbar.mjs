@@ -1,11 +1,11 @@
 let elementName = "topbar-component"
 
-import { on, off } from "/system/events.mjs"
-import {getApiConfig, ready} from "/system/core.mjs"
-import "/components/topbar-user.mjs"
-import "/components/topbar-notifications.mjs"
-import { toggleInRightbar } from "/pages/rightbar/rightbar.mjs"
-import Toast from "/components/toast.mjs"
+import { on, off } from "../system/events.mjs"
+import {getApiConfig, ready} from "../system/core.mjs"
+import "../components/topbar-user.mjs"
+import "../components/topbar-notifications.mjs"
+import { toggleInRightbar } from "../pages/rightbar/rightbar.mjs"
+import Toast from "../components/toast.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

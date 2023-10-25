@@ -8,8 +8,10 @@ import { fileURLToPath } from 'url';
 import fileUpload from 'express-fileupload';
 import Setup from '../models/setup.mjs';
 import Remote from '../models/remote.mjs';
+import { loadFilesList, staticRoute } from './static.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+let indexFileCache;
 
 export default async ({ app, mode, config }) => {
 
@@ -74,9 +76,8 @@ export default async ({ app, mode, config }) => {
   }
 
   if(mode != "api"){
-    for(let {id} of global.mods){
-      app.use("/", express.static(join(__dirname, `../mods/${id}/www`)))
-    }
+    await loadFilesList();
+
     app.get("/wwwconfig", (req, res) => {
       res.json({
             api: global.sitecore.apiURL,
@@ -94,13 +95,7 @@ export default async ({ app, mode, config }) => {
             ws: `${global.sitecore.apiURL}/federation/${req.params.remote}/api`
           })
     })
-    app.use("/", express.static(join(__dirname, "../www"), {index: "index.html"}))
-    app.use("/", (req, res) => {
-      if(req.query.single)
-        res.sendFile(join(__dirname, "../www/index-single.html"))
-      else
-        res.sendFile(join(__dirname, "../www/index.html"))
-    })
+    app.use("/", staticRoute)
   }
 
   if(mode != "www"){

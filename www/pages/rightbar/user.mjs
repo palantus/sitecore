@@ -1,11 +1,11 @@
 const elementName = 'rightbar-user-component'
 
-import api from "/system/api.mjs"
-import "/pages/rightbar/rightcard.mjs"
-import "/components/field.mjs"
-import { goto, state } from "/system/core.mjs"
-import { isSignedIn } from "/system/user.mjs"
-import { on, off } from "/system/events.mjs"
+import api from "../../system/api.mjs"
+import "./rightcard.mjs"
+import "../../components/field.mjs"
+import { goto, state } from "../../system/core.mjs"
+import { isSignedIn } from "../../system/user.mjs"
+import { on, off } from "../../system/events.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

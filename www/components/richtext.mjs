@@ -1,6 +1,6 @@
 let elementName = "richtext-component"
 
-import "/libs/easymde.min.js"
+import "../libs/easymde.min.js"
 
 const template = document.createElement('template');
 template.innerHTML = `

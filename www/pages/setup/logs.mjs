@@ -1,8 +1,8 @@
 const elementName = 'logs-page'
 
-import api from "/system/api.mjs"
-import {on, off} from "/system/events.mjs"
-import {state, pushStateQuery} from "/system/core.mjs"
+import api from "../../system/api.mjs"
+import {on, off} from "../../system/events.mjs"
+import {state, pushStateQuery} from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

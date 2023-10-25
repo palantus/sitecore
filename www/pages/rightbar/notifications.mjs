@@ -1,14 +1,14 @@
 const elementName = 'rightbar-notifications-component'
 
-import api from "/system/api.mjs"
-import "/pages/rightbar/rightcard.mjs"
-import "/components/notification.mjs";
-import { onMessage } from "/system/message.mjs";
-import "/components/field.mjs"
-import {refToPath} from "/libs/refs.mjs"
-import {on, off} from "/system/events.mjs"
-import { confirmDialog } from "/components/dialog.mjs";
-import { isSignedIn } from "/system/user.mjs";
+import api from "../../system/api.mjs"
+import "./rightcard.mjs"
+import "../../components/notification.mjs";
+import { onMessage } from "../../system/message.mjs";
+import "../../components/field.mjs"
+import {refToPath} from "../../libs/refs.mjs"
+import {on, off} from "../../system/events.mjs"
+import { confirmDialog } from "../../components/dialog.mjs";
+import { isSignedIn } from "../../system/user.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `

@@ -1,12 +1,12 @@
 const elementName = 'federation-page'
 
-import api from "/system/api.mjs"
-import {on, off} from "/system/events.mjs"
-import "/components/field-ref.mjs"
-import "/components/field-edit.mjs"
-import "/components/context-menu.mjs"
-import "/components/collapsible-card.mjs"
-import {showDialog, confirmDialog, alertDialog} from "/components/dialog.mjs"
+import api from "../../system/api.mjs"
+import {on, off} from "../../system/events.mjs"
+import "../../components/field-ref.mjs"
+import "../../components/field-edit.mjs"
+import "../../components/context-menu.mjs"
+import "../../components/collapsible-card.mjs"
+import {showDialog, confirmDialog, alertDialog} from "../../components/dialog.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

@@ -1,9 +1,9 @@
 const elementName = 'systemtools-page'
 
-import "/components/action-bar.mjs"
-import "/components/action-bar-item.mjs"
-import {apiURL, goto} from "/system/core.mjs"
-import api from "/system/api.mjs"
+import "../../components/action-bar.mjs"
+import "../../components/action-bar-item.mjs"
+import {apiURL, goto} from "../../system/core.mjs"
+import api from "../../system/api.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `

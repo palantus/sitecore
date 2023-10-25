@@ -1,6 +1,6 @@
 let elementName = "action-bar-menu"
 
-import "/components/dropdown-menu.mjs"
+import "../components/dropdown-menu.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
