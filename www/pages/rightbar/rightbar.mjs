@@ -4,7 +4,7 @@ import "./user.mjs"
 import "./notifications.mjs"
 import "../../components/field-ref.mjs"
 import "../../components/field.mjs"
-import {isMobile} from "/system/core.mjs"
+import {isMobile} from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
