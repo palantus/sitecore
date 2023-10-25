@@ -1,5 +1,5 @@
 const elementName = 'main-menu'
-import {userRoles, userPermissions, getUser, isSignedIn} from "/system/user.mjs";
+import {userRoles, userPermissions, getUser, isSignedIn} from "../system/user.mjs";
 import {goto, state, isMobile, menu, ready} from "../system/core.mjs"
 import {on} from "../system/events.mjs"
 

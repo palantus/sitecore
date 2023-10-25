@@ -2,7 +2,7 @@ import { alertDialog, showDialog } from "../components/dialog.mjs";
 import api from "../system/api.mjs";
 import {goto, state, apiURL, siteTitle, ready, getApiConfig, mods} from "../system/core.mjs"
 import { refreshStatus } from "../system/user.mjs";
-import Toast from "/components/toast.mjs"
+import Toast from "../components/toast.mjs"
 
 const elementName = 'login-page'
 

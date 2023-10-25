@@ -1,6 +1,6 @@
 const elementName = 'index-core-me-page'
-import {getUser, isSignedIn} from "/system/user.mjs"
-import {goto, getApiConfig} from "/system/core.mjs"
+import {getUser, isSignedIn} from "../system/user.mjs"
+import {goto, getApiConfig} from "../system/core.mjs"
 
 class IndexPage extends HTMLElement {
   connectedCallback() {
