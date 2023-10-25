@@ -47,7 +47,7 @@ export async function staticRoute(req, res, next){
   if(!virtualPathsAvailable.has(path)){
     if(req.method == "GET" || req.method == "HEAD"){
       // Return index
-      let pathLevel = parseInt(req.headers['fed-orig-path-level'] || path.split("/").length-2);
+      let pathLevel = path.split("/").length-2;
       path = `/index_${pathLevel}${req.query.single?"-single":''}.html`;
       if(!virtualPathToContent.has(path)){
         await loadIndex(path, pathLevel, !!req.query.single);
@@ -106,7 +106,6 @@ async function serveFromRemote(req, res, remoteId){
     delete query.impersonate;
     let redirectUrl = url.format({pathname: path, query});
     let customHeaders = {
-      "fed-orig-path-level": req.path.split("/").length-2,
       "if-none-match": req.headers['if-none-match'] || undefined
     }
     let response = await remote.get(redirectUrl, {returnRaw: true, ignoreErrors: true, useSiteURL: true, useGuest: true, customHeaders})
