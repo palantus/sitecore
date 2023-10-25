@@ -11,7 +11,7 @@ export let getCommands = async (context, query) => {
     let commandFiles = [import("./commands/menu.mjs")]
 
     for(let mod of mods()){
-      commandFiles.push(...mod.files.filter(f => f.startsWith("/commands/")).map(f => import(f)))
+      commandFiles.push(...mod.files.filter(f => f.startsWith("/commands/")).map(f => import(`../../../${f}`)))
     }
 
     commandsPromise = Promise.all(commandFiles)

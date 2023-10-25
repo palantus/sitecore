@@ -124,7 +124,7 @@ class IndexPage extends HTMLElement {
     let loginComponents = getApiConfig().mods.map(m => m.files.filter(f => /\/login\-[a-zA-z0-9]+\.mjs/.test(f))).flat();
 
     for(let path of loginComponents){
-      import(path).then(i => {
+      import(`..${path}`).then(i => {
         let div = document.createElement("div")
         div.innerHTML = `<${i.name}></${i.name}>`
         this.shadowRoot.getElementById("flex").appendChild(div)

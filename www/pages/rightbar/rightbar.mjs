@@ -51,7 +51,7 @@ class Element extends HTMLElement {
         document.getElementById("grid-container").classList.add("collapsed")
       }
       this.shadowRoot.getElementById("container").innerHTML = "";
-      import(`/pages/rightbar/${pageId}.mjs`).then(() => {
+      import(`../../pages/rightbar/${pageId}.mjs`).then(() => {
         let componentName = `rightbar-${pageId}-component`;
         let element = document.createElement(componentName)
         for(let [name, value] of args){

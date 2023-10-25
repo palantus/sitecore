@@ -66,7 +66,7 @@ class Element extends HTMLElement {
     let profileComponents = getApiConfig().mods.map(m => m.files.filter(f => /\/user\-profile\-[a-zA-z0-9]+\.mjs/.test(f))).flat();
 
     for(let path of profileComponents){
-      import(path).then(i => {
+      import(`..${path}`).then(i => {
         let div = document.createElement("div")
         div.innerHTML = `<${i.name}></${i.name}>`
         this.shadowRoot.getElementById("custom-mod-container").appendChild(div)
