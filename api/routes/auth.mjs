@@ -65,7 +65,7 @@ export default (app) => {
     let user = User.lookup(req.body.username);
 
     if(!user || !user.active){
-      return res.json({success: false})
+      return res.json({success: false, error: "Unknown user"})
     }
 
     if(user.tags.includes("federated")){
