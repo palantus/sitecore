@@ -122,7 +122,8 @@ export default async ({ app, mode, config }) => {
     app.use((err, req, res, next) => {
       // format error
       res.status(err.status || 500).json({
-        message: typeof err === "string" ? err : err.message,
+        success: false,
+        error: typeof err === "string" ? err : err.message || err.error,
         errors: err.errors,
       });
       console.log(err)

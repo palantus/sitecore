@@ -144,7 +144,10 @@ class IndexPage extends HTMLElement {
       let redirect = state().query.redirect || "/"
       goto(redirect)
     } else {
-      alertDialog("Wrong username/password combination. If you continue seeing this error and you are sure that the combination is correct, your user might be deactivated")
+      alertDialog(`
+        Wrong username/password combination. 
+        If you continue seeing this error and you are sure that the combination is correct, your user might be deactivated.
+        ${username.includes("@") ? `<br><br>This user is authenticated on the instance named "${username.split("@")[1]}", so make sure to use the password for that instance.`: ''}`)
     }
   }
 

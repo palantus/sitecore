@@ -1,9 +1,12 @@
 import express from "express"
 const { Router, Request, Response } = express;
-import { permission} from "../../services/auth.mjs"
+import { noGuest, permission} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
 import Setup from "../../models/setup.mjs";
 import url from "url"
+import User from "../../models/user.mjs";
+import jwt from 'jsonwebtoken'
+import LogEntry from "../../models/logentry.mjs";
 
 export default (app) => {
 
@@ -82,6 +85,36 @@ export default (app) => {
     if(typeof req.body.identifier === "string" || !req.body.identifier) setup.identifier = req.body.identifier||null;
     res.json(true);
   });
+  
+  route.post('/:fed/login', (req, res, next) => {
+    if(!req.body.username || !req.body.password) throw "username and password are mandatory";
+    let userId = req.body.username.split("@")[0]
+    let user = User.lookup(userId);
+
+    if(!user || !user.active || !user.hasPassword() || !user.validatePassword(req.body.password)){
+      return res.json({success: false})
+    }
+
+    let remote = Remote.lookupIdentifier(req.params.fed)
+    if(!remote) return res.sendStatus(404);
+
+    remote.get(`federation/user/${req.body.username}/jwt`)
+    .then(result => {
+      res.json(result)
+    }).catch(error => {
+      new LogEntry(error, "federation")
+      res.status(500).send({success: false, error}).end();
+    })
+	})
+  
+  route.get('/user/:user/jwt', noGuest, (req, res, next) => {
+    let user = User.lookup(req.params.user);
+    if(!user) throw "Unknown user"
+    let apiKey = res.locals.authMethod?.apiKey;
+    if(!apiKey.federation || !apiKey.identifier || !user.id.endsWith(apiKey.identifier)) throw "Not possible with the current authentication. Please use a federation API key.";
+    let token = jwt.sign(user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
+    res.json({success: true, token})
+	})
 
   route.all('/:fed/api/*', async (req, res) => {
     let path = decodeURI(req.path.split("/").slice(3).join("/")) // Go from eg. "/test/api/me" to "me"

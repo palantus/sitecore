@@ -10,6 +10,7 @@ import { lookupUserPermissions, lookupUserRoles} from '../../tools/usercache.mjs
 import Setup from "../../models/setup.mjs";
 import { getSignInURL } from "../../services/mslogin.mjs";
 import LogEntry from "../../models/logentry.mjs";
+import Remote from "../../models/remote.mjs";
 
 export default (app) => {
 
@@ -61,15 +62,35 @@ export default (app) => {
   });
 
   route.post('/login', (req, res, next) => {
-    let user = User.lookup(sanitize(req.body.username));
+    let user = User.lookup(req.body.username);
 
-    if(!user || !user.active || !user.hasPassword() || !user.validatePassword(req.body.password)){
+    if(!user || !user.active){
       return res.json({success: false})
     }
 
-    let token = jwt.sign(user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
-    //res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
-    res.json({success: true, token})
+    if(user.tags.includes("federated")){
+      let localIdentifier = Setup.lookup().identifier;
+      if(!localIdentifier) return res.json({success: false, error: "Identifier not defined on this instance"})
+      let remoteIdentifier = user.id.split("@")[1];
+      let remote = Remote.lookupIdentifier(remoteIdentifier);
+      if(!remote) return res.json({success: false, error: "No remote available to contact: " + remoteIdentifier})
+      remote.post(`federation/${localIdentifier}/login`, {username: user.id, password: req.body.password}, {useGuest: true})
+            .then(result => {
+              if(result.token) res.json({success: true, token: result.token})
+              else res.json({success: false, error: result.error || "Failed to get jwt from remote"})
+            })
+            .catch(err => {
+              return res.json({success: false, error: err})
+            })
+    } else {
+      if(!user.hasPassword() || !user.validatePassword(req.body.password)){
+        return res.json({success: false})
+      }
+  
+      let token = jwt.sign(user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
+      //res.cookie('jwtToken', token, { domain: global.sitecore.cookieDomain, maxAge: 604800000 /* 7 days */, httpOnly: true, secure: true, sameSite: "None" });
+      res.json({success: true, token})
+    }
 	})
 
   route.get('/login', (req, res, next) => {

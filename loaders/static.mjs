@@ -35,10 +35,6 @@ export async function loadFilesList(){
 }
 
 export async function staticRoute(req, res, next){
-  // TODO:
-  // - forward if-none-match headers to remotes
-  // - add one level to index.html served through federation
-
   let path = req.path;
   if(path.startsWith("/_")){
     return serveFromRemote(req, res, req.path.split("/")[1].substring(1))
@@ -53,7 +49,7 @@ export async function staticRoute(req, res, next){
         await loadIndex(path, pathLevel, !!req.query.single);
       }
     } else {
-      return next();
+      return res.sendStatus(404);
     }
   }
 
