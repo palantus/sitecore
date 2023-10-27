@@ -27,7 +27,7 @@ export function generateMenu(){
 
 function sortMenu(menu){
   if(menu.items === undefined) return;
-  menu.items = menu.items.sort((a, b) => a.title < b.title ? -1 : 1);
+  menu.items = menu.items.sort((a, b) => a.items && !b.items ? 1 : b.items && !a.items ? -1 : a.title < b.title ? -1 : 1);
   for(let m of menu.items){
     if(m.items === undefined) continue;
     sortMenu(m);

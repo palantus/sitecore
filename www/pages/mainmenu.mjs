@@ -100,6 +100,13 @@ template.innerHTML = `
         background: 0 0.1em no-repeat;
         background-size: 1em 1em;
     }
+    span.levelindicator{
+      border-left: 4px solid var(--accent-back);
+      margin-left: 1px;
+    }
+    div.menu span.title:not(:first-child){
+      padding-left: 5px;
+    }
   </style>
 
   <div id="container">
@@ -119,25 +126,18 @@ class Page extends HTMLElement {
 
     this.refreshData();
 
-    //this.shadowRoot.querySelector('h3').innerText = this.getAttribute('name');
-    //this.shadowRoot.querySelector('img').src = this.getAttribute('avatar');
-    
     this.shadowRoot.querySelector("#container").addEventListener("click", event => {
-      let path;
-      if(event.target.classList.contains("item")){
-        path = event.target.getAttribute("data-path")
-      } else if(event.target.parentElement?.classList.contains("item")){
-        path = event.target.parentElement.getAttribute("data-path")
-      }
-
-      if(path){
-        goto(path, {forceRefresh: path == state().path})
-      }
-
-      if(event.target.classList.contains("menu")){
-        this.toggleMenu(event.target)
-      } else if(event.target.parentElement?.classList.contains("menu")){
-        this.toggleMenu(event.target.parentElement)
+      let item = event.target.closest(".item")
+      if(item) {
+        let path = item.getAttribute("data-path")
+        if(path){
+          goto(path, {forceRefresh: path == state().path})
+        }
+      } else {
+        let menu = event.target.closest(".menu")
+        if(menu){
+          this.toggleMenu(menu)
+        }
       }
     })
 
@@ -153,15 +153,23 @@ class Page extends HTMLElement {
     }
   }
 
-  toggleMenu(menu){
-    let display = menu.classList.contains("open") ? "none" : "block";
-    menu.classList.toggle("open")
+  toggleMenu(menu, force){
+    let doShow = force !== undefined ? force : !menu.classList.contains("open");
+    let display = doShow ? "block" : "none";
+    menu.classList.toggle("open", doShow)
     let mi = menu.nextSibling
     while(mi){
-      if(mi.classList.contains("menu"))
-        break;
+      if(mi.classList.contains("menu")){
+        if(mi.dataset.parentmenuid == menu.dataset.menuid){
+          mi.style.display = display
+          if(!doShow){
+            this.toggleMenu(mi, false)
+          }
+        }
+      } else if(mi.dataset.menuid == menu.dataset.menuid){
+        mi.style.display = display
+      }
 
-      mi.style.display = display
       mi = mi.nextSibling
     }
   }
@@ -184,28 +192,16 @@ class Page extends HTMLElement {
     this.shadowRoot.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"))
     this.shadowRoot.querySelectorAll(".menu").forEach(e => e.classList.remove("open"))
     this.shadowRoot.querySelectorAll(".item").forEach(e => e.style.display = "none")
+
     this.shadowRoot.querySelectorAll(`.item[data-path="${state().path}"]`).forEach(e => {
       e.classList.add("selected")
-
-      let sib = e.previousSibling;
-      while(sib){
-        if(sib.classList.contains("menu")) {
-          sib.classList.add("open")
-          break;
-        }
-        sib = sib.previousSibling;
+      let parentMenu = this.shadowRoot.querySelector(`.menu[data-menuid="${e.dataset.menuid}"]`);
+      let menus = []
+      while(parentMenu){
+        menus.push(parentMenu)
+        parentMenu = this.shadowRoot.querySelector(`.menu[data-menuid="${parentMenu.dataset.parentmenuid}"]`);
       }
-    })
-
-    this.shadowRoot.querySelectorAll(".menu.open").forEach(m => {
-      let item = m.nextSibling
-      while(item){
-        if(item.classList.contains("menu"))
-          break;
-
-        item.style.display = "block"
-        item = item.nextSibling
-      }
+      menus.reverse().forEach(m => this.toggleMenu(m, true))
     })
   }
 
@@ -233,14 +229,20 @@ class Page extends HTMLElement {
         itemDiv.setAttribute("data-path", item.target||item.path)
         itemDiv.setAttribute("data-menuid", parentMenuId)
       } else {
+        let level = parentMenuId ? parseInt(this.shadowRoot.querySelector(`.menu[data-menuid="${parentMenuId}"]`).dataset.level)+1
+                                 : 0;
+        itemDiv.dataset.level = level;
+        itemDiv.style.display = parentMenuId ? "none" : "block";
+
         itemDiv.className = "menu"
-        titleElement.innerText = item.title
+        titleElement.innerHTML = `${level > 0 ? `${'<span class="levelindicator"></span>'.repeat(level)} `:''}<span class="title">${item.title}</span>`
         
         let arrow = document.createElement("span")
         arrow.className = "menuarrow"
         arrow.innerText = " ▾"
         itemDiv.appendChild(arrow)
         itemDiv.setAttribute("data-menuid", this.nextMenuId++)
+        itemDiv.setAttribute("data-parentmenuid", parentMenuId)
       }
 
       parent.appendChild(itemDiv)
@@ -265,13 +267,11 @@ class Page extends HTMLElement {
   connectedCallback() {
     on("logged-in", elementName, this.refreshData)
     on("logged-out", elementName, this.refreshData)
-    //this.shadowRoot.querySelector('#toggle-info').addEventListener('click', () => this.toggleInfo());
   }
 
   disconnectedCallback() {
     off("logged-in", elementName)
     off("logged-out", elementName)
-    //this.shadowRoot.querySelector('#toggle-info').removeEventListener();
   }
 }
 
