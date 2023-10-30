@@ -9,6 +9,7 @@ import "../../components/collapsible-card.mjs"
 import {on, off} from "../../system/events.mjs"
 import {state} from "../../system/core.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
+import { userPermissions } from "../../system/user.mjs"
 
 
 const template = document.createElement('template');
@@ -112,6 +113,8 @@ class Element extends HTMLElement {
   }
 
   async testFed(){
+    let permissions = await userPermissions();
+    if(!permissions.includes("user.federate")) return alertDialog("You are missing the user.federate permission")
     try{
       let result = await api.get(`federation/${this.remote.identifier}/api/me`, {redirectAuth: false})
       if(!result || !result.id) alertDialog(`Conneciton unsuccessful. Error details:  <br><pre>${JSON.stringify(result.error, null, 2)}</pre>`)

@@ -114,12 +114,12 @@ export default class Remote extends Entity {
 
   static async testConfig({url, apiKey}){
     if(!url || !apiKey) return {success: false, error: "Missing url or apiKey"}
+    let headers = {
+      'Authorization': 'Basic ' + Buffer.from(`${''}:${apiKey}`, 'binary').toString('base64')
+    }
+    if(/federation\/[a-zA-Z0-9-_]+\/api/.test(url)) headers['x-forward-auth'] = "yes";
     try{
-      let res = await fetch(`${url}/me`, {
-        headers: {
-          'Authorization': 'Basic ' + Buffer.from(`${''}:${apiKey}`, 'binary').toString('base64')
-        }
-      })
+      let res = await fetch(`${url}/me`, {headers})
       if(res.status !== 200){
         return {success: false, error: `Got status code ${res.status} (${res.statusText})`}
       } else {
