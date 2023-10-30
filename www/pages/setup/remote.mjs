@@ -108,7 +108,7 @@ class Element extends HTMLElement {
   }
 
   async testFed(){
-    let result = await api.get(`federation/${this.remote.identifier}/api/me`)
+    let result = await api.get(`federation/${this.remote.identifier}/api/me`, {redirectAuth: false})
     if(!result || !result.id) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result?.error||result)}`)
     else alertDialog(`Successfully logged in as user ${result.id} (${result.name})`)
   }
