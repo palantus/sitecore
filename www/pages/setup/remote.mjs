@@ -102,15 +102,23 @@ class Element extends HTMLElement {
   }
 
   async testConn(){
-    let result = await api.post(`federation/remote/${this.remoteId}/test`)
-    if(!result || !result.success) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result.error)}`)
-    else alertDialog(`Successfully logged in as user ${result.userId} (${result.name})`)
+    try{
+      let result = await api.post(`federation/remote/${this.remoteId}/test`)
+      if(!result || !result.success) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result.error)}`)
+      else alertDialog(`Successfully logged in as user ${result.userId} (${result.name})`)
+    } catch(err){
+      alertDialog(`Conneciton unsuccessful. Error details: ${err}`)
+    }
   }
 
   async testFed(){
-    let result = await api.get(`federation/${this.remote.identifier}/api/me`, {redirectAuth: false})
-    if(!result || !result.id) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result?.error||result)}`)
-    else alertDialog(`Successfully logged in as user ${result.id} (${result.name})`)
+    try{
+      let result = await api.get(`federation/${this.remote.identifier}/api/me`, {redirectAuth: false})
+      if(!result || !result.id) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result?.error||result)}`)
+      else alertDialog(`Successfully logged in as user ${result.id} (${result.name})`)
+    } catch(err){
+      alertDialog(`Conneciton unsuccessful. Error details: ${err}`)
+    }
   }
 
   connectedCallback() {
