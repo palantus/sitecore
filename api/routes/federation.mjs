@@ -162,7 +162,8 @@ export default (app) => {
     } catch(err) {
       console.log(`Could not ${req.method} ${path} on ${remote.identifier} for ${res.locals.user.id} from remote ${remote.title}`)
       console.log(err)
-      res.sendStatus(500)
+      res.status(500)
+      res.json({success: false, error: err})
     }
   })
 

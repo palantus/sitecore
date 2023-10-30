@@ -104,20 +104,20 @@ class Element extends HTMLElement {
   async testConn(){
     try{
       let result = await api.post(`federation/remote/${this.remoteId}/test`)
-      if(!result || !result.success) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result.error)}`)
+      if(!result || !result.success) alertDialog(`Conneciton unsuccessful. Error details: <br><pre>${JSON.stringify(result.error, null, 2)}</pre>`)
       else alertDialog(`Successfully logged in as user ${result.userId} (${result.name})`)
     } catch(err){
-      alertDialog(`Conneciton unsuccessful. Error details: ${err}`)
+      alertDialog(`Conneciton unsuccessful. Error details: <br><pre>${JSON.stringify(err, null, 2)}</pre>`)
     }
   }
 
   async testFed(){
     try{
       let result = await api.get(`federation/${this.remote.identifier}/api/me`, {redirectAuth: false})
-      if(!result || !result.id) alertDialog(`Conneciton unsuccessful. Error details: ${JSON.stringify(result?.error||result)}`)
+      if(!result || !result.id) alertDialog(`Conneciton unsuccessful. Error details:  <br><pre>${JSON.stringify(result.error, null, 2)}</pre>`)
       else alertDialog(`Successfully logged in as user ${result.id} (${result.name})`)
     } catch(err){
-      alertDialog(`Conneciton unsuccessful. Error details: ${err}`)
+      alertDialog(`Conneciton unsuccessful. Error details: <br><pre>${JSON.stringify(err, null, 2)}</pre>`)
     }
   }
 

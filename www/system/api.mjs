@@ -128,9 +128,9 @@ class API {
         this.cache.delete(url)
         resolve(null)
       } else {
-        if(!silent) fire("log", { level: "error", message: jsonResult.message || jsonResult.error })
+        if(!silent) fire("log", { level: "error", message: jsonResult?.message || jsonResult?.error })
         this.cache.delete(url)
-        reject(jsonResult.message || jsonResult.error || jsonResult);
+        reject(jsonResult?.message || jsonResult?.error || jsonResult || `${res.status}: ${res.statusText}`);
       }
     })
     this.cache.set(url, requestPromise);
