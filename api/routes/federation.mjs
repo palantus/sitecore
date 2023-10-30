@@ -128,7 +128,6 @@ export default (app) => {
       }
     }
     try{
-      let forwardAuth = req.headers["x-forward-auth"] == "yes";
       let query = req.query;
       delete query.token;
       delete query.impersonate;
@@ -138,8 +137,9 @@ export default (app) => {
       let customHeaders = {}
       if(req.headers["share-key"]) customHeaders["share-key"] = req.headers["share-key"];
 
-      if(forwardAuth){
+      if(req.headers["x-forward-auth"] == "yes"){
         customHeaders["Authorization"] = req.headers["authorization"];
+        if(req.headers["x-sitecore-federate"]) customHeaders["x-SiteCore-Federate"] = req.headers["x-sitecore-federate"];
       }
 
       switch(req.method){

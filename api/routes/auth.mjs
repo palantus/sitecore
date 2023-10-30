@@ -123,7 +123,7 @@ export default (app) => {
       user = res.locals.user; // In case a mod already found the user using some other form of authentication
     }
 
-    if (!user) {
+    if (!user && req.headers["x-forward-auth"] != "yes") {
       if(res.locals.token)
         token = res.locals.token //Allow mods to set token
       else if (req.query.token)
