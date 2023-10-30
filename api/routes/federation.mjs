@@ -128,24 +128,32 @@ export default (app) => {
       }
     }
     try{
+      let forwardAuth = req.headers["x-forward-auth"] == "yes";
       let query = req.query;
       delete query.token;
       delete query.impersonate;
       let redirectUrl = url.format({pathname: path, query});
       let response;
       let useGuest = res.locals.user.id == "guest" || !res.locals.user.hasPermission("user.federate")
+      let customHeaders = {}
+      if(req.headers["share-key"]) customHeaders["share-key"] = req.headers["share-key"];
+
+      if(forwardAuth){
+        customHeaders["Authorization"] = req.headers["authorization"];
+      }
+
       switch(req.method){
         case "GET":
-          response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
+          response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
           break;
         case "DELETE":
-          response = await remote.del(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
+          response = await remote.del(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
           break;
         case "POST":
-          response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
+          response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
           break;
         case "PATCH":
-          response = await remote.patch(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest})
+          response = await remote.patch(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
           break;
         default:
           return res.sendStatus(404);
@@ -191,6 +199,7 @@ export default (app) => {
       if(response.headers?.get("Cache-Control")) headers["Cache-Control"] = response.headers.get("Cache-Control");
       if(response.headers?.get("Vary")) headers["Vary"] = response.headers.get("Vary");
       if(response.headers?.get("ETag")) headers["ETag"] = response.headers.get("ETag");
+      if(response.headers?.get("share-key")) headers["share-key"] = response.headers.get("share-key");
       res.writeHead(response.status, headers)
       response.body.pipe(res)
     } catch(err) {

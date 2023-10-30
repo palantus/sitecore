@@ -135,6 +135,7 @@ export default class Remote extends Entity {
     if(!useGuest) ret['Authorization'] = 'Bearer ' + this.apiKey
     if(contentType) ret['Content-Type'] = contentType
     if(user && !useGuest) ret['X-SiteCore-Federate'] = `${user.id}@${Setup.lookup().identifier};${user.name}`
+    if(/federation\/[a-zA-Z0-9-_]+\/api/.test(this.url)) ret['x-forward-auth'] = "yes";
     return ret;
   }
 

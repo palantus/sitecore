@@ -114,6 +114,7 @@ async function serveFromRemote(req, res, remoteId){
     if(response.headers?.get("Cache-Control")) headers["Cache-Control"] = response.headers.get("Cache-Control");
     if(response.headers?.get("Vary")) headers["Vary"] = response.headers.get("Vary");
     if(response.headers?.get("ETag")) headers["ETag"] = response.headers.get("ETag");
+    if(response.headers?.get("share-key")) headers["share-key"] = response.headers.get("share-key");
     res.writeHead(response.status, headers)
     response.body.pipe(res)
   } catch(err) {
