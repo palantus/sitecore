@@ -85,6 +85,8 @@ export async function staticRoute(req, res, next){
   }
 }
 
+// Note that this is intended for static content, but for servers where the API is served at /api/, it will work for API as well
+// It is recommended to use /federation/myremote/api instead for API calls, because it will work regardless of where the api is hosted.
 async function serveFromRemote(req, res, remoteId){
   let path = decodeURI(req.path.split("/").slice(2).join("/")) // Go from eg. "/_test/setup/users" to "setup/users"
   let remote = Remote.lookupIdentifier(remoteId)
