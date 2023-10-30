@@ -105,37 +105,32 @@ class API {
         return;
       }
 
+      let jsonResult;
+      try{
+        jsonResult = await res.json()
+      } catch{}
+
       if (res.status < 300 || returnIfError === true) {
-        let jsonResult = await res.json();
         if(res.status < 300){
           this.cache.set(url, {result: jsonResult, ts: new Date().getTime()})
         }
         resolve(jsonResult);
       } else if (res.status == 401) {
         try{
-          let retObj = await res.json()
-          if(retObj?.errorCode == "expired" && !window.location.pathname.startsWith("/login") && redirectAuth){
+          if(jsonResult?.errorCode == "expired" && !window.location.pathname.startsWith("/login") && redirectAuth){
             goto(`/login?redirect=${window.location.pathname}`)
           }
-        } catch{
-        }
+        } catch{}
         //this.notLoggedIn()
         this.cache.delete(url)
         reject(res);
       } else if (res.status == 404) {
         this.cache.delete(url)
         resolve(null)
-      } else if (res.status >= 400 && res.status < 500) {
-        let retObj = await res.json()
-        console.log(`${res.status}: ${res.statusText}`, retObj)
-        if(!silent) fire("log", { level: "error", message: retObj.message || retObj.error })
-        this.cache.delete(url)
-        reject(res);
-        throw retObj.message || retObj.error
       } else {
-        if(!silent) fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
+        if(!silent) fire("log", { level: "error", message: jsonResult.message || jsonResult.error })
         this.cache.delete(url)
-        reject(res);
+        reject(jsonResult.message || jsonResult.error || jsonResult);
       }
     })
     this.cache.set(url, requestPromise);
