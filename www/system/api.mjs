@@ -123,7 +123,7 @@ class API {
         } catch{}
         //this.notLoggedIn()
         this.cache.delete(url)
-        reject(res);
+        reject(jsonResult?.message || jsonResult?.error || jsonResult || `${res.status}: ${res.statusText}`);
       } else if (res.status == 404) {
         this.cache.delete(url)
         resolve(null)
