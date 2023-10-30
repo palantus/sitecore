@@ -150,13 +150,15 @@ export default (app) => {
         default:
           return res.sendStatus(404);
       }
-      let headers = {}
-      if(response.headers?.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
-      if(response.headers?.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
-      if(response.headers?.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
-      if(response.headers?.get("Cache-Control")) headers["Cache-Control"] = response.headers.get("Cache-Control");
-      if(response.headers?.get("Vary")) headers["Vary"] = response.headers.get("Vary");
-      if(response.headers?.get("ETag")) headers["ETag"] = response.headers.get("ETag");
+      let headers = {
+        "Content-Disposition": response.headers?.get("Content-Disposition") || null,
+        "Content-Type": response.headers?.get("Content-Type") || null,
+        "Content-Length": response.headers?.get("Content-Length") || null,
+        "Cache-Control": response.headers?.get("Cache-Control") || null,
+        "Vary": response.headers?.get("Vary") || null,
+        "ETag": response.headers?.get("ETag") || null,
+      }
+      
       res.writeHead(response.status, headers)
       response.body.pipe(res)
     } catch(err) {
@@ -183,13 +185,14 @@ export default (app) => {
       delete query.impersonate;
       let redirectUrl = url.format({pathname: path, query});
       let response = await remote.get(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useSiteURL: true, useGuest: true})
-      let headers = {}
-      if(response.headers?.get("Content-Disposition")) headers["Content-Disposition"] = response.headers.get("Content-Disposition");
-      if(response.headers?.get("Content-Type")) headers["Content-Type"] = response.headers.get("Content-Type");
-      if(response.headers?.get("Content-Length")) headers["Content-Length"] = response.headers.get("Content-Length");
-      if(response.headers?.get("Cache-Control")) headers["Cache-Control"] = response.headers.get("Cache-Control");
-      if(response.headers?.get("Vary")) headers["Vary"] = response.headers.get("Vary");
-      if(response.headers?.get("ETag")) headers["ETag"] = response.headers.get("ETag");
+      let headers = {
+        "Content-Disposition": response.headers?.get("Content-Disposition") || null,
+        "Content-Type": response.headers?.get("Content-Type") || null,
+        "Content-Length": response.headers?.get("Content-Length") || null,
+        "Cache-Control": response.headers?.get("Cache-Control") || null,
+        "Vary": response.headers?.get("Vary") || null,
+        "ETag": response.headers?.get("ETag") || null,
+      }
       res.writeHead(response.status, headers)
       response.body.pipe(res)
     } catch(err) {
