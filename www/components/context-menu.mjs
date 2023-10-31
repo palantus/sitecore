@@ -25,10 +25,10 @@ let elementName = "context-menu"
 */
 
 import "../components/dropdown-menu.mjs"
+import { stylesheets } from "../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
   <style>
     #title{
       border-bottom: 1px solid var(--contrast-color-muted);
@@ -68,7 +68,8 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global]
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.dropMenu = this.shadowRoot.querySelector("dropdown-menu-component")

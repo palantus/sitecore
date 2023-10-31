@@ -1,6 +1,6 @@
 import { alertDialog, showDialog } from "../components/dialog.mjs";
 import api from "../system/api.mjs";
-import {goto, state, apiURL, siteTitle, ready, getApiConfig, mods} from "../system/core.mjs"
+import {goto, state, apiURL, siteTitle, ready, getApiConfig, mods, stylesheets} from "../system/core.mjs"
 import { refreshStatus } from "../system/user.mjs";
 import Toast from "../components/toast.mjs"
 
@@ -8,7 +8,6 @@ const elementName = 'login-page'
 
 const template = document.createElement('template');
 template.innerHTML = `
-    <link rel='stylesheet' href='/css/global.css'>
     <style>
       #container{
         padding: 10px;
@@ -88,7 +87,8 @@ class IndexPage extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global]
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     
     this.login = this.login.bind(this);

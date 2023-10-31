@@ -1,7 +1,8 @@
+import { stylesheets } from "../system/core.mjs"
+
 let elementName = "action-bar-item"
 const template = document.createElement('template');
 template.innerHTML = `
-    <link rel='stylesheet' href='/css/global.css'>
     <style>
       span.item{
         display: inline-block;
@@ -32,7 +33,8 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global]
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     //this.shadowRoot.querySelector('h3').innerText = this.getAttribute('name');
     //this.shadowRoot.querySelector('img').src = this.getAttribute('avatar');

@@ -9,11 +9,10 @@ import "../../components/field-list.mjs"
 import {on, off, fire} from "../../system/events.mjs"
 import {showDialog} from "../../components/dialog.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
-import {getApiConfig} from "../../system/core.mjs"
+import {getApiConfig, stylesheets} from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
   <style>
     #container{
         padding: 10px;
@@ -54,7 +53,8 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global];
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.changePass = this.changePass.bind(this)

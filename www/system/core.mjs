@@ -5,6 +5,7 @@ let config;
 let apiConfig;
 let readyResolve = null;
 let remoteId = null;
+export let stylesheets = {}
 export let ready = new Promise(r => {readyResolve = r})
 
 class SiteCore {
@@ -35,7 +36,7 @@ class SiteCore {
     apiConfig = await (await fetch(`${config.api}/clientconfig`)).json(); // Fetch config from API server
     window.localStorage.setItem("SiteTitle", apiConfig.title)
 
-    await Promise.all([refreshStatus(), initRouter(), this.loadMods()])
+    await Promise.all([refreshStatus(), initRouter(), this.loadMods(), this.loadStylesheets()])
     readyResolve();
 
     window.history.replaceState(this.state, null, (remoteId ? `/_${remoteId}${this.state.path}` : this.state.path) + window.location.search);
@@ -76,6 +77,23 @@ class SiteCore {
       if(typeof imported.load !== "function") return;
       imported.load()
     }
+  }
+  
+  async loadStylesheets(){
+    let [globalCSS, coreCSS, searchresultsCSS] = await Promise.all([
+      new Promise(r => fetch("../css/global.css").then(res => res.text().then(r))),
+      new Promise(r => fetch("../css/core.css").then(res => res.text().then(r))),
+      new Promise(r => fetch("../css/searchresults.css").then(res => res.text().then(r)))
+    ])
+
+    let global = new CSSStyleSheet();
+    global.replaceSync(globalCSS)
+    let core = new CSSStyleSheet();
+    core.replaceSync(coreCSS)
+    let searchresults = new CSSStyleSheet();
+    searchresults.replaceSync(searchresultsCSS)
+    
+    stylesheets = {global, core, searchresults};
   }
 
   async backTo(state) {

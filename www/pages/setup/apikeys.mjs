@@ -9,11 +9,10 @@ import "../../components/field.mjs"
 import {showDialog, promptDialog, confirmDialog} from "../../components/dialog.mjs"
 import {on, off, fire} from "../../system/events.mjs"
 import {uuidv4} from "../../libs/uuid.mjs"
+import { stylesheets } from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
-  <link rel='stylesheet' href='/css/searchresults.css'>
   <style>
     #container{
         padding: 10px;
@@ -73,7 +72,8 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global, stylesheets.searchresults];
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.newKey = this.newKey.bind(this); //Make sure "this" in that method refers to this

@@ -1,5 +1,7 @@
 let elementName = "popup-component"
 
+import { stylesheets } from "../system/core.mjs"
+
 /*
   Notes: 
   - Usage: 
@@ -11,7 +13,6 @@ let elementName = "popup-component"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
   <style>
     :host{
       z-index: 15;
@@ -125,7 +126,8 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global]
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     //this.shadowRoot.querySelector('h3').innerText = this.getAttribute('name');
     //this.shadowRoot.querySelector('img').src = this.getAttribute('avatar');

@@ -10,12 +10,11 @@ import {on, off, fire} from "../../system/events.mjs"
 import {state, goto} from "../../system/core.mjs"
 import {showDialog} from "../../components/dialog.mjs"
 import { alertDialog, confirmDialog } from "../../components/dialog.mjs"
-import { getApiConfig, isMobile } from "../../system/core.mjs"
+import { stylesheets} from "../../system/core.mjs"
 import {getUser} from "../../system/user.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
   <style>
     #container{
         padding: 10px;
@@ -86,7 +85,8 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global];
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.assignToMSUser = this.assignToMSUser.bind(this); //Make sure "this" in that method refers to this

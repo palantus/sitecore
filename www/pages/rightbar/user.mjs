@@ -3,13 +3,12 @@ const elementName = 'rightbar-user-component'
 import api from "../../system/api.mjs"
 import "./rightcard.mjs"
 import "../../components/field.mjs"
-import { goto, state } from "../../system/core.mjs"
+import { goto, state, stylesheets } from "../../system/core.mjs"
 import { isSignedIn } from "../../system/user.mjs"
 import { on, off } from "../../system/events.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
   <style>
     #container{color: white; padding: 10px;}
     h2{margin: 0px; border-bottom: 1px solid lightgray; padding-bottom: 5px;}
@@ -39,7 +38,8 @@ class Element extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: 'open' })
+        .adoptedStyleSheets = [stylesheets.global]
     this.shadowRoot.appendChild(template.content.cloneNode(true));
     
     this.refreshData = this.refreshData.bind(this);
