@@ -1,7 +1,7 @@
 let elementName = "action-bar-item"
 const template = document.createElement('template');
 template.innerHTML = `
-    <link rel='stylesheet' href='../css/global.css'>
+    <link rel='stylesheet' href='/css/global.css'>
     <style>
       span.item{
         display: inline-block;

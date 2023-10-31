@@ -12,8 +12,8 @@ import {uuidv4} from "../../libs/uuid.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='../css/global.css'>
-  <link rel='stylesheet' href='../css/searchresults.css'>
+  <link rel='stylesheet' href='/css/global.css'>
+  <link rel='stylesheet' href='/css/searchresults.css'>
   <style>
     #container{
         padding: 10px;
