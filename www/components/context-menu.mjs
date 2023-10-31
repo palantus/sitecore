@@ -28,7 +28,7 @@ import "../components/dropdown-menu.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
+  <link rel='stylesheet' href='../css/global.css'>
   <style>
     #title{
       border-bottom: 1px solid var(--contrast-color-muted);

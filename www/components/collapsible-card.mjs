@@ -2,7 +2,7 @@ let elementName = "collapsible-card"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
+  <link rel='stylesheet' href='../css/global.css'>
   <style>
     .collapsible {
       background-color: #777;

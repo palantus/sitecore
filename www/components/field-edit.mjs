@@ -6,7 +6,7 @@ import { fire } from "../system/events.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
+  <link rel='stylesheet' href='../css/global.css'>
   <style>
     :host{display: inline-block;}
     #options{display: none;}

@@ -2,7 +2,7 @@ let elementName = "field-edit-inline"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
+  <link rel='stylesheet' href='../css/global.css'>
   <style>
     :host{}
     #text{cursor: pointer;}

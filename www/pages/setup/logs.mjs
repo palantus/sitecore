@@ -6,8 +6,8 @@ import {state, pushStateQuery} from "../../system/core.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
-  <link rel='stylesheet' href='/css/global.css'>
-  <link rel='stylesheet' href='/css/searchresults.css'>
+  <link rel='stylesheet' href='../css/global.css'>
+  <link rel='stylesheet' href='../css/searchresults.css'>
   <style>
     #container{
         position: relative;
