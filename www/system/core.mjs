@@ -81,9 +81,9 @@ class SiteCore {
   
   async loadStylesheets(){
     let [globalCSS, coreCSS, searchresultsCSS] = await Promise.all([
-      new Promise(r => fetch("../css/global.css").then(res => res.text().then(r))),
-      new Promise(r => fetch("../css/core.css").then(res => res.text().then(r))),
-      new Promise(r => fetch("../css/searchresults.css").then(res => res.text().then(r)))
+      new Promise(r => fetch(`${config.site}/css/global.css`).then(res => res.text().then(r))),
+      new Promise(r => fetch(`${config.site}/css/core.css`).then(res => res.text().then(r))),
+      new Promise(r => fetch(`${config.site}/css/searchresults.css`).then(res => res.text().then(r)))
     ])
 
     let global = new CSSStyleSheet();
