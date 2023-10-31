@@ -135,7 +135,7 @@ async function loadIndex(path, level, isSingle){
   let newRelativePath = "../".repeat(level);
 
   indexContent = indexContent.replaceAll(`src="/`, `src="${newRelativePath}`)
-                             .replaceAll(`href="/`, `src="${newRelativePath}`)
+                             .replaceAll(`href="/`, `href="${newRelativePath}`)
 
   let buffer = Buffer.from(indexContent);
   virtualPathToContent.set(path, buffer);
