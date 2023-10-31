@@ -79,8 +79,8 @@ class APIKey extends Entity {
     if(!this.identifier) return null;
     let [federateUserId, name] = federateUser.split(";")
     let userIdSplit = federateUserId.split("@");
-    if(userIdSplit.length != 2) return null; // Only one @ allowed and that one is mandatory
-    let [userId, identifier] = userIdSplit;
+    if(userIdSplit.length < 2) return null;
+    let identifier = userIdSplit.pop();
     if(this.identifier != identifier) return null;
     let user = User.lookup(federateUserId)
     if(!user){
