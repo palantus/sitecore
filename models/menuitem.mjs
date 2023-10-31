@@ -3,7 +3,7 @@ import Setup from "./setup.mjs";
 
 export default class MenuItem extends Entity {
 
-  initNew(title, path, target, owner, type = "auto") {
+  initNew(title, path, target, owner = Setup.lookup(), type = "user") {
     if(type == "auto"){
       this.suggestedTitle = title || "Untitled menu item";
       this.suggestedPath = path || "/";

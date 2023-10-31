@@ -131,7 +131,10 @@ class Page extends HTMLElement {
       if(item) {
         let path = item.getAttribute("data-path")
         if(path){
-          goto(path, {forceRefresh: path == state().path})
+          if(path.startsWith("/_")) 
+            window.open(path)
+          else
+            goto(path, {forceRefresh: path == state().path})
         }
       } else {
         let menu = event.target.closest(".menu")

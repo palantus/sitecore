@@ -69,7 +69,7 @@ function loadMenuFile(menu, owner){
   for(let mi of items){
     let id = `${mi.path}/${mi.title}`
     foundIds.add(id)
-    let item = MenuItem.lookupPathSuggested(mi.title, mi.path, owner) || new MenuItem(mi.title, mi.path, mi.target, owner);
+    let item = MenuItem.lookupPathSuggested(mi.title, mi.path, owner) || new MenuItem(mi.title, mi.path, mi.target, owner, "auto");
     item.suggestedTitle = mi.title;
     item.suggestedPath = mi.path;
     item.suggestedTarget = mi.target;
