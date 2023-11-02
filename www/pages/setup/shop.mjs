@@ -43,6 +43,9 @@ template.innerHTML = `
     #active-mod{
       margin-top: 10px;
     }
+
+    .dep.installed{color:green}
+    .dep:not(.installed){color: red}
   </style>  
 
   <action-bar>
@@ -71,6 +74,7 @@ template.innerHTML = `
       <button id="install-btn" class="styled hidden">Install</button>
       <button id="uninstall-btn" class="styled hidden">Uninstall</button>
       <button id="source-btn" class="styled hidden">View source</button>
+      <p id="dependencies"></p>
       <div id="active-mod">
         <p>Select a mod on the list and view the details here. <br>When a mod is selected, you can choose to install it.</p>
       </div>
@@ -137,6 +141,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("install-btn").classList.toggle("hidden", mod.installed)
     this.shadowRoot.getElementById("uninstall-btn").classList.toggle("hidden", !mod.installed)
     this.shadowRoot.getElementById("source-btn").classList.toggle("hidden", false)
+    this.shadowRoot.getElementById("dependencies").innerHTML = `Dependencies: ${mod.dependencies.map(dep => `<span class="dep${this.mods.find(m => m.id == dep)?.installed ? " installed" : ""}">${dep}</span>`).join(", ")||"None"}`
   }
 
   async refreshData(){
@@ -177,6 +182,11 @@ class Element extends HTMLElement {
   async install(){
     let mod = this.getSelectedMod()
     if(!mod) return;
+
+    if(mod.dependencies.find(dep => this.mods.find(m => m.id == dep && !m.installed))){
+      return new Toast({text: "Install unmet dependencies first"})
+    }
+
     let toast = new Toast({text: `Installing ${mod.id}...`, showProgress: false})
     let result = await api.post(`system/mod/${mod.id}/install`)
     toast.remove()

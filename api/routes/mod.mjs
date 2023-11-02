@@ -34,6 +34,10 @@ export default (app) => {
   idRoute.get("/readme", (req, res) => {
     res.json({html: res.locals.mod.readme||null})
   })
+  
+  idRoute.get("/package", (req, res) => {
+    res.json(JSON.parse(res.locals.mod.package||"{}"))
+  })
 
   idRoute.post("/install", (req, res) => {
     res.locals.mod.install().then(resp => res.json(resp))

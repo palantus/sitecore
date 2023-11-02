@@ -78,7 +78,13 @@ class Mod extends Entity {
         mod.user = user
         mod.repo = avMod.name
         mod.versionAvailable = avMod.pushed_at
-        mod.readme = await Mod.fetchReadme(user, avMod.name)
+
+        let [readmeFile, packageFile] = await Promise.all([
+          Mod.fetchReadme(user, avMod.name),
+          Mod.fetchPackage(user, avMod.name)
+        ])
+        mod.readme = readmeFile
+        mod.package = packageFile
       }
     } catch(err){
       console.log(err)
@@ -110,6 +116,19 @@ class Mod extends Entity {
       })).text())
     } catch(err){
       throw "Failed to fetch readme"
+    }
+  }
+
+  static async fetchPackage(user, repo){
+    let setup = Setup.lookup();
+    try{
+      return await (await fetch(`https://raw.githubusercontent.com/${user}/${repo}/main/package.json`, {
+        headers : {
+          "Authorization": setup.githubAPIKey ? `token ${setup.githubAPIKey}` : undefined
+        }
+      })).text()
+    } catch(err){
+      return null;
     }
   }
 
@@ -194,7 +213,8 @@ class Mod extends Entity {
       github:{
         user: this.user,
         repo: this.repo
-      }
+      },
+      dependencies: JSON.parse(this.package||"{}").sitecore?.dependencies||[]
     }
   }
 }
