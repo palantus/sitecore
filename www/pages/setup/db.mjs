@@ -1,4 +1,4 @@
-const elementName = 'labels-page'
+const elementName = 'db-browser-page'
 
 import api from "../../system/api.mjs"
 import "../../components/action-bar.mjs"
