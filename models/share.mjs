@@ -1,5 +1,6 @@
 import Entity, {query} from "entitystorage"
 import { uuidv4 } from "../www/libs/uuid.mjs"
+import User from "./user.mjs"
 
 export default class Share extends Entity{
   initNew(name, rights, owner) {
@@ -44,7 +45,7 @@ export default class Share extends Entity{
   }
 
   get owner(){
-    return this.related.owner
+    return User.from(this.related.owner)
   }
 
   static hasAccess(entity, key, right, acl){
