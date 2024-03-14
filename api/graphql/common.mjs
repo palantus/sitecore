@@ -34,6 +34,7 @@ export const HistoryType = new GraphQLObjectType({
   name: 'HistoryType',
   description: 'This represents a History entry',
   fields: () => ({
+    type: { type: GraphQLString },
     timestamp: { type: GraphQLNonNull(GraphQLString) },
     typeName: { type: GraphQLString },
     typeText: { type: GraphQLString },
