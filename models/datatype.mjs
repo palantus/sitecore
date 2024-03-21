@@ -1,4 +1,4 @@
-import Entity, {query} from "entitystorage"
+import Entity, { query } from "entitystorage"
 import Permission from "./permission.mjs";
 
 class DataType extends Entity {
@@ -10,7 +10,7 @@ class DataType extends Entity {
     this.tag("datatype")
   }
 
-  initFromOptions({title, permission = null, api, idField = "id", nameField = "id", uiPath, showId, apiExhaustiveList, acl, aclInheritance, aclInheritFrom}){
+  initFromOptions({ title, permission = null, api, idField = "id", nameField = "id", uiPath, showId, apiExhaustiveList, acl, aclInheritance, aclInheritFrom }) {
     this.title = title;
     this.api = api || this.id;
     this.idField = idField;
@@ -26,35 +26,45 @@ class DataType extends Entity {
 
     return this
   }
-  
-  static lookup(id){
+
+  static lookup(id) {
     return query.type(DataType).tag("datatype").prop("id", id).first
   }
-  
-  init({typeModel}){
-    if(typeModel) {
+
+  init({ typeModel }) {
+    if (typeModel) {
       DataType.typeModelMap.set(this.id, typeModel);
-      if(typeof typeModel.lookup !== "function") throw `DataType ${this.id} doesn't have a 'lookup' function`
+      if (typeof typeModel.lookup !== "function") throw `DataType ${this.id} doesn't have a 'lookup' function`
+      if (typeof typeModel.isOfType !== "function") console.log(`Warning: DataType ${this.id} doesn't have a 'isOfType' function`);
     }
     return this;
   }
-  
-  static lookupOrCreate(id, options){
+
+  static lookupOrCreate(id, options) {
     return DataType.lookup(id)?.initFromOptions(options) || new DataType(id, options)
   }
 
-  static all(){
+  static all() {
     return query.type(DataType).tag("datatype").all;
   }
 
-  get aclParent(){
-    return DataType.from(this.related.aclinheritfrom)||this
+  get aclParent() {
+    return DataType.from(this.related.aclinheritfrom) || this
   }
 
-  lookupEntity(id){
+  lookupEntity(id) {
     let TypeModel = DataType.typeModelMap.has(this.id) ? DataType.typeModelMap.get(this.id) : null;
-    if(!TypeModel) throw `DataType ${this.id} didn't call init with a 'typeModel', which is necessary when using ACL/shares`
+    if (!TypeModel) throw `DataType ${this.id} didn't call init with a 'typeModel', which is necessary when using ACL/shares`
     return TypeModel.lookup(id);
+  }
+
+  static lookupByEntity(entity) {
+    if (!entity) return null
+    for (let [key, TypeModel] of DataType.typeModelMap.entries()) {
+      if (!TypeModel.isOfType) continue;
+      if (TypeModel.isOfType(entity)) return DataType.lookup(key)
+    }
+    return null
   }
 
   toObj() {

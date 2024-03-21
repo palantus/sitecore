@@ -33,7 +33,7 @@ class User extends Entity {
   }
 
   static lookupEmail(email) {
-    if(!email) return null;
+    if (!email) return null;
     return query.type(User).tag("user").prop("email", email).first
   }
 
@@ -56,10 +56,10 @@ class User extends Entity {
     return query.tag("user").not(query.tag("obsolete")).type(User).relatedTo(role, "role").all
   }
 
-  static activeByPermission(permissionId){
-    if(!permissionId) return [];
+  static activeByPermission(permissionId) {
+    if (!permissionId) return [];
     let permission = Permission.lookup(permissionId)
-    if(!permission) return [];
+    if (!permission) return [];
     return query.type(User).tag("user").not(query.tag("obsolete")).relatedTo(query.tag("role").relatedTo(permission, "permission"), "role").all
   }
 
@@ -68,6 +68,11 @@ class User extends Entity {
     let id = newId.replace(/[^a-zA-Z0-9\-_.]/g, '')
     if (newId !== id) return false;
     return true;
+  }
+
+  static isOfType(entity) {
+    if (!entity) return false;
+    return entity.tags.includes("user")
   }
 
   notify(area, message, details) {
@@ -91,20 +96,20 @@ class User extends Entity {
     return this.password === hash
   }
 
-  resetPassword(){
+  resetPassword() {
     let newPassword = uuidv4()
     this.setPassword(newPassword);
-    if(this.email && global.mods.find(m => m.id == "mail")) {
+    if (this.email && global.mods.find(m => m.id == "mail")) {
       import("../mods/mail/models/mail.mjs").catch(() => null)
-                                            .then(({default: Mail}) => {
-        this.setPassword(newPassword)
-        new Mail({
-          to: this.email, 
-          subject: `${Setup.lookup().siteTitle}: Password reset`, 
-          body: `<h1>Hi ${this.name}!</h1><p>Here is your new password:</p><div>${newPassword}</div><br>You can change your new password to something of your choice <a href="${global.sitecore.siteURL}/profile">here</a>.<br>If you just want to go to the site and log in, follow <a href="${global.sitecore.siteURL}/login">this link</a>.`,
-          bodyType: "html"
-        }).send()
-      })
+        .then(({ default: Mail }) => {
+          this.setPassword(newPassword)
+          new Mail({
+            to: this.email,
+            subject: `${Setup.lookup().siteTitle}: Password reset`,
+            body: `<h1>Hi ${this.name}!</h1><p>Here is your new password:</p><div>${newPassword}</div><br>You can change your new password to something of your choice <a href="${global.sitecore.siteURL}/profile">here</a>.<br>If you just want to go to the site and log in, follow <a href="${global.sitecore.siteURL}/login">this link</a>.`,
+            bodyType: "html"
+          }).send()
+        })
     }
     return newPassword
   }
@@ -178,7 +183,7 @@ class User extends Entity {
     return query.type(Notification).tag("notification").relatedTo(this, "user").all
   }
 
-  delete(){
+  delete() {
     this.msUsers.forEach(msUser => msUser.delete());
     this.notifications.forEach(n => n.delete());
     this.related.setup?.delete();
