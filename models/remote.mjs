@@ -109,6 +109,10 @@ export default class Remote extends Entity {
   
   async query(query, variables, {user = null, useGuest = false} = {}){
     let res = await this.post(`graphql`, {query, variables, user})
+    if(res.errors){
+      res.errors.forEach(e => LogEntry.create(JSON.stringify(e), "federation"));
+      console.log(res);
+    }
     return res.data || res
   }
 
