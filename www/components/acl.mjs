@@ -3,6 +3,7 @@ let elementName = "acl-component"
 import {userPermissions} from "../system/user.mjs"
 import api from "../system/api.mjs"
 import "../components/dropdown-menu.mjs"
+import { siteURL } from "../system/core.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -273,7 +274,7 @@ class Element extends HTMLElement {
           <field-edit class="read" type="checkbox" field="read" title="Read access" value="${s.rights.read}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
           <field-edit class="write" type="checkbox" field="write" title="Write access" value="${s.rights.write}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
           <field-edit class="execute" type="checkbox" field="execute" title="Execute access" value="${s.rights.execute}" patch="acl/${this.typeId}/${this.entityId}/share/${s.id}"></field-edit>
-          <button class="copy" data-url="${s.url||s.key}"}>Copy</button>
+          <button class="copy" data-key="${s.key}"}>Copy</button>
           <button class="delete" data-id="${s.id}">Delete</button>
       </div>`).join("")
 
@@ -329,13 +330,16 @@ class Element extends HTMLElement {
     await api.patch(`acl/${this.typeId}/default`, {acl: this.getAcl()})
   }
 
-  shareClick(e){
+  async shareClick(e){
     if(e.target.classList.contains("delete")){
       let id = e.target.getAttribute("data-id")
       if(!id) return;
       api.del(`acl/${this.typeId}/${this.entityId}/share/${id}`).then(this.refreshData)
     } else if(e.target.classList.contains("copy")){
-      navigator.clipboard.writeText(e.target.getAttribute("data-url"))
+      let key = e.target.getAttribute("data-key");
+      let type = await api.get(`system/datatypes/${this.typeId}`);
+      let url = `${siteURL()}/${type.ui.path}/${this.entityId}?shareKey=${key}`;
+      navigator.clipboard.writeText(url)
     }
   }
 
