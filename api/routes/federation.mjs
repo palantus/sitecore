@@ -1,5 +1,5 @@
 import express from "express"
-const { Router, Request, Response } = express;
+const { Router } = express;
 import { noGuest, permission} from "../../services/auth.mjs"
 import Remote from "../../models/remote.mjs"
 import Setup from "../../models/setup.mjs";
@@ -13,31 +13,31 @@ export default (app) => {
   const route = Router();
   app.use("/federation", route)
 
-  route.post('/remote', permission("admin"),  (req, res, next) => {
+  route.post('/remote', permission("admin"),  (req, res) => {
     if(typeof req.body.title !== "string") throw "Invalid title"
     let remote = new Remote(req.body)
-    remote.refresh().catch(err => null);
+    remote.refresh().catch(() => null);
     res.json(remote.toObj())
   });
 
-  route.get('/remote', permission("admin"), (req, res, next) => {
+  route.get('/remote', permission("admin"), (req, res) => {
     res.json(Remote.all().map(f => f.toObj()));
   });
 
-  route.delete('/remote/:id', permission("admin"), (req, res, next) => {
+  route.delete('/remote/:id', permission("admin"), (req, res) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     remote.delete();
     res.json({success: true});
   });
 
-  route.get('/remote/:id', permission("admin"), (req, res, next) => {
+  route.get('/remote/:id', permission("admin"), (req, res) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     res.json(remote.toObj());
   });
 
-  route.post('/remote/:id/test', permission("admin"), async (req, res, next) => {
+  route.post('/remote/:id/test', permission("admin"), async (req, res) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     try{
@@ -48,7 +48,7 @@ export default (app) => {
     }
   });
 
-  route.post('/remote/test', permission("admin"), async (req, res, next) => {
+  route.post('/remote/test', permission("admin"), async (req, res) => {
     try{
       let result = await Remote.testConfig(req.body)
       res.json(result)
@@ -57,14 +57,14 @@ export default (app) => {
     }
   });
 
-  route.post('/remote/:id/refresh', permission("admin"), (req, res, next) => {
+  route.post('/remote/:id/refresh', permission("admin"), (req, res) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     remote.refresh().catch(err => res.json({success: false, err}))
                     .then(() => res.json({success: true}))
   });
 
-  route.patch('/remote/:id', permission("admin"), (req, res, next) => {
+  route.patch('/remote/:id', permission("admin"), (req, res) => {
     let remote = Remote.lookup(req.params.id)
     if (!remote) throw "Unknown remote"
     if(typeof req.body.title === "string" && req.body.title) remote.title = req.body.title;
@@ -73,20 +73,20 @@ export default (app) => {
     res.json(true);
   });
   
-  route.get('/setup', permission("admin"), (req, res, next) => {
+  route.get('/setup', permission("admin"), (req, res) => {
     let setup = Setup.lookup()
     res.json({
       identifier: setup.identifier||null
     });
   });
   
-  route.patch('/setup', permission("admin"), (req, res, next) => {
+  route.patch('/setup', permission("admin"), (req, res) => {
     let setup = Setup.lookup()
     if(typeof req.body.identifier === "string" || !req.body.identifier) setup.identifier = req.body.identifier||null;
     res.json(true);
   });
   
-  route.post('/:fed/login', (req, res, next) => {
+  route.post('/:fed/login', (req, res) => {
     if(!req.body.username || !req.body.password) throw "username and password are mandatory";
     let userId = req.body.username.split("@")[0]
     let user = User.lookup(userId);
@@ -107,7 +107,7 @@ export default (app) => {
     })
 	})
   
-  route.get('/user/:user/jwt', noGuest, (req, res, next) => {
+  route.get('/user/:user/jwt', noGuest, (req, res) => {
     let user = User.lookup(req.params.user);
     if(!user) throw "Unknown user"
     let apiKey = res.locals.authMethod?.apiKey;
@@ -150,7 +150,20 @@ export default (app) => {
           response = await remote.del(redirectUrl, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
           break;
         case "POST":
-          response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
+          let contentType = req.headers["content-type"];
+          if(req.is("json")){
+            response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
+          } else if(req.files){
+            for (let filedef in req.files) {
+              let fileObj = Array.isArray(req.files[filedef]) ? req.files[filedef] : [req.files[filedef]]
+              for (let f of fileObj) {
+                response = await remote.upload(redirectUrl, f.data, f.name, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders});
+              }
+            }
+          } else {
+            console.log(typeof req.body, req.body)
+            response = await remote.post(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders, isRawBody: true, contentType})
+          }
           break;
         case "PATCH":
           response = await remote.patch(redirectUrl, req.body, {user: res.locals.user, returnRaw: true, ignoreErrors: true, useGuest, customHeaders})
