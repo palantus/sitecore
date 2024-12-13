@@ -151,8 +151,8 @@ export default (app) => {
   });
 
   meRoute.get('/token', noGuest, (req, res, next) => {
-		res.json({token: service(res.locals).getTempAuthToken(res.locals.user)})
-	})
+    res.json({token: service(res.locals).getTempAuthToken(res.locals.user)})
+  })
 
   meRoute.post('/changepass', noGuest, function (req, res, next) {
     let u = service(res.locals).me()

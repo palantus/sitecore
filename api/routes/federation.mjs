@@ -7,6 +7,7 @@ import url from "url"
 import User from "../../models/user.mjs";
 import jwt from 'jsonwebtoken'
 import LogEntry from "../../models/logentry.mjs";
+import { service } from "../../services/user.mjs";
 
 export default (app) => {
 
@@ -112,9 +113,14 @@ export default (app) => {
     if(!user) throw "Unknown user"
     let apiKey = res.locals.authMethod?.apiKey;
     if(!apiKey.federation || !apiKey.identifier || !user.id.endsWith(apiKey.identifier)) throw "Not possible with the current authentication. Please use a federation API key.";
-    let token = jwt.sign(user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' })
+    let token = jwt.sign(user.toObj(), global.sitecore.accessTokenSecret, { expiresIn: '7d' });
     res.json({success: true, token})
-	})
+  })
+
+  route.get('/:fed/api/me/token', noGuest, (_, res) => {
+    // Forwarding a temp token request to the sub does not make sense, since it is the parent/host that handles authentication.
+    res.json({token: service(res.locals).getTempAuthToken(res.locals.user)});
+  })
 
   route.all('/:fed/api/*', async (req, res) => {
     let path = decodeURI(req.path.split("/").slice(3).join("/")) // Go from eg. "/test/api/me" to "me"
