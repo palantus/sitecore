@@ -119,7 +119,7 @@ export default (app) => {
 
   route.get('/:fed/api/me/token', noGuest, (_, res) => {
     // Forwarding a temp token request to the sub does not make sense, since it is the parent/host that handles authentication.
-    res.json({token: service(res.locals).getTempAuthToken(res.locals.user)});
+    res.json({token: service.getTempAuthToken(res.locals.user)});
   })
 
   route.all('/:fed/api/*', async (req, res) => {
