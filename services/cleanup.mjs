@@ -6,7 +6,7 @@ export function startCleanupService(){
 }
 
 function runJob(){
-  console.time("Core cleanup completed")
+  // console.time("Core cleanup completed")
   let todayMinus15 = new Date()
   todayMinus15.setDate(todayMinus15.getDate()-15)
   let todayMinus15Str = todayMinus15.toISOString()
@@ -22,5 +22,5 @@ function runJob(){
   query.tag("notification").all.filter(n => n.timestamp < todayMinus30Str)
                                .forEach(n => n.delete())
 
-  console.timeEnd("Core cleanup completed")
+  // console.timeEnd("Core cleanup completed")
 }
