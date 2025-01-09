@@ -80,7 +80,7 @@ class Element extends HTMLElement {
   }
 
   async clearLog(){
-    if(!(await confirmDialog("Are you sure"))) return;
+    if(!(await confirmDialog("Are you sure?"))) return;
     await api.post(`system/log/clear`);
     this.refreshData();
   }
