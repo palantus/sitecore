@@ -4,6 +4,9 @@ import api from "../../system/api.mjs"
 import {on, off} from "../../system/events.mjs"
 import {state, pushStateQuery} from "../../system/core.mjs"
 import { stylesheets } from "../../system/core.mjs"
+import "../../components/action-bar.mjs"
+import "../../components/action-bar-item.mjs"
+import { confirmDialog } from "../../components/dialog.mjs"
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -22,6 +25,10 @@ template.innerHTML = `
     table thead th:nth-child(1){min-width: 150px !important;}
     table thead th:nth-child(2){min-width: 120px !important;}
   </style>  
+
+  <action-bar>
+      <action-bar-item id="clear-btn">Clear log</action-bar-item>
+  </action-bar>
 
   <div id="container">
     <label for="logselect">Area: </label>
@@ -53,6 +60,8 @@ class Element extends HTMLElement {
 
     this.refreshData = this.refreshData.bind(this);
 
+    this.shadowRoot.getElementById("clear-btn").addEventListener("click", this.clearLog)
+
     api.get("system/logareas").then(areas => {
       this.shadowRoot.getElementById("logselect").innerHTML = `<option value=""></option>` + areas.map(e => `<option value="${e.id}">${e.id}</option>`).join("")
 
@@ -68,6 +77,12 @@ class Element extends HTMLElement {
   async refreshData(){
     let data = await api.get(`system/log/${this.shadowRoot.getElementById("logselect").value||""}`)
     this.shadowRoot.getElementById("log").innerHTML = data.map(e => `<tr><td>${e.timestamp?.substr(0, 19).replace("T", " ")||"N/A"}</td><td>${e.area?.id || "N/A"}</td><td>${e.text || "N/A"}</td></tr>`).join("")
+  }
+
+  async clearLog(){
+    if(!(await confirmDialog("Are you sure"))) return;
+    await api.post(`system/log/clear`);
+    this.refreshData();
   }
 
   connectedCallback() {

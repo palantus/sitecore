@@ -40,6 +40,14 @@ template.innerHTML = `
       <field-edit type="text" label="Home path" id="home"></field-edit>
     </field-list>
 
+    <div id="ms-container">
+      <h3>Microsoft accounts</h3>
+      <table>
+        <tbody id="ms-accounts">
+        </tbody>
+      </table>
+    </div>
+
     <div id="custom-mod-container"></div>
   </div>
 
@@ -101,7 +109,7 @@ class Element extends HTMLElement {
         existingPass: this.shadowRoot.getElementById("pass-existing").value,
         newPass: this.shadowRoot.getElementById("pass-new").value
       }},
-      close: () => {name
+      close: () => {
         this.shadowRoot.querySelectorAll("field-component input").forEach(e => e.value = '')
       }
     })
@@ -114,6 +122,9 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("name").setAttribute("value", user.name);
     this.shadowRoot.getElementById("email").setAttribute("value", user.email||"");
     this.shadowRoot.getElementById("home").setAttribute("value", user.home||"");
+
+    this.shadowRoot.getElementById("ms-container").style.display = getApiConfig().msSigninEnabled ? "block" : "none"
+
     
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `me/setup`));
   }

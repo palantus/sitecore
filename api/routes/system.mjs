@@ -41,6 +41,13 @@ export default (app) => {
     res.json(LogArea.all().map(e => ({ id: e.id })));
   });
 
+  route.post('/log/clear', permission("admin"), (_, res) => {
+    for(let entry of LogEntry.all()){
+      entry.delete();
+    }
+    res.json({success: true});
+  })
+
   route.get("/db/query", (req, res, next) => {
     if(!validateAccess(req, res, {permission: "admin"})) return;
     req.params.query = req.query.q;
