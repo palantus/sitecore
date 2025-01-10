@@ -6,8 +6,9 @@ import "../../components/action-bar-item.mjs"
 import "../../components/field.mjs"
 import "../../components/field-edit.mjs"
 import "../../components/field-list.mjs"
+import "../../components/list-inline.mjs"
 import {on, off, fire} from "../../system/events.mjs"
-import {showDialog} from "../../components/dialog.mjs"
+import {promptDialog, showDialog} from "../../components/dialog.mjs"
 import { alertDialog } from "../../components/dialog.mjs"
 import {getApiConfig, stylesheets} from "../../system/core.mjs"
 
@@ -38,15 +39,8 @@ template.innerHTML = `
       <field-edit type="text" label="Name" id="name" disabled></field-edit>
       <field-edit type="text" label="E-mail" id="email"></field-edit>
       <field-edit type="text" label="Home path" id="home"></field-edit>
+      <list-inline-component id="ms-accounts" label="MS accounts"></list-inline-component>
     </field-list>
-
-    <div id="ms-container">
-      <h3>Microsoft accounts</h3>
-      <table>
-        <tbody id="ms-accounts">
-        </tbody>
-      </table>
-    </div>
 
     <div id="custom-mod-container"></div>
   </div>
@@ -123,8 +117,23 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("email").setAttribute("value", user.email||"");
     this.shadowRoot.getElementById("home").setAttribute("value", user.home||"");
 
-    this.shadowRoot.getElementById("ms-container").style.display = getApiConfig().msSigninEnabled ? "block" : "none"
-
+    let msContainer = this.shadowRoot.getElementById("ms-accounts")
+    msContainer.setup({
+      add: async () => {
+        let email = await promptDialog("Enter the Microsoft email address that you want to be able to sign in as");
+        await api.post(`user/${user.id}/assignToMSAccount`, {msid: email, createIfMissing: true})
+        this.refreshData();
+      },
+      validateAdd: () => true,
+      remove: async msuser => {
+        await api.del(`msuser/${msuser.email}`);
+      },
+      validateRemove: () => true,
+      getData: async () => {
+        return user.msUsers
+      },
+      toHTML: user => `<span>${user.email}</span>`,
+    })
     
     this.shadowRoot.querySelectorAll("field-edit:not([disabled])").forEach(e => e.setAttribute("patch", `me/setup`));
   }

@@ -2,7 +2,7 @@ import Entity, {query, sanitize} from "entitystorage";
 import express from "express"
 const { Router, Request, Response } = express;
 import service from "../../services/user.mjs"
-import {noGuest, validateAccess} from "../../services/auth.mjs"
+import {noGuest, permission, validateAccess} from "../../services/auth.mjs"
 import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import { createId } from "../../tools/id.mjs"
@@ -66,7 +66,8 @@ export default (app) => {
     let msid = req.body.msid
 
     let msUser = MSUser.lookup(msid)
-    if(!msUser && req.body.createIfMissing === true && User.validateEmailAddress(msid)){
+    if(!msUser && req.body.createIfMissing === true){
+      if(!User.validateEmailAddress(msid)) throw "Invalid email address";
       msUser = new MSUser(null, {email: msid})
     }
 
@@ -191,6 +192,13 @@ export default (app) => {
       if(req.body.vsts) msUser.tag("vsts")
       else msUser.removeTag("vsts")
     }
+    res.json(true);
+  });
+  
+  msRoute.delete('/:email', permission("user.edit"), (req, res) => {
+    if(!req.params.email) throw "email is required"
+    let msUser = MSUser.lookup(sanitize(req.params.email))
+    msUser?.delete();
     res.json(true);
   });
 
