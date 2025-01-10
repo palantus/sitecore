@@ -117,6 +117,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("email").setAttribute("value", user.email||"");
     this.shadowRoot.getElementById("home").setAttribute("value", user.home||"");
 
+    this.shadowRoot.getElementById("ms-accounts").parentElement.style.display = getApiConfig().msSigninEnabled ? "block" : "none";
     let msContainer = this.shadowRoot.getElementById("ms-accounts")
     msContainer.setup({
       add: async () => {
