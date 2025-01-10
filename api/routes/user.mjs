@@ -170,6 +170,28 @@ export default (app) => {
 
     res.json(true)
   });
+
+  meRoute.post('/assignToMSAccount', noGuest, (req, res) => {
+    let user = res.locals.user;
+    let msid = req.body.msid
+
+    let msUser = MSUser.lookup(msid)
+    if(!msUser && req.body.createIfMissing === true){
+      if(!User.validateEmailAddress(msid)) throw "Invalid email address";
+      msUser = new MSUser(null, {email: msid})
+    }
+
+    if (msUser) {
+      if (msUser.related.user && msUser.related.user.id != user.id) {
+        throw "MS user is already assigned to another user"
+      } else {
+        msUser.rel(user, "user")
+        res.json(true)
+      }
+    } else {
+      throw "MS user doesn't exist. Try logging in with it first."
+    }
+  });
   
   /* MS Users */
 
@@ -195,9 +217,12 @@ export default (app) => {
     res.json(true);
   });
   
-  msRoute.delete('/:email', permission("user.edit"), (req, res) => {
+  msRoute.delete('/:email', (req, res) => {
     if(!req.params.email) throw "email is required"
     let msUser = MSUser.lookup(sanitize(req.params.email))
+    if (msUser.related.user && msUser.related.user.id != res.locals.user.id) {
+      if(!validateAccess(req, res, {permission: "user.edit"})) return;
+    }
     msUser?.delete();
     res.json(true);
   });

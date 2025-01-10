@@ -121,7 +121,7 @@ class Element extends HTMLElement {
     msContainer.setup({
       add: async () => {
         let email = await promptDialog("Enter the Microsoft email address that you want to be able to sign in as");
-        await api.post(`user/${user.id}/assignToMSAccount`, {msid: email, createIfMissing: true})
+        await api.post(`/me/assignToMSAccount`, {msid: email, createIfMissing: true})
         this.refreshData();
       },
       validateAdd: () => true,
