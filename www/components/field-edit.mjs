@@ -4,6 +4,7 @@ import { stylesheets } from "../system/core.mjs"
 import api from "../system/api.mjs"
 import {userPermissions} from "../system/user.mjs"
 import { fire } from "../system/events.mjs";
+import { confirmDialog } from "./dialog.mjs";
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -143,6 +144,10 @@ class Element extends HTMLElement {
 
   async valueChanged(e){
     if(this.preventSaving) return;
+    if(this.hasAttribute("confirm") && !(await confirmDialog(this.getAttribute("confirm") || "Are you sure that you want to make this change?"))) {
+      this.setValue(this.currentKnownStoredValue)
+      return;
+    }
     
     let patch = this.getAttribute("patch")
     let field = this.getAttribute("field") || this.getAttribute("id")
