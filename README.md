@@ -27,6 +27,18 @@ Default is combined. It can be changed by setting `MODE` in .env or passing `mod
 - Set ADMIN_PASS in .env to a new admin password (otherwise password is "admin")
 - start server and login using admin as username
 
+## Run in Docker
+
+- Expose port 8080.
+- Set the following env variables:
+  - `SITE_HOST`: The hostname (including port, if not 80/443) that users can reach the site at
+  - `SECURE`: Set to `FALSE` if the connection isn't encrypted (ie. not https).
+  - `COOKIEDOMAIN`: Enter the domain for cookies (ex. `.example.com` or `192.168.0.10`).
+  - `ACCESS_TOKEN_SECRET`: Set to a long, random string of characters. Make sure to not lose this, as it is used to encrypt/decrypt values like passwords. 
+- Optionally map the following locations for persistance:
+  - `/home/node/app/mods`: mods installed through GUI.
+  - `/home/node/app/storage`: database, uploaded files etc.
+
 
 ## Main menu:
 Can be overridden by creating a menu.mjs in root folder of sitecore or a mod, which has a default export of type array. Otherwise, the menu consists of a merge of all ui.mjs files in sitecore and mod root folders.
