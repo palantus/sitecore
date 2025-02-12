@@ -139,7 +139,7 @@ class Element extends HTMLElement {
     this.style.left = "0px";
     this.style.top = "0px";
 
-    this.shadowRoot.getElementById("title").innerText = this.getAttribute("title") || "Dialog"
+    this.shadowRoot.getElementById("title").innerText = this.getAttribute("label") || this.getAttribute("title") || "Dialog"
   }
 
   connectedCallback() {
@@ -198,11 +198,15 @@ class Element extends HTMLElement {
       case "title":
         this.shadowRoot.getElementById("title").innerText = newValue || "Dialog"
         break;
+      
+      case "label":
+        this.shadowRoot.getElementById("title").innerText = newValue || "Dialog"
+        break;
     }
   }
 
   static get observedAttributes() {
-    return ["validationerror", "title"];
+    return ["validationerror", "title", "label"];
   }  
 }
 
@@ -291,7 +295,7 @@ export function showDialog(dialog, {ok, cancel, show, validate, values, close, t
 
 export async function confirmDialog(text, {title = null} = {}){
   let container = document.createElement("div")
-  container.innerHTML = `<dialog-component title="${title || "Confirm"}"><div>${text}</div></dialog-component>`
+  container.innerHTML = `<dialog-component label="${title || "Confirm"}"><div>${text}</div></dialog-component>`
   document.getElementById("body-container").appendChild(container)
   let dialog = container.querySelector("dialog-component")
   return new Promise(resolve => {
@@ -316,7 +320,7 @@ export async function confirmDialog(text, {title = null} = {}){
 export async function promptDialog(text, defValue, {selectValue = false, title = null, validate = undefined, type = "text", lookup = null, extendedResult = false} = {}){
   let container = document.createElement("div")
   container.innerHTML = `
-    <dialog-component title="${title || "Prompt"}">
+    <dialog-component label="${title || "Prompt"}">
       <div>${text}: </div><field-edit style="margin-top: 5px; width: 350px"></field-edit></input>
     </dialog-component>`
   document.getElementById("body-container").appendChild(container)
@@ -353,7 +357,7 @@ export async function promptDialog(text, defValue, {selectValue = false, title =
 
 export async function alertDialog(text, {title = null} = {}){
   let container = document.createElement("div")
-  container.innerHTML = `<dialog-component title="${title ||"Alert"}" no-cancel><div>${text}</div></dialog-component>`
+  container.innerHTML = `<dialog-component label="${title ||"Alert"}" no-cancel><div>${text}</div></dialog-component>`
   document.getElementById("body-container").appendChild(container)
   let dialog = container.querySelector("dialog-component")
   return new Promise(resolve => {
