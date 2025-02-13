@@ -41,7 +41,8 @@ export const UserType = new GraphQLObjectType({
       roles: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
       permissions: {type: GraphQLNonNull(GraphQLList(GraphQLString))},
       active: {type: GraphQLNonNull(GraphQLBoolean)},
-      isMe: {type: GraphQLNonNull(GraphQLBoolean), resolve: (u, args, context) => u.id == context.user.id}
+      isMe: {type: GraphQLNonNull(GraphQLBoolean), resolve: (u, args, context) => u.id == context.user.id},
+      note: { type: GraphQLString },
     })
   })
 

@@ -47,6 +47,7 @@ template.innerHTML = `
     <field-list labels-pct="20">
       <field-edit type="text" label="Name" id="name"></field-edit>
       <field-edit type="text" label="Email" id="email"></field-edit>
+      <field-edit type="text" label="Note" id="note"></field-edit>
       <field-edit type="password" label="Password" id="password"></field-edit>
       <field-edit type="checkbox" label="Active" id="active"></field-edit>
     </field-list>
@@ -180,7 +181,7 @@ class Element extends HTMLElement {
   async refreshData(){
     let id = this.userId;
 
-    let user = (await api.query(`{user(id:"${id}") {id, name, email, passwordSet, msUsers{email, vsts}, roles, active}}`)).user
+    let user = (await api.query(`{user(id:"${id}") {id, name, email, passwordSet, msUsers{email, vsts}, roles, active, note}}`)).user
     if(!user){alertDialog(`Could not retrive user ${id}. Maybe you don't have permission to view this user.`); return;}
 
     let me = await getUser()
@@ -193,6 +194,7 @@ class Element extends HTMLElement {
     this.shadowRoot.getElementById("email").setAttribute("value", user.email||"");
     this.shadowRoot.getElementById("password").setAttribute("value", user.passwordSet ? "12345678" : "");
     this.shadowRoot.getElementById("active").setAttribute("value", user.active);
+    this.shadowRoot.getElementById("note").setAttribute("value", user.note||"");
     
     if(isAdmin || isShowingMe){
       this.shadowRoot.getElementById("msusers").innerHTML = user.msUsers.map(u => u.vsts ? `${u.email} (vsts)` : u.email).join("<br/>") || "- None -"

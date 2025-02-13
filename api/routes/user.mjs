@@ -2,7 +2,7 @@ import Entity, {query, sanitize} from "entitystorage";
 import express from "express"
 const { Router, Request, Response } = express;
 import service from "../../services/user.mjs"
-import {noGuest, permission, validateAccess} from "../../services/auth.mjs"
+import {noGuest, permission, validateAccess, lookupType} from "../../services/auth.mjs"
 import User from "../../models/user.mjs"
 import MSUser from "../../models/msuser.mjs"
 import { createId } from "../../tools/id.mjs"
@@ -83,10 +83,8 @@ export default (app) => {
     }
   });
 
-  userRoute.patch('/:id', function (req, res, next) {
-    if(!validateAccess(req, res, {permission: "user.edit"})) return;
-    let user = User.lookup(sanitize(req.params.id))
-    if (!user) throw "Unknown user"
+  userRoute.patch('/:id', permission("user.edit"), lookupType(User, "user"), (req, res) => {
+    let user = res.locals.user;
 
     if (req.body.name !== undefined) user.name = req.body.name
     if (req.body.active !== undefined) {if(req.body.active) user.activate(); else user.deactivate();}
@@ -96,6 +94,7 @@ export default (app) => {
       if(req.body.email && !User.validateEmailAddress(email)) throw "Invalid email"
       user.email = email;
     }
+    if (req.body.note !== undefined) user.note = req.body.note;
 
     res.json(true);
   });
