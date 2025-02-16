@@ -166,9 +166,9 @@ export async function restartServer(){
       })
     }, 1000)
   })
-  toast.text = "Server restarted sucessfully. Reloading page in 5 seconds..."
-  toast.showProgress = true
-  toast.unpause()
+
+  toast.remove();
+  new Toast({text: "Server restarted sucessfully. Reloading page in 5 seconds...", showProgress: true, autoClose: 5000})
   setTimeout(() => location.reload(), 5000)
 }
 
