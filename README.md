@@ -13,6 +13,7 @@
 - API_HOST: (optional) domain for the API (including port, if non-default) - eg.: api.example.com or localhost:8080
 - COOKIEDOMAIN: Domain to set cookies on (eg. ".example.com" or "localhost"). Don't include port.
 - STORAGE: relative path to database and blob storage. Will be created if it doesn't exist. Default is "storage".
+- CACHE: true/false indicating if static files should be cached in memory. Default `true`. Use `true` for prodoction and `false` for development.
 
 ## Run mode
 

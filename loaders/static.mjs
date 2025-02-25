@@ -52,20 +52,25 @@ export async function staticRoute(req, res, next){
       return res.sendStatus(404);
     }
   }
+  
+  let content;
+  let hash;
 
-  if(!virtualPathToContent.has(path)){
+  if(virtualPathToContent.has(path)){
+    content = virtualPathToContent.get(path);
+    hash = virtualPathToHash.get(path)
+  } else {
     // Load file
     let physicalPath = virtualPathToPhysical.get(path);
     let data = await fs.readFile(physicalPath);
-    let buffer = Buffer.from(data);
-    virtualPathToContent.set(path, buffer);
+    content = Buffer.from(data);
+    if(process.env.CACHE != "false")
+      virtualPathToContent.set(path, content);
     
-    let hash = createHash('md5').update(buffer).digest("base64");
-    virtualPathToHash.set(path, hash);
-  }
-
-  let content = virtualPathToContent.get(path);
-  let hash = virtualPathToHash.get(path)
+    hash = createHash('md5').update(content).digest("base64");
+    if(process.env.CACHE != "false")
+      virtualPathToHash.set(path, hash);
+  } 
 
   res.setHeader('Content-Type', mime.lookup(path))
   res.setHeader('Cache-Control', `max-age=31536000, no-cache`)
