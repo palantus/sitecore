@@ -34,7 +34,6 @@ Default is combined. It can be changed by setting `MODE` in .env or passing `mod
 - Set the following env variables:
   - `SITE_HOST`: The hostname (including port, if not 80/443) that users can reach the site at
   - `SECURE`: Set to `FALSE` if the connection isn't encrypted (ie. not https).
-  - `COOKIEDOMAIN`: Enter the domain for cookies (ex. `.example.com` or `192.168.0.10`).
   - `ACCESS_TOKEN_SECRET`: Set to a long, random string of characters. Make sure to not lose this, as it is used to encrypt/decrypt values like passwords. 
 - Optionally map the following locations for persistance:
   - `/home/node/app/mods`: mods installed through GUI.
