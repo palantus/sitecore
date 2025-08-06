@@ -303,7 +303,7 @@ class API {
     this.cache = new Map()
   }
 
-  async fetch(path, options) {
+  async fetch(path, options, silent = false) {
     this.checkInit();
     if (this.failedLoginState === true) return;
     let parms = options || {}
@@ -314,7 +314,8 @@ class API {
     } else if (res.status == 401) {
       //this.notLoggedIn()
     } else if (res.status >= 400 && res.status < 500) {
-      alertDialog("Server fejl")
+      if(!silent)
+        alertDialog("Server error")
       console.log(await res.text())
     } else {
       fire("log", { level: "error", message: `Request returned an error. Information: ${res.status}; ${res.statusText}`})
