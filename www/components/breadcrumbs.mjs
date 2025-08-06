@@ -24,7 +24,7 @@ template.innerHTML = `
         background: rgba(200, 200, 200, 0.3);
       }
       #path span.divider{
-        background: rgba(0, 0, 200, 0.4);
+        background: var(--accent-back);
       }
     </style>
 
