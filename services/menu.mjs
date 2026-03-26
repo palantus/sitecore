@@ -105,7 +105,7 @@ function upgradeLegacyMenu(menu){
 }
 
 async function uiExists(basePath){
-  return new Promise(r => fs.access(path.join(basePath, "ui.mjs"), fs.F_OK, (err) => {
+  return new Promise(r => fs.access(path.join(basePath, "ui.mjs"), fs.constants.F_OK, (err) => {
     if (err) return r(false);
     return r(true)
   }))
