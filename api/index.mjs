@@ -60,7 +60,7 @@ export default async (app) => {
 }
 
 async function apiExists(basePath){
-  return new Promise(r => fs.access(path.join(basePath, "index.mjs"), fs.F_OK, (err) => {
+  return new Promise(r => fs.access(path.join(basePath, "index.mjs"), fs.constants.F_OK, (err) => {
     if (err) return r(false);
     return r(true)
   }))

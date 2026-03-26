@@ -25,7 +25,7 @@ export default async () => {
 }
 
 async function rootExists(basePath){
-  return new Promise(r => fs.access(path.join(basePath, "services.mjs"), fs.F_OK, (err) => {
+  return new Promise(r => fs.access(path.join(basePath, "services.mjs"), fs.constants.F_OK, (err) => {
     if (err) return r(false);
     return r(true)
   }))
