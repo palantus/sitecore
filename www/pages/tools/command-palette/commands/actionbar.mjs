@@ -15,6 +15,7 @@ export class ActionBarClicker extends Command{
     if(!actionBar) return [];
 
     return [...actionBar.querySelectorAll("action-bar-item")]
+    .filter(i => !i.classList.contains("hidden"))
     .map(i => ({
         title: i.innerText, 
         element: i
