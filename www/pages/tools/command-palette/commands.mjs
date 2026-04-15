@@ -8,7 +8,10 @@ export let getCommands = async (context, query) => {
 
   if(commands.length == 0){
 
-    let commandFiles = [import("./commands/menu.mjs")]
+    let commandFiles = [
+      import("./commands/menu.mjs"),
+      import("./commands/actionbar.mjs"),
+    ];
 
     for(let mod of mods()){
       commandFiles.push(...mod.files.filter(f => f.startsWith("/commands/")).map(f => import(`../../..${f}`)))
