@@ -11,6 +11,7 @@ export let getCommands = async (context, query) => {
     let commandFiles = [
       import("./commands/menu.mjs"),
       import("./commands/actionbar.mjs"),
+      import("./commands/content-actions.mjs"),
     ];
 
     for(let mod of mods()){

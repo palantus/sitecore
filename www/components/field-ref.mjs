@@ -44,6 +44,10 @@ class Element extends HTMLElement {
         this.shadowRoot.querySelector('span').title = this.getAttribute('ref');
   }
 
+  click(){
+    this.shadowRoot.querySelector("span").click();
+  }
+
   connectedCallback() {
   }
 
